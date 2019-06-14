@@ -1,0 +1,310 @@
+= Report runner service
+Steve Schafer;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[introduction]
+= Introduction
+
+Report runner service is a microservice for generating BIRT reports.
+
+[[overview]]
+= Overview
+
+We attempt to adhere to REST standards although running a report is really an action and not a resource.  However we use POST for report run actions because it can be thought of as adding a new request, where a request is a resource.  We use GET for retrieving reports and report status.
+
+When the payload is the generated report, it is returned with the appropriate MIME type and a response code of 200.  If there was an error generating the report, a response code of 500 (internal server error) is returned.  If the report design file was not found, 404 (not found) is returned.  If the output format is not recognized, 406 (not acceptable) is returned.
+
+The server can be configured to use the open-source BIRT libraries or the OpenText commercial BIRT libraries.
+
+[[requests]]
+= Requests
+
+[[report-run-request]]
+== Report run request
+This request is used to immediately generate a report and return the output in the response.
+
+request fields:
+include::{snippets}/run/request-fields.adoc[]
+
+Examples:
+
+curl:
+include::{snippets}/run/curl-request.adoc[]
+
+http request:
+include::{snippets}/run/http-request.adoc[]
+
+request body:
+include::{snippets}/run/request-body.adoc[]
+
+[[report-submit-request]]
+== Report submit request
+This request is used to start generating the report asynchronously.  A string is returned that identifies the job.
+
+Request fields:
+include::{snippets}/submit/request-fields.adoc[]
+
+Response fields:
+include::{snippets}/submit/response-fields.adoc[]
+
+Examples:
+
+curl:
+include::{snippets}/submit/curl-request.adoc[]
+
+http request:
+include::{snippets}/submit/http-request.adoc[]
+
+request body:
+include::{snippets}/submit/request-body.adoc[]
+
+[[report-status-request]]
+== Report status request
+This request is used to get the status of a running or finished job.
+
+Request path parameters:
+include::{snippets}/status/path-parameters.adoc[]
+
+Response fields:
+include::{snippets}/status/response-fields.adoc[]
+
+Examples:
+
+curl:
+include::{snippets}/status/curl-request.adoc[]
+
+http request:
+include::{snippets}/status/http-request.adoc[]
+
+[[report-get-request]]
+== Report get request
+This request is used to retrieve the output of a report that was run asynchronously (using submit).
+
+Request path parameters:
+include::{snippets}/status/path-parameters.adoc[]
+
+Examples:
+
+curl:
+include::{snippets}/status/curl-request.adoc[]
+
+http request:
+include::{snippets}/status/http-request.adoc[]
+
+[[report-download-request]]
+== Report download request
+This request is used to retrieve the output of a report that was run asynchronously (using submit).  It's the same as /get except that the report output is treated as an attachment.
+
+Request path parameters:
+include::{snippets}/status/path-parameters.adoc[]
+
+Examples:
+
+curl:
+include::{snippets}/status/curl-request.adoc[]
+
+http request:
+include::{snippets}/status/http-request.adoc[]
+
+[[parameters]]
+= Parameters
+
+In the run and submit requests, parameters are specified in JSON as an object in the form
+{"name": value, ...}, where name is a 
+parameter name and value may be a string, number, boolean, or object.  For example: {"a-number": 1, "a-string": "apples", "a-boolean": true}.
+
+Objects are used to specify date or time data types.  If an object is used it must have two fields: "type" and "value".  Type must be one of "date", "datetime", or "time", and value must be a string.  The format for dates is "yyyy-MM-dd", for datetime "yyyy-MM-dd HH:mm:ss", and for time "HH:mm:ss". For example: {"a-date": {type: "date", value: "2016-06-21"}}.
+
+Additionally for multi-value parameters you can specify an array of values, like this: 
+{"name": [value, ...], ...}.  For example: {"some-numbers": [1, 2, 3]}.  The same types as single-value parameters can be used.
+
+[[building]]
+= Building
+To build the jar from source, change directory to the root folder (the folder containing pom.xml) and type 
+
+--------------------------
+mvn package
+--------------------------
+
+The build will run a series of unit tests and also build the documentation you are reading.
+
+[[runtime-configuration]]
+= Runtime Configuration
+
+This server is configured by a java properties file.  The full path to the properties file must be
+specified in an environment variable named REPORT_RUNNER_PROPERTIES prior to executing
+the jar file.  The following properies may be specified.
+
+birt.runner.outputDir::
+ The filesystem path to the directory where output files should be placed.  If absent, output file names are
+ relative to the current directory if they are not absolute.
+ 
+birt.runner.workspace::
+  The default location of report design files.  If absent design file names relative to the current directory
+  if they are not absolute.
+  
+birt.runner.runtime::
+  For versions of BIRT less than 3.7 and the OpenText commercial version,
+  this should be the full path to the directory containing the eclipse plugin directory.
+  In the case of open source birt-runtime it should be the ReportEngine directory.
+  For OpenText commercial it can be iServer/Jar/BIRT/platform in the iServer installation directory
+  or WEB-INF/platform in the OJC webapp.
+  For open source versions of BIRT greater than or equal to 3.7 it should be omitted.
+  
+birt.runner.resources::
+  The filesystem path to the report resources directory.  This directory should contain report libraries, 
+  javascript files, css files, jar files, and any other resources that reports will need during execution.
+  This property is required.
+  
+birt.runner.scriptlib::
+  The filesystem path to a directory containing jar files and/or class files that constitute the classpath
+  available to the report for event handlers.  If absent, no classpath is provided.
+  
+birt.runner.reportFormat::
+  The default format for all reports.  If absent, the default format is PDF.
+  
+birt.runner.baseImageURL::
+  The base URL used for images in HTML reports.
+  
+birt.runner.logging.properties::
+  The filesystem path to the logging properties file used by the BIRT report engine.
+  
+birt.runner.logging.dir::
+  The filesystem path to the directory for log files produced by the BIRT report engine.
+  
+birt.runner.db.driver::
+  Reserved for future use.
+  
+birt.runner.db.url::
+  Reserved for future use.
+  
+birt.runner.db.username::
+  Reserved for future use.
+  
+birt.runner.db.password::
+  Reserved for future use.
+  
+birt.runner.db.query::
+  Reserved for future use.
+  
+birt.runner.mail.username::
+  The user name required for SMTP server authentication.
+  
+birt.runner.mail.password::
+  The password required for SMTP server authentication.
+  
+birt.runner.mail.properties::
+  The filesystem path to the javamail properties file.
+  
+birt.runner.mail.to::
+  A universal email recipient list.  All addresses in this list will receive emails
+  in addition to any recipients specified in the report request.  Multiple email addresses
+  must be separated by commas.
+  
+birt.runner.mail.cc::
+  A universal email copy recipient list.  All addresses in this list will receive emails
+  in addition to any copy recipients specified in the report request.  Multiple email addresses
+  must be separated by commas.
+  
+birt.runner.mail.bcc::
+  A universal email blind-copy recipient list.  All addresses in this list will receive emails
+  in addition to any blind-copy recipients specified in the report request.  Multiple email addresses
+  must be separated by commas.
+  
+birt.runner.mail.from::
+  The universal email from address.  All emails will be from this address.
+
+birt.runner.mail.subject.success::
+  The default email subject for successful generations.  Success subjects specified in
+  report requests will override this one.
+  
+birt.runner.mail.subject.failure::
+  The default email subject for failed generations.  Failed generation subjects specified in
+  report requests will override this one.
+  
+birt.runner.mail.body.success::
+  The default email body for successful generations.  Successful generation bodies specified in
+  report requests will override this one.  The body text will be interpreted as HTML if
+  the birt.runner.mail.html property is "true".  The body text may contain one or more of the
+  following substitution strings:
+  
+  ${designFileName};;
+    The BIRT report design filename specified in the report run or submit request.
+  
+  ${nameForHumans};;
+    The human-friendly name for the report specified in the report run or submit request.
+  
+  ${startTime};;
+    The date and time the report generation started.
+  
+  ${finishTime};;
+    The date and time the report generation finished.
+  
+birt.runner.mail.body.failure::
+  The default email body for failed report generations.  Failed generation bodies specified in
+  report requests will override this one.  Rules for the birt.runner.mail.body.success property
+  are also applicable to this one.
+  
+birt.runner.mail.attachReport::
+  "true" or "false".  True if the report output file should be attached to the email.
+  
+birt.runner.mail.html::
+  "true" or "false".  True if the email body is HTML.  False if it is plain text.
+
+birt.runner.threadCount::
+  The number of reports that can be simultaneously generated.
+  
+birt.runner.isActuate::
+  "true" or "false".  True if the Actuate commercial jar files are to be used.
+
+= Configuring for OpenText libraries
+
+If you have purchased the OpenText commercial iHub, iServer or Java Components products you can build this REST server
+to use the commercial libraries.  There are two directories you will need to locate: lib and platform.  In the iServer installation they will be in iServer/Jar/BIRT.  In the case of OJC, they are in WEB-INF in the OJC webapp.  The jars in lib are used during the maven build and the jars in platform/plugins are used at runtime.
+
+. Use the bash script mvn-install-birt-jars to install the commercial jars into your local maven repository.  For example, assuming a standard Actuate 11 iServer installation:
++
+------
+./mvn-install-birt-jars "/c/Program Files (x86)/Actuate11sp6/iServer/Jar/BIRT/lib"
+------
++
+This works from the git-bash shell on windows, available from https://git-scm.com/downloads.
+
+. Rename pom.xml to pom-os.xml and pom-actuate.xml to pom.xml.  
+
+. Build with
++
+------
+mvn package
+------
+
+. Make sure your runtime properties file is correctly set up for the commercial jars:
+ .. set birt.runner.isActuate to true.
+ .. set birt.runner.runtime to the platform directory.
+For example:
++
+------
+birt.runner.isActuate=true
+birt.runner.runtime=C:/Program Files (x86)/Actuate11sp6/iServer/Jar/BIRT/platform
+------
+
+======
+Note that if you use backslashes in a java properties file they must be doubled, like this: 
+C:\\Program Files (x86)\\Actuate11sp6\\iServer\\Jar\\BIRT\\platform.  
+Single forward slashes can also be used.  On Windows they will be automatically converted to backslashes.
+======
+
+[[startup]]
+= Startup
+
+To start the server, first make sure you have defined the REPORT_RUNNER_PROPERTIES environment variable.
+then change directory to the target folder under the root folder (the folder containing pom.xml) and type:
+
+------
+java -jar report-runner-ac-sbms-0.0.1-SNAPSHOT.jar
+------

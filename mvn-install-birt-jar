@@ -1,0 +1,12 @@
+#!/bin/sh
+FULLFILENAME=$1
+BASENAME=$(basename "$FULLFILENAME")
+ARTIFACT_ID="${BASENAME%.*}"
+mvn install:install-file \
+  -Dfile=$FULLFILENAME \
+  -DgroupId=local-birt \
+  -DartifactId=$ARTIFACT_ID \
+  -Dversion=0.0.1 \
+  -Dpackaging=jar \
+  -DgeneratePom=true
+# echo "<dependency><groupId>com.innoventsolutions.birt</groupId><artifactId>$ARTIFACT_ID</artifactId><version>0.0.1</version></dependency>" >> ./mvn-dependencies.xml
