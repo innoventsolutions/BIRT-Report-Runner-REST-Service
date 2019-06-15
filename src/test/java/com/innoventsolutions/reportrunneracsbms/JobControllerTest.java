@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -127,10 +128,12 @@ public class JobControllerTest {
 							JsonFieldType.OBJECT).description(PARAMETERS_DESCRIPTION),
 						fieldWithPath("nameForHumans").optional().description(
 							"A human friendly name for the report.  This will appear in a report status message and emails."),
-						fieldWithPath("sendEmailOnSuccess").optional().description(
-							"Indicates whether or not email should be sent for successful generation"),
-						fieldWithPath("sendEmailOnFailure").optional().description(
-							"Indicates whether or not email should be sent for failed generation"),
+						fieldWithPath("sendEmailOnSuccess").type(
+							JsonFieldType.BOOLEAN).optional().description(
+								"Indicates whether or not email should be sent for successful generation"),
+						fieldWithPath("sendEmailOnFailure").type(
+							JsonFieldType.BOOLEAN).optional().description(
+								"Indicates whether or not email should be sent for failed generation"),
 						fieldWithPath("mailTo").type(JsonFieldType.STRING).optional().description(
 							"Recipient addresses separated by commas"),
 						fieldWithPath("mailCc").type(JsonFieldType.STRING).optional().description(
@@ -174,8 +177,7 @@ public class JobControllerTest {
 		Assert.assertNotNull("Job ID is null", jobId);
 	}
 
-	@Test
-	public void testStatus() throws Exception {
+	public String submit() throws Exception {
 		JobController.initializeRunnerContextFromResource(
 			this.getClass().getResource("report-runner.properties"));
 		final String requestString = getResourceAsString("unit-test-submit-request.json");
@@ -197,56 +199,66 @@ public class JobControllerTest {
 		Assert.assertFalse("Exception string is not null and not blank: " + exceptionString,
 			exceptionString != null && exceptionString.trim().length() > 0);
 		Assert.assertNotNull("Job ID is null", jobId);
-		final MvcResult statusResult = this.mockMvc.perform(get("/status/{uuid}", jobId).accept(
+		return jobId;
+	}
+
+	private Map<String, Object> testStatus(final String op) throws Exception {
+		final String jobId = submit();
+		final MvcResult statusResult = this.mockMvc.perform(get("/" + op + "/{uuid}", jobId).accept(
 			MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
-				"status",
+				op,
 				pathParameters(
 					parameterWithName("uuid").description("The identifier returned from submit")),
 				responseFields(
 					subsectionWithPath("reportRun").description("The report run request"),
-					fieldWithPath("email").description("The email request"),
+					subsectionWithPath("email").description("The email request"),
 					fieldWithPath("startTime").description(
 						"The time when the report generation started"),
 					fieldWithPath("finishTime").description(
+						"The time when report generation and email finished or null if not finished"),
+					fieldWithPath("reportFinishTime").description(
 						"The time when the report generation finished or null if it is still running"),
 					fieldWithPath("duration").description(
 						"The number of milliseconds it took to generate the report"),
 					fieldWithPath("finished").description(
 						"Whether the report generation is finished"),
-					fieldWithPath("errors").description(
-						"List of exceptions that were encountered during generation")))).andReturn();
+					subsectionWithPath("errors").description(
+						"List of exceptions that were encountered during report generation"),
+					subsectionWithPath("emailErrors").description(
+						"List of exceptions that were encountered during sending email")))).andReturn();
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
 		logger.info("testStatus response = " + jsonString2);
+		final ObjectMapper mapper = new ObjectMapper();
 		@SuppressWarnings("unchecked")
-		final Map<String, String> responseMap = mapper.readValue(jsonString2, Map.class);
+		final Map<String, Object> responseMap = mapper.readValue(jsonString2, Map.class);
 		logger.info("responseMap = " + responseMap);
+		return responseMap;
+	}
+
+	@Test
+	public void testStatus() throws Exception {
+		testStatus("status");
+	}
+
+	@Test
+	public void testWaitFor() throws Exception {
+		final Map<String, Object> responseMap = testStatus("waitfor");
+		@SuppressWarnings("unchecked")
+		final List<Object> reportErrors = (List<Object>) responseMap.get("errors");
+		Assert.assertNotNull("reportErrors should not be null", reportErrors);
+		Assert.assertTrue("reportErrors should be empty", reportErrors.isEmpty());
+		@SuppressWarnings("unchecked")
+		final Map<String, Object> emailErrors = (Map<String, Object>) responseMap.get(
+			"emailErrors");
+		Assert.assertNotNull("emailErrors should not be null", emailErrors);
+		// Assert.assertTrue("emailErrors should be empty", emailErrors.isEmpty());
 	}
 
 	@Test
 	public void testGet() throws Exception {
-		JobController.initializeRunnerContextFromResource(
-			this.getClass().getResource("report-runner.properties"));
-		final String requestString = getResourceAsString("unit-test-submit-request.json");
-		logger.info("testGet request = " + requestString);
-		final MvcResult result = this.mockMvc.perform(
-			post("/submit").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
-		final MockHttpServletResponse response = result.getResponse();
-		Assert.assertTrue(response.getContentType().startsWith("application/json"));
-		final String jsonString = response.getContentAsString();
-		logger.info("testGet response = " + jsonString);
-		final ObjectMapper mapper = new ObjectMapper();
-		@SuppressWarnings("unchecked")
-		final Map<String, String> submitResponse = mapper.readValue(jsonString, Map.class);
-		final String jobId = submitResponse.get("uuid");
-		logger.info("getGet jobId = " + jobId);
-		final String exceptionString = submitResponse.get("exceptionString");
-		logger.info("testGet exceptionString = " + exceptionString);
-		Assert.assertFalse("Exception string is not null and not blank: " + exceptionString,
-			exceptionString != null && exceptionString.trim().length() > 0);
-		Assert.assertNotNull("Job ID is null", jobId);
+		final String jobId = submit();
 		this.mockMvc.perform(
 			get("/get/{uuid}", jobId).accept(MediaType.APPLICATION_JSON)).andExpect(
 				status().isOk()).andDo(
@@ -260,7 +272,7 @@ public class JobControllerTest {
 	private static String getResourceAsString(final String name) throws IOException {
 		final URL requestURL = JobControllerTest.class.getResource(name);
 		if (requestURL == null) {
-			Assert.fail("unit-test-submit-request.json not found in classpath");
+			Assert.fail(name + " not found in classpath");
 		}
 		// get the resource into a string
 		final BufferedInputStream bis = (BufferedInputStream) requestURL.getContent();

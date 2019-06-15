@@ -1,5 +1,5 @@
 {
-	"designFile": "/disk1/home/phototype/workspace-neon-java/report-runner-ac-sbms/src/test/resources/com/innoventsolutions/birt/test/test.rptdesign",
+	"designFile": "/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/src/test/resources/com/innoventsolutions/birt/test/test.rptdesign",
 	"format": "pdf",
 	"runThenRender": true,
 	"parameters": {"rowCount": "5"}

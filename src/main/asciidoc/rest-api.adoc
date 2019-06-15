@@ -12,7 +12,6 @@ Steve Schafer;
 
 Report runner service is a microservice for generating BIRT reports.
 
-[[overview]]
 = Overview
 
 We attempt to adhere to REST standards although running a report is really an action and not a resource.  However we use POST for report run actions because it can be thought of as adding a new request, where a request is a resource.  We use GET for retrieving reports and report status.
@@ -21,10 +20,8 @@ When the payload is the generated report, it is returned with the appropriate MI
 
 The server can be configured to use the open-source BIRT libraries or the OpenText commercial BIRT libraries.
 
-[[requests]]
 = Requests
 
-[[report-run-request]]
 == Report run request
 This request is used to immediately generate a report and return the output in the response.
 
@@ -42,7 +39,6 @@ include::{snippets}/run/http-request.adoc[]
 request body:
 include::{snippets}/run/request-body.adoc[]
 
-[[report-submit-request]]
 == Report submit request
 This request is used to start generating the report asynchronously.  A string is returned that identifies the job.
 
@@ -63,7 +59,6 @@ include::{snippets}/submit/http-request.adoc[]
 request body:
 include::{snippets}/submit/request-body.adoc[]
 
-[[report-status-request]]
 == Report status request
 This request is used to get the status of a running or finished job.
 
@@ -81,7 +76,6 @@ include::{snippets}/status/curl-request.adoc[]
 http request:
 include::{snippets}/status/http-request.adoc[]
 
-[[report-get-request]]
 == Report get request
 This request is used to retrieve the output of a report that was run asynchronously (using submit).
 
@@ -96,7 +90,6 @@ include::{snippets}/status/curl-request.adoc[]
 http request:
 include::{snippets}/status/http-request.adoc[]
 
-[[report-download-request]]
 == Report download request
 This request is used to retrieve the output of a report that was run asynchronously (using submit).  It's the same as /get except that the report output is treated as an attachment.
 
@@ -111,7 +104,6 @@ include::{snippets}/status/curl-request.adoc[]
 http request:
 include::{snippets}/status/http-request.adoc[]
 
-[[parameters]]
 = Parameters
 
 In the run and submit requests, parameters are specified in JSON as an object in the form
@@ -123,7 +115,6 @@ Objects are used to specify date or time data types.  If an object is used it mu
 Additionally for multi-value parameters you can specify an array of values, like this: 
 {"name": [value, ...], ...}.  For example: {"some-numbers": [1, 2, 3]}.  The same types as single-value parameters can be used.
 
-[[building]]
 = Building
 To build the jar from source, change directory to the root folder (the folder containing pom.xml) and type 
 
@@ -133,20 +124,25 @@ mvn package
 
 The build will run a series of unit tests and also build the documentation you are reading.
 
-[[runtime-configuration]]
 = Runtime Configuration
 
 This server is configured by a java properties file.  The full path to the properties file must be
 specified in an environment variable named REPORT_RUNNER_PROPERTIES prior to executing
 the jar file.  The following properies may be specified.
 
+=====
+Note: in the following, ~ refers to your home directory.
+=====
+
 birt.runner.outputDir::
- The filesystem path to the directory where output files should be placed.  If absent, output file names are
- relative to the current directory if they are not absolute.
+  The default location of output files.
+  If not absolute it will be relative to ~.
+  The default is ~/reportRunnerTest/output.
  
 birt.runner.workspace::
-  The default location of report design files.  If absent design file names relative to the current directory
-  if they are not absolute.
+  The default location of report design files.
+  If not absolute it will be relative to ~.
+  The default is ~/reportRunnerTest/reports.
   
 birt.runner.runtime::
   For versions of BIRT less than 3.7 and the OpenText commercial version,
@@ -157,25 +153,31 @@ birt.runner.runtime::
   For open source versions of BIRT greater than or equal to 3.7 it should be omitted.
   
 birt.runner.resources::
-  The filesystem path to the report resources directory.  This directory should contain report libraries, 
-  javascript files, css files, jar files, and any other resources that reports will need during execution.
-  This property is required.
+  The location of resources needed for reports, such as .rptlibrary files, javascript files, css files, 
+  and jar files.
+  If not absolute it will be relative to the location of this properties file.
+  The default is the resources directory in the same directory as this properties file.
   
 birt.runner.scriptlib::
-  The filesystem path to a directory containing jar files and/or class files that constitute the classpath
-  available to the report for event handlers.  If absent, no classpath is provided.
+  The location of jar files needed for report event handlers.
+  If not absolute it will be relative to the location of this properties file.
+  The default is the lib directory in the same directory as this properties file.
   
 birt.runner.reportFormat::
-  The default format for all reports.  If absent, the default format is PDF.
+  The default format for all reports.  The default is PDF.
   
 birt.runner.baseImageURL::
-  The base URL used for images in HTML reports.
+  The base URL used for images in HTML reports.  If absent, no base image URL will be provided.
   
 birt.runner.logging.properties::
-  The filesystem path to the logging properties file used by the BIRT report engine.
+  The logging properties file used by the BIRT report engine.
+  If not absolute it will be relative to the location of this properties file.
+  The default is "logging.properties" in the same directory as this properties file.
   
 birt.runner.logging.dir::
   The filesystem path to the directory for log files produced by the BIRT report engine.
+  If not absolute it will be relative to the location of this properties file.
+  The default is the log directory in the same directory as this properties file.
   
 birt.runner.db.driver::
   Reserved for future use.
@@ -199,37 +201,45 @@ birt.runner.mail.password::
   The password required for SMTP server authentication.
   
 birt.runner.mail.properties::
-  The filesystem path to the javamail properties file.
+  The javamail properties file.
+  If not absolute it will be relative to the location of this properties file.
+  The default is "smtp.properties" in the same directory as this properties file.
+  If this file does not exist, no emails will be sent.
   
 birt.runner.mail.to::
-  A universal email recipient list.  All addresses in this list will receive emails
-  in addition to any recipients specified in the report request.  Multiple email addresses
-  must be separated by commas.
+  A comma separated list of email addresses. All addresses in this list will receive emails
+  in addition to any recipients specified in the report request.
   
 birt.runner.mail.cc::
-  A universal email copy recipient list.  All addresses in this list will receive emails
-  in addition to any copy recipients specified in the report request.  Multiple email addresses
-  must be separated by commas.
+  A comma separated list of email addresses.  All addresses in this list will receive emails
+  in addition to any copy recipients specified in the report request.
   
 birt.runner.mail.bcc::
-  A universal email blind-copy recipient list.  All addresses in this list will receive emails
-  in addition to any blind-copy recipients specified in the report request.  Multiple email addresses
-  must be separated by commas.
+  A comma separated list of email addresses.  All addresses in this list will receive emails
+  in addition to any copy recipients specified in the report request.
   
 birt.runner.mail.from::
-  The universal email from address.  All emails will be from this address.
+  A single email address.  All emails will be from this address.
+
+birt.runner.mail.success::
+  Whether to send emails for successful reports.  The default is false.
+  This can be overridden by a submit request.
+
+birt.runner.mail.failure::
+  Whether to send emails for failed reports.  The default is false.
+  This can be overridden by a submit request.
 
 birt.runner.mail.subject.success::
   The default email subject for successful generations.  Success subjects specified in
-  report requests will override this one.
+  submit requests will override this one.  The default is "Success".
   
 birt.runner.mail.subject.failure::
   The default email subject for failed generations.  Failed generation subjects specified in
-  report requests will override this one.
+  submit requests will override this one.  The default is "Failure".
   
 birt.runner.mail.body.success::
   The default email body for successful generations.  Successful generation bodies specified in
-  report requests will override this one.  The body text will be interpreted as HTML if
+  submit requests will override this one.  The body text will be interpreted as HTML if
   the birt.runner.mail.html property is "true".  The body text may contain one or more of the
   following substitution strings:
   
@@ -247,24 +257,27 @@ birt.runner.mail.body.success::
   
 birt.runner.mail.body.failure::
   The default email body for failed report generations.  Failed generation bodies specified in
-  report requests will override this one.  Rules for the birt.runner.mail.body.success property
+  submit requests will override this one.  Rules for the birt.runner.mail.body.success property
   are also applicable to this one.
   
 birt.runner.mail.attachReport::
-  "true" or "false".  True if the report output file should be attached to the email.
+  True if the report output file should be attached to the email. The default is true.
+  Submit requests can override this value.
   
 birt.runner.mail.html::
-  "true" or "false".  True if the email body is HTML.  False if it is plain text.
+  True if the email body is HTML.  False if it is plain text.  The default is true.
+  Submit requests can override this value.
 
 birt.runner.threadCount::
-  The number of reports that can be simultaneously generated.
+  The number of reports that can be simultaneously generated.  The default is 1.
   
 birt.runner.isActuate::
-  "true" or "false".  True if the Actuate commercial jar files are to be used.
+  True if the Actuate commercial jar files are to be used.  The default is false.
 
 = Configuring for OpenText libraries
 
-If you have purchased the OpenText commercial iHub, iServer or Java Components products you can build this REST server
+If you have purchased the OpenText commercial iHub, iServer or Java Components products you can build 
+this REST server
 to use the commercial libraries.  There are two directories you will need to locate: lib and platform.  In the iServer installation they will be in iServer/Jar/BIRT.  In the case of OJC, they are in WEB-INF in the OJC webapp.  The jars in lib are used during the maven build and the jars in platform/plugins are used at runtime.
 
 . Use the bash script mvn-install-birt-jars to install the commercial jars into your local maven repository.  For example, assuming a standard Actuate 11 iServer installation:
@@ -299,12 +312,11 @@ C:\\Program Files (x86)\\Actuate11sp6\\iServer\\Jar\\BIRT\\platform.
 Single forward slashes can also be used.  On Windows they will be automatically converted to backslashes.
 ======
 
-[[startup]]
 = Startup
 
 To start the server, first make sure you have defined the REPORT_RUNNER_PROPERTIES environment variable.
 then change directory to the target folder under the root folder (the folder containing pom.xml) and type:
 
 ------
-java -jar report-runner-ac-sbms-0.0.1-SNAPSHOT.jar
+java -jar BIRT-Report-Runner-REST-Service-0.0.1-SNAPSHOT.jar
 ------

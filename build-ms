@@ -1,0 +1,17 @@
+#!/bin/sh
+NOTESTS=""
+case $1 in
+	notests)
+		NOTESTS="-Dmaven.test.skip=true"
+esac
+LOGS=$HOME/logs
+mkdir -p $LOGS
+cd $HOME/projects/BIRT-Report-Runner-REST-Service
+mvn $NOTESTS clean package > $LOGS/build-ms.log 2> $LOGS/build-ms.err.log
+FAILURE_MESSAGE="$(grep "\[INFO\] BUILD FAILURE" $LOGS/build-ms.log)"
+if [ -z "$FAILURE_MESSAGE" ]; then
+	echo "succeeded"
+else
+	echo "failed"
+fi
+[ -z "$FAILURE_MESSAGE" ]

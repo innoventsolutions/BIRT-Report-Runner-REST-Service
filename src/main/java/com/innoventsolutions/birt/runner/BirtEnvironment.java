@@ -100,7 +100,8 @@ public class BirtEnvironment {
 			config.setProperty(EngineConstants.WEBAPP_CLASSPATH_KEY, scriptlibFileNames);
 		}
 		final File loggingProperties = loggingPropertiesFile == null
-			? new File("./logging.properties") : loggingPropertiesFile;
+			? new File("./logging.properties")
+			: loggingPropertiesFile;
 		LogManager.getLogManager().readConfiguration(new FileInputStream(loggingProperties));
 		final File logDir = new File("./log");
 		if (!logDir.exists()) {

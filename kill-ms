@@ -1,0 +1,6 @@
+#!/bin/sh
+JOBID=$(lsof -i:9001 -t)
+if [ "$JOBID" ]; then
+	echo "killing $JOBID"
+	kill $JOBID
+fi

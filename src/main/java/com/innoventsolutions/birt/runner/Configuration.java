@@ -20,7 +20,7 @@ public class Configuration {
 		File resourcePath = null;
 		File scriptLib = null;
 		boolean doNotRun = false;
-		String reportFormat = null;
+		String reportFormat = "pdf";
 		String baseImageURL = null;
 		File loggingPropertiesFile = null;
 		File loggingDir = null;
@@ -33,6 +33,8 @@ public class Configuration {
 		String mailPassword = null;
 		File mailPropertiesFile = null;
 		String mailFrom = null;
+		boolean mailSuccess = false;
+		boolean mailFailure = false;
 		String mailTo = null;
 		String mailCc = null;
 		String mailBcc = null;
@@ -45,18 +47,45 @@ public class Configuration {
 		int threadCount = 1;
 		boolean isActuate = false;
 
-		public void loadProperties(final Properties properties, final File defaultDirectory) {
+		public void loadProperties(final Properties properties, final File propertiesDir) {
+			final String userHome = System.getProperty("user.home");
+			final File userHomeDir = userHome == null ? null : new File(userHome);
+			final File defaultWorkDir = new File(userHomeDir, "reportRunnerTest");
 			final PropertiesHelper ph = new PropertiesHelper(properties);
-			outputDirectory = ph.get("birt.runner.outputDir", outputDirectory, defaultDirectory);
-			workspace = ph.get("birt.runner.workspace", workspace, defaultDirectory);
-			birtRuntimeHome = ph.get("birt.runner.runtime", birtRuntimeHome, defaultDirectory);
-			resourcePath = ph.requireFile("birt.runner.resources", defaultDirectory);
-			scriptLib = ph.get("birt.runner.scriptlib", scriptLib, defaultDirectory);
+			File defaultOutputDirectory = outputDirectory;
+			if (defaultOutputDirectory == null) {
+				defaultOutputDirectory = new File(defaultWorkDir, "output");
+			}
+			outputDirectory = ph.get("birt.runner.outputDir", defaultOutputDirectory, userHomeDir);
+			File defaultWorkspace = workspace;
+			if (defaultWorkspace == null) {
+				defaultWorkspace = new File(defaultWorkDir, "reports");
+			}
+			workspace = ph.get("birt.runner.workspace", defaultWorkspace, userHomeDir);
+			birtRuntimeHome = ph.get("birt.runner.runtime", birtRuntimeHome, propertiesDir);
+			File defaultResourcePath = resourcePath;
+			if (defaultResourcePath == null) {
+				defaultResourcePath = new File(propertiesDir, "resources");
+			}
+			resourcePath = ph.get("birt.runner.resources", defaultResourcePath, propertiesDir);
+			File defaultScriptLib = scriptLib;
+			if (defaultScriptLib == null) {
+				defaultScriptLib = new File(propertiesDir, "lib");
+			}
+			scriptLib = ph.get("birt.runner.scriptlib", defaultScriptLib, propertiesDir);
 			reportFormat = ph.get("birt.runner.reportFormat", reportFormat);
 			baseImageURL = ph.get("birt.runner.baseImageURL", baseImageURL);
-			loggingPropertiesFile = ph.get("birt.runner.logging.properties", loggingPropertiesFile,
-				defaultDirectory);
-			loggingDir = ph.get("birt.runner.logging.dir", loggingDir, defaultDirectory);
+			File defaultLoggingPropertiesFile = loggingPropertiesFile;
+			if (defaultLoggingPropertiesFile == null) {
+				defaultLoggingPropertiesFile = new File(propertiesDir, "logging.properties");
+			}
+			loggingPropertiesFile = ph.get("birt.runner.logging.properties",
+				defaultLoggingPropertiesFile, propertiesDir);
+			File defaultLoggingDir = loggingDir;
+			if (defaultLoggingDir == null) {
+				defaultLoggingDir = new File(defaultWorkDir, "log");
+			}
+			loggingDir = ph.get("birt.runner.logging.dir", defaultLoggingDir, propertiesDir);
 			dbDriver = ph.get("birt.runner.db.driver", dbDriver);
 			dbUrl = ph.get("birt.runner.db.url", dbUrl);
 			dbUsername = ph.get("birt.runner.db.username", dbUsername);
@@ -64,8 +93,14 @@ public class Configuration {
 			dbQuery = ph.get("birt.runner.db.query", dbQuery);
 			mailUsername = ph.get("birt.runner.mail.username", mailUsername);
 			mailPassword = ph.get("birt.runner.mail.password", mailPassword);
-			mailPropertiesFile = ph.get("birt.runner.mail.properties", mailPropertiesFile,
-				defaultDirectory);
+			File defaultMailPropertiesFile = mailPropertiesFile;
+			if (defaultMailPropertiesFile == null) {
+				defaultMailPropertiesFile = new File(propertiesDir, "smtp.properties");
+			}
+			mailPropertiesFile = ph.get("birt.runner.mail.properties", defaultMailPropertiesFile,
+				propertiesDir);
+			mailSuccess = ph.get("birt.runner.mail.success", mailSuccess);
+			mailFailure = ph.get("birt.runner.mail.failure", mailFailure);
 			mailTo = ph.get("birt.runner.mail.to", mailTo);
 			mailCc = ph.get("birt.runner.mail.cc", mailCc);
 			mailBcc = ph.get("birt.runner.mail.bcc", mailBcc);
@@ -99,6 +134,8 @@ public class Configuration {
 	final String mailUsername;
 	final String mailPassword;
 	final File mailPropertiesFile;
+	final boolean mailSuccess;
+	final boolean mailFailure;
 	final String mailTo;
 	final String mailCc;
 	final String mailBcc;
@@ -131,6 +168,8 @@ public class Configuration {
 		this.mailUsername = editor.mailUsername;
 		this.mailPassword = editor.mailPassword;
 		this.mailPropertiesFile = editor.mailPropertiesFile;
+		this.mailSuccess = editor.mailSuccess;
+		this.mailFailure = editor.mailFailure;
 		this.mailTo = editor.mailTo;
 		this.mailCc = editor.mailCc;
 		this.mailBcc = editor.mailBcc;

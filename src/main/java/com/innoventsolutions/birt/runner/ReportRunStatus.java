@@ -13,14 +13,18 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ReportRunStatus {
 	public final ReportRun reportRun;
 	public final ReportEmail email;
 	public final Date startTime;
+	private Date reportFinishTime = null;
 	private Date finishTime = null;
-	private List<Exception> errors = new ArrayList<>();
+	private final List<Exception> errors = new ArrayList<>();
+	private final Map<String, Exception> emailErrors = new HashMap<>();
 
 	public ReportRunStatus(final ReportRun reportRun, final ReportEmail email) {
 		this.reportRun = reportRun;
@@ -28,10 +32,17 @@ public class ReportRunStatus {
 		this.startTime = new Date();
 	}
 
-	public void finish(final List<Exception> errors) {
+	public void finishReport(final List<Exception> errors) {
+		reportFinishTime = new Date();
+		if (errors != null) {
+			this.errors.addAll(errors);
+		}
+	}
+
+	public void finishEmail(final Map<String, Exception> errors) {
 		finishTime = new Date();
 		if (errors != null) {
-			this.errors = new ArrayList<>(errors);
+			this.emailErrors.putAll(errors);
 		}
 		synchronized (this) {
 			notifyAll();
@@ -50,6 +61,10 @@ public class ReportRunStatus {
 		return new ArrayList<>(errors);
 	}
 
+	public Date getReportFinishTime() {
+		return reportFinishTime;
+	}
+
 	public String replace(String string) {
 		final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		string = string.replace("${designFileName}", reportRun.designFile);
@@ -66,5 +81,21 @@ public class ReportRunStatus {
 			: finishTime.getTime();
 		final long startTimeLong = startTime.getTime();
 		return finishTimeLong - startTimeLong;
+	}
+
+	public ReportRun getReportRun() {
+		return reportRun;
+	}
+
+	public ReportEmail getEmail() {
+		return email;
+	}
+
+	public Date getStartTime() {
+		return startTime;
+	}
+
+	public Map<String, Exception> getEmailErrors() {
+		return emailErrors;
 	}
 }

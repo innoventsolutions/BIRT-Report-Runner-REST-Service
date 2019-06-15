@@ -18,8 +18,8 @@ public class SubmitRequest {
 	private boolean runThenRender;
 	private Map<String, Object> parameters = new HashMap<>();
 	private String nameForHumans;
-	private boolean sendEmailOnSuccess;
-	private boolean sendEmailOnFailure;
+	private Boolean sendEmailOnSuccess;
+	private Boolean sendEmailOnFailure;
 	private String mailTo;
 	private String mailCc;
 	private String mailBcc;
@@ -27,6 +27,8 @@ public class SubmitRequest {
 	private String mailFailureSubject;
 	private String mailSuccessBody;
 	private String mailFailureBody;
+	private Boolean mailAttachReport;
+	private Boolean mailHtml;
 
 	public String getDesignFile() {
 		return designFile;
@@ -124,19 +126,43 @@ public class SubmitRequest {
 		this.mailFailureBody = mailFailureBody;
 	}
 
-	public boolean isSendEmailOnSuccess() {
+	public Boolean isSendEmailOnSuccess() {
 		return sendEmailOnSuccess;
 	}
 
-	public void setSendEmailOnSuccess(final boolean sendEmailOnSuccess) {
+	public void setSendEmailOnSuccess(final Boolean sendEmailOnSuccess) {
 		this.sendEmailOnSuccess = sendEmailOnSuccess;
 	}
 
-	public boolean isSendEmailOnFailure() {
+	public Boolean isSendEmailOnFailure() {
 		return sendEmailOnFailure;
 	}
 
-	public void setSendEmailOnFailure(final boolean sendEmailOnFailure) {
+	public void setSendEmailOnFailure(final Boolean sendEmailOnFailure) {
 		this.sendEmailOnFailure = sendEmailOnFailure;
+	}
+
+	public Boolean getMailAttachReport() {
+		return mailAttachReport;
+	}
+
+	public void setMailAttachReport(final Boolean mailAttachReport) {
+		this.mailAttachReport = mailAttachReport;
+	}
+
+	public Boolean getSendEmailOnSuccess() {
+		return sendEmailOnSuccess;
+	}
+
+	public Boolean getSendEmailOnFailure() {
+		return sendEmailOnFailure;
+	}
+
+	public Boolean getMailHtml() {
+		return mailHtml;
+	}
+
+	public void setMailHtml(final Boolean mailHtml) {
+		this.mailHtml = mailHtml;
 	}
 }

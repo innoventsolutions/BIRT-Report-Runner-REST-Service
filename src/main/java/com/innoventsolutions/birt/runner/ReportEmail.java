@@ -10,8 +10,8 @@
 package com.innoventsolutions.birt.runner;
 
 public class ReportEmail {
-	public final boolean sendOnSuccess;
-	public final boolean sendOnFailure;
+	public final Boolean mailSuccess;
+	public final Boolean mailFailure;
 	public final String mailTo;
 	public final String mailCc;
 	public final String mailBcc;
@@ -19,13 +19,15 @@ public class ReportEmail {
 	public final String mailFailureSubject;
 	public final String mailSuccessBody;
 	public final String mailFailureBody;
+	public final Boolean mailAttachReport;
+	public final Boolean mailHtml;
 
-	public ReportEmail(final boolean sendOnSuccess, final boolean sendOnFailure,
-			final String mailTo, final String mailCc, final String mailBcc,
-			final String mailSuccessSubject, final String mailFailureSubject,
-			final String mailSuccessBody, final String mailFailureBody) {
-		this.sendOnSuccess = sendOnSuccess;
-		this.sendOnFailure = sendOnFailure;
+	public ReportEmail(final Boolean mailSuccess, final Boolean mailFailure, final String mailTo,
+			final String mailCc, final String mailBcc, final String mailSuccessSubject,
+			final String mailFailureSubject, final String mailSuccessBody,
+			final String mailFailureBody, final Boolean mailAttachReport, final Boolean mailHtml) {
+		this.mailSuccess = mailSuccess;
+		this.mailFailure = mailFailure;
 		this.mailTo = mailTo;
 		this.mailCc = mailCc;
 		this.mailBcc = mailBcc;
@@ -33,5 +35,7 @@ public class ReportEmail {
 		this.mailFailureSubject = mailFailureSubject;
 		this.mailSuccessBody = mailSuccessBody;
 		this.mailFailureBody = mailFailureBody;
+		this.mailAttachReport = mailAttachReport;
+		this.mailHtml = mailHtml;
 	}
 }

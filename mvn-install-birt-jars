@@ -1,8 +1,6 @@
 #!/bin/sh
-# LIB=/disk1/home/phototype/OJC/lib
+# LIB=/disk1/home/innovent/OJC/lib
 # for open source BIRT 4.8 use the com.innoventsolutions.birt.runtime public maven repo instead of this
 LIB=$1
-WORK=$HOME/workspace-neon-java/report-runner-ac-sbms
-cd $WORK
 # echo "" > ./mvn-dependencies.xml
 find $LIB -name "*.jar" -exec ./mvn-install-birt-jar "{}" \;

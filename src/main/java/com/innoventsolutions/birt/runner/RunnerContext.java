@@ -128,13 +128,16 @@ public class RunnerContext {
 		public void run() {
 			try {
 				final List<Exception> errors = runReport(status.reportRun);
-				status.finish(errors);
+				logger.info("report is finished, errors = " + errors);
+				status.finishReport(errors);
 				mailer.send(status);
 			}
 			catch (final Exception e) {
 				final List<Exception> errors = new ArrayList<>();
 				errors.add(e);
-				status.finish(errors);
+				logger.info("report failed", e);
+				status.finishReport(errors);
+				mailer.send(status);
 			}
 		}
 	}
@@ -145,7 +148,10 @@ public class RunnerContext {
 		logger.info("runReport reportRun = " + reportRun);
 		IReportRunnable design;
 		try {
-			final File designFile = new File(env.workspace, reportRun.designFile);
+			File designFile = new File(reportRun.designFile);
+			if (!designFile.isAbsolute()) {
+				designFile = new File(env.workspace, reportRun.designFile);
+			}
 			final FileInputStream fis = new FileInputStream(designFile);
 			design = engine.openReportDesign(fis);
 		}
@@ -223,6 +229,7 @@ public class RunnerContext {
 				runTask.run(docFile.getAbsolutePath());
 			}
 			catch (final Exception e) {
+				logger.info("task.run exception", e);
 				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException".equals(
 					e.getClass().getName())) {
 					throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE, e.getMessage());
@@ -332,6 +339,7 @@ public class RunnerContext {
 	}
 
 	private RenderOption getRenderOptions(final BirtEnvironment env, final ReportRun reportRun) {
+		logger.info("getRenderOptions");
 		final String format = reportRun.format;
 		RenderOption options = null;
 		if (format.equalsIgnoreCase(RenderOption.OUTPUT_FORMAT_HTML)) {
@@ -352,6 +360,7 @@ public class RunnerContext {
 			options.setOutputFormat(format.toLowerCase());
 		}
 		final File outputFile = new File(env.outputDir, reportRun.outputFile);
+		logger.info("getRenderOptions outputFile = " + outputFile);
 		outputFile.getParentFile().mkdirs();
 		options.setOutputFileName(outputFile.getAbsolutePath());
 		options.setOutputFormat(format);

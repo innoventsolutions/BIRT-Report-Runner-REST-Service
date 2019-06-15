@@ -61,7 +61,9 @@ public class JobController {
 
 	public ResponseEntity<Resource> getReport(final String uuidString, final boolean isAttachment) {
 		try {
+			logger.info("getReport " + uuidString + " " + isAttachment);
 			final File outputDir = runnerContext.getOutputDirectory();
+			logger.info("outputDir = " + outputDir);
 			UUID uuid;
 			try {
 				uuid = UUID.fromString(uuidString);
@@ -73,9 +75,11 @@ public class JobController {
 			if (status == null) {
 				return getErrorResponse(HttpStatus.NOT_FOUND, "Report not found");
 			}
+			logger.info("waiting...");
 			synchronized (status) {
 				status.wait();
 			}
+			logger.info("done waiting");
 			if (!status.isFinished()) {
 				return getErrorResponse(HttpStatus.BAD_REQUEST, "Report is not finished");
 			}
@@ -104,10 +108,24 @@ public class JobController {
 		return runnerContext.getStatus(UUID.fromString(uuid));
 	}
 
+	@GetMapping("/waitfor/{uuid}")
+	@ResponseBody
+	public ReportRunStatus waitFor(@PathVariable("uuid") final String uuid) {
+		final ReportRunStatus status = runnerContext.getStatus(UUID.fromString(uuid));
+		synchronized (status) {
+			try {
+				status.wait();
+			}
+			catch (final InterruptedException e) {
+			}
+		}
+		return status;
+	}
+
 	@PostMapping("/submit")
 	@ResponseBody
 	public SubmitResponse submit(@RequestBody final SubmitRequest request) {
-		logger.debug("submit");
+		logger.info("submit " + request);
 		if (runnerContext == null) {
 			logger.error("runnerContext is null - " + initException);
 			return new SubmitResponse(null, initException);
@@ -119,17 +137,12 @@ public class JobController {
 			final ReportRun reportRun = new ReportRun(request.getDesignFile(),
 					request.getNameForHumans(), format, outputFilename, request.isRunThenRender(),
 					fixParameterTypes(request.getParameters()));
-			final ReportEmail email;
-			if (request.isSendEmailOnSuccess() || request.isSendEmailOnFailure()) {
-				email = new ReportEmail(request.isSendEmailOnSuccess(),
-						request.isSendEmailOnFailure(), request.getMailTo(), request.getMailCc(),
-						request.getMailBcc(), request.getMailSuccessSubject(),
-						request.getMailFailureSubject(), request.getMailSuccessBody(),
-						request.getMailFailureBody());
-			}
-			else {
-				email = null;
-			}
+			final ReportEmail email = new ReportEmail(request.isSendEmailOnSuccess(),
+					request.isSendEmailOnFailure(), request.getMailTo(), request.getMailCc(),
+					request.getMailBcc(), request.getMailSuccessSubject(),
+					request.getMailFailureSubject(), request.getMailSuccessBody(),
+					request.getMailFailureBody(), request.getMailAttachReport(),
+					request.getMailHtml());
 			final UUID jobUUID = runnerContext.startReport(reportRun, email);
 			return new SubmitResponse(jobUUID, null);
 		}
