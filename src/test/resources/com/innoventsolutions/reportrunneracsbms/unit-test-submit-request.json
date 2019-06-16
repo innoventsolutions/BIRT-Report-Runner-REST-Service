@@ -3,5 +3,5 @@
 	"format": "PDF",
 	"runThenRender": true,
 	"nameForHumans": "Test Report",
-	"sendEmailOnSuccess": true
+	"sendEmailOnSuccess": false
 }

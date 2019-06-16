@@ -1,10 +1,12 @@
 #!/bin/sh
 LOGS=$HOME/logs
 mkdir -p $LOGS
+# keystore needed for private email server
+KEYSTORE="-Djavax.net.ssl.trustStore=$HOME/truststore"
 PROJECT=$HOME/projects/BIRT-Report-Runner-REST-Service
 TARGET=$PROJECT/target
 SRC=$PROJECT/src
 cd $TARGET
 export REPORT_RUNNER_PROPERTIES="$SRC/test/resources/com/innoventsolutions/birt/test/report-runner.properties"
-java -jar report-runner-ac-sbms-0.0.1-SNAPSHOT.jar > $LOGS/run-ms.log 2> $LOGS/run-ms.err.log &
+java $KEYSTORE -jar report-runner-ac-sbms-0.0.1-SNAPSHOT.jar > $LOGS/run-ms.log 2> $LOGS/run-ms.err.log &
 echo "running..."

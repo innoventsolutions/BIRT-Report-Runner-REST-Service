@@ -253,7 +253,7 @@ public class JobControllerTest {
 		final Map<String, Object> emailErrors = (Map<String, Object>) responseMap.get(
 			"emailErrors");
 		Assert.assertNotNull("emailErrors should not be null", emailErrors);
-		// Assert.assertTrue("emailErrors should be empty", emailErrors.isEmpty());
+		Assert.assertTrue("emailErrors should be empty", emailErrors.isEmpty());
 	}
 
 	@Test

@@ -4,10 +4,12 @@ case $1 in
 	notests)
 		NOTESTS="-Dmaven.test.skip=true"
 esac
+# keystore needed for private email server
+KEYSTORE="-Djavax.net.ssl.trustStore=$HOME/truststore"
 LOGS=$HOME/logs
 mkdir -p $LOGS
 cd $HOME/projects/BIRT-Report-Runner-REST-Service
-mvn $NOTESTS clean package > $LOGS/build-ms.log 2> $LOGS/build-ms.err.log
+mvn $NOTESTS $KEYSTORE clean package > $LOGS/build-ms.log 2> $LOGS/build-ms.err.log
 FAILURE_MESSAGE="$(grep "\[INFO\] BUILD FAILURE" $LOGS/build-ms.log)"
 if [ -z "$FAILURE_MESSAGE" ]; then
 	echo "succeeded"
