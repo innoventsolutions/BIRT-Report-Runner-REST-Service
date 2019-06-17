@@ -53,6 +53,7 @@ public class JobControllerTest {
 	private static final Object FORMAT_DESCRIPTION = "The report output format: HTML, PDF, XLS, or any other format supported by the BIRT engine";
 	private static final Object RUN_THEN_RENDER_DESCRIPTION = "Whether to build with separate run and render phases";
 	private static final Object PARAMETERS_DESCRIPTION = "The parameters in the form {\"name\": value, ...}, where value may be a string, number or boolean for single value parameters or an array of string, number, or boolean for multi-valued parameters.";
+	private static final Object TOKEN_DESCRIPTION = "The security token for this request.  This is required only if database security has been enabled in the configuration.";
 	Logger logger = LoggerFactory.getLogger(JobControllerTest.class);
 	@Rule
 	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation(
@@ -83,7 +84,9 @@ public class JobControllerTest {
 							fieldWithPath("runThenRender").optional().description(
 								RUN_THEN_RENDER_DESCRIPTION),
 							subsectionWithPath("parameters").optional().type(
-								JsonFieldType.OBJECT).description(PARAMETERS_DESCRIPTION)),
+								JsonFieldType.OBJECT).description(PARAMETERS_DESCRIPTION),
+							fieldWithPath("securityToken").type(
+								JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION)),
 						responseHeaders(headerWithName("Content-Type").description(
 							"The content type of the payload"))));
 	}
@@ -126,6 +129,8 @@ public class JobControllerTest {
 							RUN_THEN_RENDER_DESCRIPTION),
 						subsectionWithPath("parameters").optional().type(
 							JsonFieldType.OBJECT).description(PARAMETERS_DESCRIPTION),
+						fieldWithPath("securityToken").type(
+							JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION),
 						fieldWithPath("nameForHumans").optional().description(
 							"A human friendly name for the report.  This will appear in a report status message and emails."),
 						fieldWithPath("sendEmailOnSuccess").type(

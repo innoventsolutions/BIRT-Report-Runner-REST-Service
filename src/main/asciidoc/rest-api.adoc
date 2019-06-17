@@ -180,20 +180,39 @@ birt.runner.logging.dir::
   The default is the log directory in the same directory as this properties file.
   
 birt.runner.db.driver::
-  Reserved for future use.
+  The JDBC driver class name for database request security.
+  If missing, no database request security will be done.
   
 birt.runner.db.url::
-  Reserved for future use.
+  The JDBC URL for database request security.
+  If missing, no database request security will be done.
   
 birt.runner.db.username::
-  Reserved for future use.
+  The username required for database authentication.
   
 birt.runner.db.password::
-  Reserved for future use.
+  The password required for database authentication.
   
 birt.runner.db.query::
-  Reserved for future use.
+  The query for database request security.  The query must
+  accept a single parameter denoted by a question mark in which the
+  security token will be passed and return the full report design file path/name and
+  the timestamp of the request time in that order.
++
+  Example: select design_file, request_time from reports where security_token = ?;
   
+birt.runner.db.timeout::
+  The maximum number of milliseconds allowed between the timestamp returned
+  by the database query (birt.runner.db.query) and the actual time the report
+  request is submitted.  This should be very short.  The default is 5000.
+  The request will not be allowed if the request submission time is
+  later than the timestamp in the database plus the timeout.
+  
+birt.runner.unsecuredDesignFilePattern::
+  This is an optional regular expression that is matched against the full design file path/names.
+  If it matches, the request is allowed with no further security checks.
+  If it is missing then other security measures, if any, will be enforced for all reports.
+
 birt.runner.mail.username::
   The user name required for SMTP server authentication.
   
@@ -273,6 +292,32 @@ birt.runner.threadCount::
   
 birt.runner.isActuate::
   True if the Actuate commercial jar files are to be used.  The default is false.
+
+= Security
+
+== Unsecured Reports
+
+A subset of reports can be unsecured by specifying the birt.runner.unsecuredDesignFilePattern
+property.  This is a regular expression that is matched against the full report design path/name
+in the request.  If it matches, the request is allowed without any further security checks.
+If it is not specified then other security constraints (if any) are applied to all reports.
+
+== Database Secured Requests
+
+A SQL database server can be used as a back channel to secure requests.  To enable this, 
+specify all the "db" properties in the configuration.  Then for each request you will need to
+create a random security token (UUID.getRandomUUID() is a good way to do this).
+Then you'll need to insert a row into a table prior to making a /run or /submit request.
+The table should contain the security token, the full path/name of the report design file,
+and the current timestamp.  The security token must also be included in the /run or /submit
+request.  The configuration will provide a query that can retrieve these values
+from the database.  If the security token is not found or the report request name doesn't
+match the request or the request is received later than a timeout specified in the configuration,
+then the request will be rejected.
+
+== Client Certificates
+
+TODO
 
 = Configuring for OpenText libraries
 

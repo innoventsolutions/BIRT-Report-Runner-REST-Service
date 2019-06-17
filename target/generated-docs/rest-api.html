@@ -442,6 +442,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_parameters">Parameters</a></li>
 <li><a href="#_building">Building</a></li>
 <li><a href="#_runtime_configuration">Runtime Configuration</a></li>
+<li><a href="#_security">Security</a>
+<ul class="sectlevel1">
+<li><a href="#_unsecured_reports">Unsecured Reports</a></li>
+<li><a href="#_database_secured_requests">Database Secured Requests</a></li>
+<li><a href="#_client_certificates">Client Certificates</a></li>
+</ul>
+</li>
 <li><a href="#_configuring_for_opentext_libraries">Configuring for OpenText libraries</a></li>
 <li><a href="#_startup">Startup</a></li>
 </ul>
@@ -513,6 +520,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>parameters</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The parameters in the form {"name": value, &#8230;&#8203;}, where value may be a string, number or boolean for single value parameters or an array of string, number, or boolean for multi-valued parameters.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>securityToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The security token for this request.  This is required only if database security has been enabled in the configuration.</p></td>
 </tr>
 </tbody>
 </table>
@@ -617,6 +629,11 @@ Host: localhost:8080
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>parameters</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The parameters in the form {"name": value, &#8230;&#8203;}, where value may be a string, number or boolean for single value parameters or an array of string, number, or boolean for multi-valued parameters.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>securityToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The security token for this request.  This is required only if database security has been enabled in the configuration.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>nameForHumans</code></p></td>
@@ -865,7 +882,7 @@ Host: localhost:8080
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/de3969ab-bc94-4c6c-9e3c-a6038cac79b8' -i -X GET \
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/b92b8e8f-4b75-41cc-9fcc-9dec48812266' -i -X GET \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -874,7 +891,7 @@ Host: localhost:8080
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/de3969ab-bc94-4c6c-9e3c-a6038cac79b8 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/b92b8e8f-4b75-41cc-9fcc-9dec48812266 HTTP/1.1
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -917,7 +934,7 @@ Host: localhost:8080</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/de3969ab-bc94-4c6c-9e3c-a6038cac79b8' -i -X GET \
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/b92b8e8f-4b75-41cc-9fcc-9dec48812266' -i -X GET \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -926,7 +943,7 @@ Host: localhost:8080</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/de3969ab-bc94-4c6c-9e3c-a6038cac79b8 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/b92b8e8f-4b75-41cc-9fcc-9dec48812266 HTTP/1.1
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -969,7 +986,7 @@ Host: localhost:8080</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/de3969ab-bc94-4c6c-9e3c-a6038cac79b8' -i -X GET \
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/b92b8e8f-4b75-41cc-9fcc-9dec48812266' -i -X GET \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -978,7 +995,7 @@ Host: localhost:8080</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/de3969ab-bc94-4c6c-9e3c-a6038cac79b8 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/b92b8e8f-4b75-41cc-9fcc-9dec48812266 HTTP/1.1
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -1091,23 +1108,47 @@ The default is the log directory in the same directory as this properties file.<
 </dd>
 <dt class="hdlist1">birt.runner.db.driver</dt>
 <dd>
-<p>Reserved for future use.</p>
+<p>The JDBC driver class name for database request security.
+If missing, no database request security will be done.</p>
 </dd>
 <dt class="hdlist1">birt.runner.db.url</dt>
 <dd>
-<p>Reserved for future use.</p>
+<p>The JDBC URL for database request security.
+If missing, no database request security will be done.</p>
 </dd>
 <dt class="hdlist1">birt.runner.db.username</dt>
 <dd>
-<p>Reserved for future use.</p>
+<p>The username required for database authentication.</p>
 </dd>
 <dt class="hdlist1">birt.runner.db.password</dt>
 <dd>
-<p>Reserved for future use.</p>
+<p>The password required for database authentication.</p>
 </dd>
 <dt class="hdlist1">birt.runner.db.query</dt>
 <dd>
-<p>Reserved for future use.</p>
+<p>The query for database request security.  The query must
+accept a single parameter denoted by a question mark in which the
+security token will be passed and return the full report design file path/name and
+the timestamp of the request time in that order.</p>
+<div class="literalblock">
+<div class="content">
+<pre>Example: select design_file, request_time from reports where security_token = ?;</pre>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">birt.runner.db.timeout</dt>
+<dd>
+<p>The maximum number of milliseconds allowed between the timestamp returned
+by the database query (birt.runner.db.query) and the actual time the report
+request is submitted.  This should be very short.  The default is 5000.
+The request will not be allowed if the request submission time is
+later than the timestamp in the database plus the timeout.</p>
+</dd>
+<dt class="hdlist1">birt.runner.unsecuredDesignFilePattern</dt>
+<dd>
+<p>This is an optional regular expression that is matched against the full design file path/names.
+If it matches, the request is allowed with no further security checks.
+If it is missing then other security measures, if any, will be enforced for all reports.</p>
 </dd>
 <dt class="hdlist1">birt.runner.mail.username</dt>
 <dd>
@@ -1218,6 +1259,43 @@ Submit requests can override this value.</p>
 </div>
 </div>
 </div>
+<h1 id="_security" class="sect0"><a class="link" href="#_security">Security</a></h1>
+<div class="sect1">
+<h2 id="_unsecured_reports"><a class="link" href="#_unsecured_reports">Unsecured Reports</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A subset of reports can be unsecured by specifying the birt.runner.unsecuredDesignFilePattern
+property.  This is a regular expression that is matched against the full report design path/name
+in the request.  If it matches, the request is allowed without any further security checks.
+If it is not specified then other security constraints (if any) are applied to all reports.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_database_secured_requests"><a class="link" href="#_database_secured_requests">Database Secured Requests</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A SQL database server can be used as a back channel to secure requests.  To enable this,
+specify all the "db" properties in the configuration.  Then for each request you will need to
+create a random security token (UUID.getRandomUUID() is a good way to do this).
+Then you&#8217;ll need to insert a row into a table prior to making a /run or /submit request.
+The table should contain the security token, the full path/name of the report design file,
+and the current timestamp.  The security token must also be included in the /run or /submit
+request.  The configuration will provide a query that can retrieve these values
+from the database.  If the security token is not found or the report request name doesn&#8217;t
+match the request or the request is received later than a timeout specified in the configuration,
+then the request will be rejected.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_client_certificates"><a class="link" href="#_client_certificates">Client Certificates</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>TODO</p>
+</div>
+</div>
+</div>
 <h1 id="_configuring_for_opentext_libraries" class="sect0"><a class="link" href="#_configuring_for_opentext_libraries">Configuring for OpenText libraries</a></h1>
 <div class="openblock partintro">
 <div class="content">
@@ -1300,7 +1378,7 @@ then change directory to the target folder under the root folder (the folder con
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-06-15 07:16:54 MDT
+Last updated 2019-06-17 13:17:01 MDT
 </div>
 </div>
 </body>

@@ -35,20 +35,36 @@ public class PropertiesHelper {
 		return value;
 	}
 
-	public int get(final String key, final int defaultValue) {
+	public Integer get(final String key, final Integer defaultValue) {
 		final String value = properties.getProperty(key);
 		if (value == null) {
 			return defaultValue;
 		}
-		return Integer.parseInt(value);
+		return Integer.valueOf(value);
 	}
 
-	public int requireInteger(final String key) {
+	public Integer requireInteger(final String key) {
 		final String value = properties.getProperty(key);
 		if (value == null) {
 			throw new IllegalArgumentException("Property " + key + " is required");
 		}
-		return Integer.parseInt(value);
+		return Integer.valueOf(value);
+	}
+
+	public Long get(final String key, final Long defaultValue) {
+		final String value = properties.getProperty(key);
+		if (value == null) {
+			return defaultValue;
+		}
+		return Long.valueOf(value);
+	}
+
+	public Long requireLong(final String key) {
+		final String value = properties.getProperty(key);
+		if (value == null) {
+			throw new IllegalArgumentException("Property " + key + " is required");
+		}
+		return Long.valueOf(value);
 	}
 
 	public boolean get(final String key, final boolean defaultValue) {

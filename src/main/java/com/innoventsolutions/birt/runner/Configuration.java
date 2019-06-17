@@ -11,8 +11,20 @@ package com.innoventsolutions.birt.runner;
 
 import java.io.File;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
+/**
+ * The immutable class that contains all configuration values.
+ *
+ * @author Steve Schafer, Innovent Solutions Inc.
+ */
 public class Configuration {
+	/**
+	 * The mutable class that contains all configuration values. Values can be
+	 * set manually or they can be loaded from a properties object.
+	 *
+	 * @author Steve Schafer, Innovent Solutions Inc.
+	 */
 	public static class Editor {
 		public File outputDirectory = null;
 		public File workspace = null;
@@ -29,6 +41,7 @@ public class Configuration {
 		public String dbUsername = null;
 		public String dbPassword = null;
 		public String dbQuery = null;
+		public Long dbTimeout = null;
 		public String mailUsername = null;
 		public String mailPassword = null;
 		public File mailPropertiesFile = null;
@@ -46,7 +59,18 @@ public class Configuration {
 		public boolean mailHtml = true;
 		public int threadCount = 1;
 		public boolean isActuate = false;
+		public Pattern unsecuredDesignFilePattern = null;
 
+		/**
+		 * Load the properties from a Properties object. All fields are public.
+		 * Any values set to these fields prior to calling this method will
+		 * serve as defaults.
+		 *
+		 * @param properties
+		 *            The properties object
+		 * @param propertiesDir
+		 *            The default location for some properties
+		 */
 		public void loadProperties(final Properties properties, final File propertiesDir) {
 			final String userHome = System.getProperty("user.home");
 			final File userHomeDir = userHome == null ? null : new File(userHome);
@@ -91,6 +115,11 @@ public class Configuration {
 			dbUsername = ph.get("birt.runner.db.username", dbUsername);
 			dbPassword = ph.get("birt.runner.db.password", dbPassword);
 			dbQuery = ph.get("birt.runner.db.query", dbQuery);
+			Long defaultDbTimeout = dbTimeout;
+			if (defaultDbTimeout == null) {
+				defaultDbTimeout = Long.valueOf(5000);
+			}
+			dbTimeout = ph.get("birt.runner.db.timeout", defaultDbTimeout);
 			mailUsername = ph.get("birt.runner.mail.username", mailUsername);
 			mailPassword = ph.get("birt.runner.mail.password", mailPassword);
 			File defaultMailPropertiesFile = mailPropertiesFile;
@@ -113,41 +142,51 @@ public class Configuration {
 			mailHtml = ph.get("birt.runner.mail.html", true);
 			threadCount = ph.get("birt.runner.threadCount", threadCount);
 			isActuate = ph.get("birt.runner.isActuate", isActuate);
+			final String patternString = ph.get("birt.runner.unsecuredDesignFilePattern",
+				unsecuredDesignFilePattern == null ? null : unsecuredDesignFilePattern.pattern());
+			if (patternString != null) {
+				unsecuredDesignFilePattern = Pattern.compile(patternString);
+			}
+			else {
+				unsecuredDesignFilePattern = null;
+			}
 		}
 	}
 
-	final File outputDirectory;
-	final File workspace;
-	final File birtRuntimeHome;
-	final File resourcePath;
-	final File scriptLib;
-	final boolean doNotRun;
-	final String reportFormat;
-	final String baseImageURL;
-	final File loggingPropertiesFile;
-	final File loggingDir;
-	final String dbDriver;
-	final String dbUrl;
-	final String dbUsername;
-	final String dbPassword;
-	final String dbQuery;
-	final String mailUsername;
-	final String mailPassword;
-	final File mailPropertiesFile;
-	final boolean mailSuccess;
-	final boolean mailFailure;
-	final String mailTo;
-	final String mailCc;
-	final String mailBcc;
-	final String mailFrom;
-	final String mailSuccessSubject;
-	final String mailFailureSubject;
-	final String mailSuccessBody;
-	final String mailFailureBody;
-	final boolean mailAttachReport;
-	final boolean mailHtml;
-	final int threadCount;
-	final boolean isActuate;
+	public final File outputDirectory;
+	public final File workspace;
+	public final File birtRuntimeHome;
+	public final File resourcePath;
+	public final File scriptLib;
+	public final boolean doNotRun;
+	public final String reportFormat;
+	public final String baseImageURL;
+	public final File loggingPropertiesFile;
+	public final File loggingDir;
+	public final String dbDriver;
+	public final String dbUrl;
+	public final String dbUsername;
+	public final String dbPassword;
+	public final String dbQuery;
+	public final Long dbTimeout;
+	public final String mailUsername;
+	public final String mailPassword;
+	public final File mailPropertiesFile;
+	public final boolean mailSuccess;
+	public final boolean mailFailure;
+	public final String mailTo;
+	public final String mailCc;
+	public final String mailBcc;
+	public final String mailFrom;
+	public final String mailSuccessSubject;
+	public final String mailFailureSubject;
+	public final String mailSuccessBody;
+	public final String mailFailureBody;
+	public final boolean mailAttachReport;
+	public final boolean mailHtml;
+	public final int threadCount;
+	public final boolean isActuate;
+	public final Pattern unsecuredDesignFilePattern;
 
 	public Configuration(final Editor editor) {
 		this.outputDirectory = editor.outputDirectory;
@@ -165,6 +204,7 @@ public class Configuration {
 		this.dbUsername = editor.dbUsername;
 		this.dbPassword = editor.dbPassword;
 		this.dbQuery = editor.dbQuery;
+		this.dbTimeout = editor.dbTimeout;
 		this.mailUsername = editor.mailUsername;
 		this.mailPassword = editor.mailPassword;
 		this.mailPropertiesFile = editor.mailPropertiesFile;
@@ -182,6 +222,7 @@ public class Configuration {
 		this.mailHtml = editor.mailHtml;
 		this.threadCount = editor.threadCount;
 		this.isActuate = editor.isActuate;
+		this.unsecuredDesignFilePattern = editor.unsecuredDesignFilePattern;
 	}
 
 	@Override

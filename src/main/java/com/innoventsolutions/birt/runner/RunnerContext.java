@@ -16,6 +16,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,6 +29,7 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
 
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.report.engine.api.EngineException;
@@ -60,9 +62,11 @@ public class RunnerContext {
 	public final Mailer mailer;
 	public final ExecutorService threadPool;
 	public final Map<UUID, ReportRunStatus> reports = new HashMap<>();
+	public final DbInterface dbInterface;
 
-	public RunnerContext(final String filename) throws IOException, BirtException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public RunnerContext(final String filename)
+			throws IOException, BirtException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, SQLException {
 		logger.debug("instantiate RunnerContext with " + filename);
 		final File file = new File(filename);
 		final File dir = file.getParentFile();
@@ -90,7 +94,9 @@ public class RunnerContext {
 		logger.debug("configuration = " + configuration);
 		final BirtEnvironment env = new BirtEnvironment(configuration);
 		final Mailer mailer = new Mailer(configuration);
+		final DbInterface dbInterface = new DbInterface(configuration);
 		this.engine = env.getReportEngine();
+		this.dbInterface = dbInterface;
 		final ExecutorService threadPool = Executors.newFixedThreadPool(configuration.threadCount);
 		this.configuration = configuration;
 		this.env = env;
@@ -98,8 +104,10 @@ public class RunnerContext {
 		this.threadPool = threadPool;
 	}
 
-	public UUID startReport(final ReportRun reportRun, final ReportEmail email) {
+	public UUID startReport(final ReportRun reportRun, final ReportEmail email)
+			throws BadRequestException, SQLException {
 		logger.debug("startReport reportRun = " + reportRun + ", email = " + email);
+		authorize(reportRun);
 		final ReportRunStatus status = new ReportRunStatus(reportRun, email);
 		UUID uuid = null; // job identifier
 		synchronized (reports) {
@@ -127,7 +135,7 @@ public class RunnerContext {
 		@Override
 		public void run() {
 			try {
-				final List<Exception> errors = runReport(status.reportRun);
+				final List<Exception> errors = runReport(status.reportRun, false);
 				logger.info("report is finished, errors = " + errors);
 				status.finishReport(errors);
 				mailer.send(status);
@@ -142,16 +150,21 @@ public class RunnerContext {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Exception> runReport(final ReportRun reportRun)
-			throws EngineException, IOException, BadRequestException {
+			throws EngineException, IOException, BadRequestException, SQLException {
+		return runReport(reportRun, true);
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Exception> runReport(final ReportRun reportRun, final boolean authorize)
+			throws EngineException, IOException, BadRequestException, SQLException {
 		logger.info("runReport reportRun = " + reportRun);
+		if (authorize) {
+			authorize(reportRun);
+		}
 		IReportRunnable design;
 		try {
-			File designFile = new File(reportRun.designFile);
-			if (!designFile.isAbsolute()) {
-				designFile = new File(env.workspace, reportRun.designFile);
-			}
+			final File designFile = getDesignFile(reportRun);
 			final FileInputStream fis = new FileInputStream(designFile);
 			design = engine.openReportDesign(fis);
 		}
@@ -259,6 +272,25 @@ public class RunnerContext {
 			}
 		}
 		return exceptions;
+	}
+
+	private File getDesignFile(final ReportRun reportRun) {
+		File designFile = new File(reportRun.designFile);
+		if (!designFile.isAbsolute()) {
+			designFile = new File(env.workspace, reportRun.designFile);
+		}
+		return designFile;
+	}
+
+	private void authorize(final ReportRun reportRun) throws BadRequestException, SQLException {
+		final String designFile = getDesignFile(reportRun).getAbsolutePath();
+		if (configuration.unsecuredDesignFilePattern != null) {
+			final Matcher matcher = configuration.unsecuredDesignFilePattern.matcher(designFile);
+			if (matcher.matches()) {
+				return; // allow
+			}
+		}
+		dbInterface.authorize(reportRun.securityToken, designFile);
 	}
 
 	/*

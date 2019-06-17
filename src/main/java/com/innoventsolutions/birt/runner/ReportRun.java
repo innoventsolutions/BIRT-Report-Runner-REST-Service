@@ -12,6 +12,11 @@ package com.innoventsolutions.birt.runner;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The immutable report run request.
+ *
+ * @author Steve Schafer, Innovent Solutions Inc.
+ */
 public class ReportRun {
 	public final String designFile;
 	public final String nameForHumans;
@@ -19,10 +24,11 @@ public class ReportRun {
 	public final String outputFile;
 	public final boolean runThenRender;
 	public final Map<String, Object> parameters;
+	public final String securityToken;
 
 	public ReportRun(final String designFile, final String nameForHumans, final String format,
 			final String outputFile, final boolean runThenRender,
-			final Map<String, Object> parameters) {
+			final Map<String, Object> parameters, final String securityToken) {
 		this.nameForHumans = nameForHumans;
 		if (designFile == null) {
 			throw new NullPointerException("designFile may not be null");
@@ -41,6 +47,7 @@ public class ReportRun {
 			throw new NullPointerException("parameters may not be null");
 		}
 		this.parameters = new HashMap<>(parameters);
+		this.securityToken = securityToken;
 	}
 
 	@Override

@@ -48,8 +48,15 @@ public class TestReport {
 		final URL designURL = this.getClass().getResource("test.rptdesign");
 		final String designFile = designURL.getPath();
 		final ReportRun reportRun = new ReportRun(designFile, "Test Report", "pdf", "test.pdf",
-				true, new HashMap<>());
-		runnerContext.startReport(reportRun, null);
+				true, new HashMap<>(), null);
+		try {
+			runnerContext.startReport(reportRun, null);
+		}
+		catch (final Throwable e) {
+			e.printStackTrace();
+			Assert.fail("Failed to start report: " + e);
+			return;
+		}
 		runnerContext.waitForAllReportsToFinish();
 		runnerContext.shutdown();
 	}
@@ -72,14 +79,24 @@ public class TestReport {
 		final Map<String, Object> parameters = new HashMap<>();
 		parameters.put("keyFilter", "a.*");
 		final ReportRun[] reportRuns = new ReportRun[] {
-			new ReportRun(designFile, "Test Report 1", "pdf", "test1.pdf", true, new HashMap<>()),
-			new ReportRun(designFile, "Test Report 2", "pdf", "test2.pdf", false, new HashMap<>()),
-			new ReportRun(designFile, "Test Report 3", "pdf", "test3.pdf", true, parameters),
-			new ReportRun(designFile, "Test Report 4", "pdf", "test4.pdf", false, parameters) };
+			new ReportRun(designFile, "Test Report 1", "pdf", "test1.pdf", true, new HashMap<>(),
+					null),
+			new ReportRun(designFile, "Test Report 2", "pdf", "test2.pdf", false, new HashMap<>(),
+					null),
+			new ReportRun(designFile, "Test Report 3", "pdf", "test3.pdf", true, parameters, null),
+			new ReportRun(designFile, "Test Report 4", "pdf", "test4.pdf", false, parameters,
+					null) };
 		final UUID[] uuids = new UUID[reportRuns.length];
 		for (int i = 0; i < reportRuns.length; i++) {
 			final ReportRun reportRun = reportRuns[i];
-			uuids[i] = runnerContext.startReport(reportRun, null);
+			try {
+				uuids[i] = runnerContext.startReport(reportRun, null);
+			}
+			catch (final Throwable e) {
+				e.printStackTrace();
+				Assert.fail("Failed to start report: " + e);
+				return;
+			}
 		}
 		runnerContext.waitForAllReportsToFinish();
 		for (final UUID uuid : uuids) {

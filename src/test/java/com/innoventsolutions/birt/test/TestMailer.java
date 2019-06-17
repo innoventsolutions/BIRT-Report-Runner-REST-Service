@@ -37,7 +37,7 @@ public class TestMailer {
 		final Configuration config = new Configuration(editor);
 		final Mailer mailer = new Mailer(config);
 		final ReportRun reportRun = new ReportRun("test.rptdesign", "Test report", "PDF",
-				"output.pdf", true, new HashMap<>());
+				"output.pdf", true, new HashMap<>(), null);
 		final ReportEmail reportEmail = new ReportEmail(true, false, null, null, null, null, null,
 				null, null, false, true);
 		final ReportRunStatus status = new ReportRunStatus(reportRun, reportEmail);
