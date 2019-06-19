@@ -12,7 +12,6 @@ package com.innoventsolutions.reportrunneracsbms;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,6 +22,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -35,17 +35,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.innoventsolutions.birt.runner.BadRequestException;
 import com.innoventsolutions.birt.runner.ReportEmail;
 import com.innoventsolutions.birt.runner.ReportRun;
 import com.innoventsolutions.birt.runner.ReportRunStatus;
-import com.innoventsolutions.birt.runner.RunnerContext;
 
 @Controller
-public class JobController {
-	Logger logger = LoggerFactory.getLogger(JobController.class);
+@RequestMapping("/springTest")
+public class JobControllerSB {
+	Logger logger = LoggerFactory.getLogger(JobControllerSB.class);
+	@Autowired
+	private RunnerService runner;
 
 	@GetMapping("/welcome")
 	public String loginMessage() {
@@ -67,7 +70,7 @@ public class JobController {
 	public ResponseEntity<Resource> getReport(final String uuidString, final boolean isAttachment) {
 		try {
 			logger.info("getReport " + uuidString + " " + isAttachment);
-			final File outputDir = runnerContext.getOutputDirectory();
+			final File outputDir = runner.getOutputDirectory();
 			logger.info("outputDir = " + outputDir);
 			UUID uuid;
 			try {
@@ -76,7 +79,7 @@ public class JobController {
 			catch (final IllegalArgumentException e) {
 				return getErrorResponse(HttpStatus.NOT_ACCEPTABLE, "Invalid or missing UUID");
 			}
-			final ReportRunStatus status = runnerContext.getStatus(uuid);
+			final ReportRunStatus status = runner.getStatus(uuid);
 			if (status == null) {
 				return getErrorResponse(HttpStatus.NOT_FOUND, "Report not found");
 			}
@@ -110,13 +113,13 @@ public class JobController {
 	@GetMapping("/status/{uuid}")
 	@ResponseBody
 	public ReportRunStatus getStatus(@PathVariable("uuid") final String uuid) {
-		return runnerContext.getStatus(UUID.fromString(uuid));
+		return runner.getStatus(UUID.fromString(uuid));
 	}
 
 	@GetMapping("/waitfor/{uuid}")
 	@ResponseBody
 	public ReportRunStatus waitFor(@PathVariable("uuid") final String uuid) {
-		final ReportRunStatus status = runnerContext.getStatus(UUID.fromString(uuid));
+		final ReportRunStatus status = runner.getStatus(UUID.fromString(uuid));
 		synchronized (status) {
 			try {
 				status.wait();
@@ -131,13 +134,9 @@ public class JobController {
 	@ResponseBody
 	public SubmitResponse submit(@RequestBody final SubmitRequest request) {
 		logger.info("submit " + request);
-		if (runnerContext == null) {
-			logger.error("runnerContext is null - " + initException);
-			return new SubmitResponse(null, initException);
-		}
 		try {
 			final UUID uuid = UUID.randomUUID();
-			final String format = runnerContext.getFormat(request.getFormat());
+			final String format = runner.getFormat(request.getFormat());
 			final String outputFilename = uuid + "." + format;
 			final ReportRun reportRun = new ReportRun(request.getDesignFile(),
 					request.getNameForHumans(), format, outputFilename, request.isRunThenRender(),
@@ -148,7 +147,7 @@ public class JobController {
 					request.getMailFailureSubject(), request.getMailSuccessBody(),
 					request.getMailFailureBody(), request.getMailAttachReport(),
 					request.getMailHtml());
-			final UUID jobUUID = runnerContext.startReport(reportRun, email);
+			final UUID jobUUID = runner.startReport(reportRun, email);
 			return new SubmitResponse(jobUUID, null);
 		}
 		catch (final Throwable e) {
@@ -161,24 +160,20 @@ public class JobController {
 	@ResponseBody
 	public ResponseEntity<Resource> run(@RequestBody final RunRequest request) {
 		logger.info("run");
-		if (runnerContext == null) {
-			logger.error("runnerContext may not be null - " + initException);
-			return getErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Server configuration error");
-		}
 		try {
-			final String format = runnerContext.getFormat(request.getFormat());
+			final String format = runner.getFormat(request.getFormat());
 			final String outputFilename = UUID.randomUUID() + "." + format;
 			final ReportRun reportRun = new ReportRun(request.getDesignFile(), null, format,
 					outputFilename, request.isRunThenRender(),
 					fixParameterTypes(request.getParameters()), null);
-			final List<Exception> exceptions = runnerContext.runReport(reportRun);
+			final List<Exception> exceptions = runner.runReport(reportRun);
 			if (!exceptions.isEmpty()) {
 				for (final Throwable e : exceptions) {
 					logger.error("Exception", e);
 				}
 				return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			final File outputDir = runnerContext.getOutputDirectory();
+			final File outputDir = runner.getOutputDirectory();
 			final File outputFile = outputDir == null ? new File(outputFilename)
 				: new File(outputDir, outputFilename);
 			final InputStream inputStream = new FileInputStream(outputFile);
@@ -314,43 +309,6 @@ public class JobController {
 			return MediaType.parseMediaType("application/vnd.oasis.opendocument.text");
 		}
 		return MediaType.APPLICATION_OCTET_STREAM;
-	}
-
-	private static RunnerContext runnerContext = null;
-	private static Exception initException = null;
-	static {
-		final String envName = "REPORT_RUNNER_PROPERTIES";
-		final String filename = System.getenv(envName);
-		if (filename == null) {
-			final Logger logger = LoggerFactory.getLogger(JobController.class);
-			final String msg = "Environment variable " + envName + " is missing";
-			logger.error(msg);
-		}
-		else {
-			initializeRunnerContext(filename);
-		}
-	}
-
-	public static void initializeRunnerContextFromResource(final URL propertiesURL) {
-		if (propertiesURL == null) {
-			throw new NullPointerException("report-runner.properties not found in classpath");
-		}
-		final String propertiesFilename = propertiesURL.getPath();
-		final Logger logger = LoggerFactory.getLogger(JobController.class);
-		logger.info("propertiesFilename from resource URL = " + propertiesFilename);
-		initializeRunnerContext(propertiesFilename);
-	}
-
-	public static void initializeRunnerContext(final String filename) {
-		final Logger logger = LoggerFactory.getLogger(JobController.class);
-		logger.info("setPropertiesFilename - JobController class = "
-			+ JobController.class.getClassLoader());
-		try {
-			runnerContext = new RunnerContext(filename);
-		}
-		catch (final Exception e) {
-			initException = e;
-		}
 	}
 
 	public static ResponseEntity<Resource> getErrorResponse(final HttpStatus code,

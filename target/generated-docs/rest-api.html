@@ -427,7 +427,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
+<ul class="sectlevel0">
 <li><a href="#_introduction">Introduction</a></li>
 <li><a href="#_overview">Overview</a></li>
 <li><a href="#_requests">Requests</a>
@@ -455,12 +455,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_introduction"><a class="link" href="#_introduction">Introduction</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Report runner service is a microservice for generating BIRT reports.</p>
-</div>
+<h1 id="_introduction" class="sect0"><a class="link" href="#_introduction">Introduction</a></h1>
+<div class="openblock partintro">
+<div class="content">
+Report runner service is a microservice for generating BIRT reports.
 </div>
 </div>
 <h1 id="_overview" class="sect0"><a class="link" href="#_overview">Overview</a></h1>
@@ -882,7 +880,7 @@ Host: localhost:8080
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/b92b8e8f-4b75-41cc-9fcc-9dec48812266' -i -X GET \
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/9a15c889-b3e0-435b-98e5-ac63c9a92f91' -i -X GET \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -891,7 +889,7 @@ Host: localhost:8080
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/b92b8e8f-4b75-41cc-9fcc-9dec48812266 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/9a15c889-b3e0-435b-98e5-ac63c9a92f91 HTTP/1.1
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -934,7 +932,7 @@ Host: localhost:8080</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/b92b8e8f-4b75-41cc-9fcc-9dec48812266' -i -X GET \
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/9a15c889-b3e0-435b-98e5-ac63c9a92f91' -i -X GET \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -943,7 +941,7 @@ Host: localhost:8080</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/b92b8e8f-4b75-41cc-9fcc-9dec48812266 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/9a15c889-b3e0-435b-98e5-ac63c9a92f91 HTTP/1.1
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -986,7 +984,7 @@ Host: localhost:8080</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/b92b8e8f-4b75-41cc-9fcc-9dec48812266' -i -X GET \
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/9a15c889-b3e0-435b-98e5-ac63c9a92f91' -i -X GET \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -995,7 +993,7 @@ Host: localhost:8080</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/b92b8e8f-4b75-41cc-9fcc-9dec48812266 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/9a15c889-b3e0-435b-98e5-ac63c9a92f91 HTTP/1.1
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -1275,7 +1273,9 @@ If it is not specified then other security constraints (if any) are applied to a
 <h2 id="_database_secured_requests"><a class="link" href="#_database_secured_requests">Database Secured Requests</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>A SQL database server can be used as a back channel to secure requests.  To enable this,
+<p>A SQL database server can be used as a back channel to secure requests.  This serves to
+ensure that only your application (or any application that can insert into
+your database) can make report requests.  To enable this,
 specify all the "db" properties in the configuration.  Then for each request you will need to
 create a random security token (UUID.getRandomUUID() is a good way to do this).
 Then you&#8217;ll need to insert a row into a table prior to making a /run or /submit request.
@@ -1378,7 +1378,7 @@ then change directory to the target folder under the root folder (the folder con
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-06-17 13:17:01 MDT
+Last updated 2019-06-18 06:58:48 MDT
 </div>
 </div>
 </body>

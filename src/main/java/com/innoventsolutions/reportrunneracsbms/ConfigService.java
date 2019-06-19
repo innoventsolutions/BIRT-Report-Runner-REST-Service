@@ -1,0 +1,308 @@
+package com.innoventsolutions.reportrunneracsbms;
+
+import java.io.File;
+import java.util.Properties;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.innoventsolutions.birt.runner.PropertiesHelper;
+
+@Service
+public class ConfigService {
+	Logger logger = LoggerFactory.getLogger(ConfigService.class);
+
+	@Service
+	public static class Editor {
+		@Value("${birt.runner.outputDirectory:${user.home}/reportRunnerTest/output}")
+		public File outputDirectory;
+		@Value("${birt.runner.workspace:${user.home}/reportRunnerTest/workspace}")
+		public File workspace = null;
+		@Value("${birt.runner.runtime:unknown}")
+		public File birtRuntimeHome = null;
+		@Value("${birt.runner.resources:${user.home}/reportRunnerTest/resources}")
+		public File resourcePath = null;
+		@Value("${birt.runner.scriptlib:${user.home}/reportRunnerTest/lib}")
+		public File scriptLib = null;
+		@Value("${birt.runner.reportFormat:PDF}")
+		public String reportFormat = "pdf";
+		@Value("${birt.runner.baseImageURL:${user.home}/reportRunnerTest/images}")
+		public String baseImageURL = null;
+		@Value("${birt.runner.logging.properties:logging.properties}")
+		public File loggingPropertiesFile = null;
+		@Value("${birt.runner.logging.dir:${user.home}reportRunnerTest/log}")
+		public File loggingDir = null;
+		@Value("${birt.runner.db.driver:}")
+		public String dbDriver = null;
+		@Value("${birt.runner.db.url:}")
+		public String dbUrl = null;
+		@Value("${birt.runner.db.username:}")
+		public String dbUsername = null;
+		@Value("${birt.runner.db.password:}")
+		public String dbPassword = null;
+		@Value("${birt.runner.db.query:}")
+		public String dbQuery = null;
+		@Value("${birt.runner.db.timeout:}")
+		public Long dbTimeout = null;
+		@Value("${birt.runner.mail.username:}")
+		public String mailUsername = null;
+		@Value("${birt.runner.mail.password:}")
+		public String mailPassword = null;
+		@Value("${birt.runner.mail.properties:not-specified}")
+		public File mailPropertiesFile = null;
+		@Value("${birt.runner.mail.from:}")
+		public String mailFrom = null;
+		@Value("${birt.runner.mail.success:false}")
+		public boolean mailSuccess = false;
+		@Value("${birt.runner.mail.failure:false}")
+		public boolean mailFailure = false;
+		@Value("${birt.runner.mail.to:}")
+		public String mailTo = null;
+		@Value("${birt.runner.mail.cc:}")
+		public String mailCc = null;
+		@Value("${birt.runner.mail.bcc:}")
+		public String mailBcc = null;
+		@Value("${birt.runner.mail.subject.success:}")
+		public String mailSuccessSubject = null;
+		@Value("${birt.runner.mail.subject.failure:}")
+		public String mailFailureSubject = null;
+		@Value("${birt.runner.mail.body.success:}")
+		public String mailSuccessBody = null;
+		@Value("${birt.runner.mail.body.failure:}")
+		public String mailFailureBody = null;
+		@Value("${birt.runner.mail.attachReport:false}")
+		public boolean mailAttachReport = false;
+		@Value("${birt.runner.mail.html:true}")
+		public boolean mailHtml = true;
+		@Value("${birt.runner.threadCount:1}")
+		public int threadCount = 1;
+		@Value("${birt.runner.isActuate:false}")
+		public boolean isActuate = false;
+		@Value("${birt.runner.unsecuredDesignFilePattern:.*}")
+		public Pattern unsecuredDesignFilePattern = null;
+
+		/**
+		 * Load the properties from a Properties object. All fields are public.
+		 * Any values set to these fields prior to calling this method will
+		 * serve as defaults.
+		 *
+		 * @param properties
+		 *            The properties object
+		 * @param propertiesDir
+		 *            The default location for some properties
+		 */
+		public void loadProperties(final Properties properties, final File propertiesDir) {
+			final String userHome = System.getProperty("user.home");
+			final File userHomeDir = userHome == null ? null : new File(userHome);
+			final File defaultWorkDir = new File(userHomeDir, "reportRunnerTest");
+			final PropertiesHelper ph = new PropertiesHelper(properties);
+			File defaultOutputDirectory = outputDirectory;
+			if (defaultOutputDirectory == null) {
+				defaultOutputDirectory = new File(defaultWorkDir, "output");
+			}
+			outputDirectory = ph.get("birt.runner.outputDir", defaultOutputDirectory, userHomeDir);
+			File defaultWorkspace = workspace;
+			if (defaultWorkspace == null) {
+				defaultWorkspace = new File(defaultWorkDir, "reports");
+			}
+			workspace = ph.get("birt.runner.workspace", defaultWorkspace, userHomeDir);
+			birtRuntimeHome = ph.get("birt.runner.runtime", birtRuntimeHome, propertiesDir);
+			File defaultResourcePath = resourcePath;
+			if (defaultResourcePath == null) {
+				defaultResourcePath = new File(propertiesDir, "resources");
+			}
+			resourcePath = ph.get("birt.runner.resources", defaultResourcePath, propertiesDir);
+			File defaultScriptLib = scriptLib;
+			if (defaultScriptLib == null) {
+				defaultScriptLib = new File(propertiesDir, "lib");
+			}
+			scriptLib = ph.get("birt.runner.scriptlib", defaultScriptLib, propertiesDir);
+			reportFormat = ph.get("birt.runner.reportFormat", reportFormat);
+			baseImageURL = ph.get("birt.runner.baseImageURL", baseImageURL);
+			File defaultLoggingPropertiesFile = loggingPropertiesFile;
+			if (defaultLoggingPropertiesFile == null) {
+				defaultLoggingPropertiesFile = new File(propertiesDir, "logging.properties");
+			}
+			loggingPropertiesFile = ph.get("birt.runner.logging.properties",
+				defaultLoggingPropertiesFile, propertiesDir);
+			File defaultLoggingDir = loggingDir;
+			if (defaultLoggingDir == null) {
+				defaultLoggingDir = new File(defaultWorkDir, "log");
+			}
+			loggingDir = ph.get("birt.runner.logging.dir", defaultLoggingDir, propertiesDir);
+			dbDriver = ph.get("birt.runner.db.driver", dbDriver);
+			dbUrl = ph.get("birt.runner.db.url", dbUrl);
+			dbUsername = ph.get("birt.runner.db.username", dbUsername);
+			dbPassword = ph.get("birt.runner.db.password", dbPassword);
+			dbQuery = ph.get("birt.runner.db.query", dbQuery);
+			Long defaultDbTimeout = dbTimeout;
+			if (defaultDbTimeout == null) {
+				defaultDbTimeout = Long.valueOf(5000);
+			}
+			dbTimeout = ph.get("birt.runner.db.timeout", defaultDbTimeout);
+			mailUsername = ph.get("birt.runner.mail.username", mailUsername);
+			mailPassword = ph.get("birt.runner.mail.password", mailPassword);
+			File defaultMailPropertiesFile = mailPropertiesFile;
+			if (defaultMailPropertiesFile == null) {
+				defaultMailPropertiesFile = new File(propertiesDir, "smtp.properties");
+			}
+			mailPropertiesFile = ph.get("birt.runner.mail.properties", defaultMailPropertiesFile,
+				propertiesDir);
+			mailSuccess = ph.get("birt.runner.mail.success", mailSuccess);
+			mailFailure = ph.get("birt.runner.mail.failure", mailFailure);
+			mailTo = ph.get("birt.runner.mail.to", mailTo);
+			mailCc = ph.get("birt.runner.mail.cc", mailCc);
+			mailBcc = ph.get("birt.runner.mail.bcc", mailBcc);
+			mailFrom = ph.get("birt.runner.mail.from", mailFrom);
+			mailSuccessSubject = ph.get("birt.runner.mail.subject.success", mailSuccessSubject);
+			mailFailureSubject = ph.get("birt.runner.mail.subject.failure", mailFailureSubject);
+			mailSuccessBody = ph.get("birt.runner.mail.body.success", mailSuccessBody);
+			mailFailureBody = ph.get("birt.runner.mail.body.failure", mailFailureBody);
+			mailAttachReport = ph.get("birt.runner.mail.attachReport", true);
+			mailHtml = ph.get("birt.runner.mail.html", true);
+			threadCount = ph.get("birt.runner.threadCount", threadCount);
+			isActuate = ph.get("birt.runner.isActuate", isActuate);
+			final String patternString = ph.get("birt.runner.unsecuredDesignFilePattern",
+				unsecuredDesignFilePattern == null ? null : unsecuredDesignFilePattern.pattern());
+			if (patternString != null) {
+				unsecuredDesignFilePattern = Pattern.compile(patternString);
+			}
+			else {
+				unsecuredDesignFilePattern = null;
+			}
+		}
+
+		public void applyDefaults() {
+			if (loggingPropertiesFile.isDirectory()) {
+				loggingPropertiesFile = new File(loggingPropertiesFile, "logging.properties");
+			}
+			if (!loggingPropertiesFile.exists()) {
+				throw new IllegalArgumentException("Logging properties file "
+					+ loggingPropertiesFile.getAbsolutePath() + " does not exist");
+			}
+			if (mailPropertiesFile.getName().equals("not-specified")) {
+				mailPropertiesFile = null;
+			}
+			else if (mailPropertiesFile.isDirectory()) {
+				mailPropertiesFile = new File(mailPropertiesFile, "smtp.properties");
+			}
+		}
+	}
+
+	public final File outputDirectory;
+	public final File workspace;
+	public final File birtRuntimeHome;
+	public final File resourcePath;
+	public final File scriptLib;
+	public final String reportFormat;
+	public final String baseImageURL;
+	public final File loggingPropertiesFile;
+	public final File loggingDir;
+	public final String dbDriver;
+	public final String dbUrl;
+	public final String dbUsername;
+	public final String dbPassword;
+	public final String dbQuery;
+	public final Long dbTimeout;
+	public final String mailUsername;
+	public final String mailPassword;
+	public final File mailPropertiesFile;
+	public final boolean mailSuccess;
+	public final boolean mailFailure;
+	public final String mailTo;
+	public final String mailCc;
+	public final String mailBcc;
+	public final String mailFrom;
+	public final String mailSuccessSubject;
+	public final String mailFailureSubject;
+	public final String mailSuccessBody;
+	public final String mailFailureBody;
+	public final boolean mailAttachReport;
+	public final boolean mailHtml;
+	public final int threadCount;
+	public final boolean isActuate;
+	public final Pattern unsecuredDesignFilePattern;
+
+	public ConfigService(@Autowired final Editor editor) {
+		editor.applyDefaults();
+		this.outputDirectory = editor.outputDirectory;
+		this.workspace = editor.workspace;
+		this.birtRuntimeHome = editor.birtRuntimeHome;
+		this.resourcePath = editor.resourcePath;
+		this.scriptLib = editor.scriptLib;
+		this.reportFormat = editor.reportFormat;
+		this.baseImageURL = editor.baseImageURL;
+		this.loggingPropertiesFile = editor.loggingPropertiesFile;
+		this.loggingDir = editor.loggingDir;
+		this.dbDriver = editor.dbDriver;
+		this.dbUrl = editor.dbUrl;
+		this.dbUsername = editor.dbUsername;
+		this.dbPassword = editor.dbPassword;
+		this.dbQuery = editor.dbQuery;
+		this.dbTimeout = editor.dbTimeout;
+		this.mailUsername = editor.mailUsername;
+		this.mailPassword = editor.mailPassword;
+		this.mailPropertiesFile = editor.mailPropertiesFile;
+		this.mailSuccess = editor.mailSuccess;
+		this.mailFailure = editor.mailFailure;
+		this.mailTo = editor.mailTo;
+		this.mailCc = editor.mailCc;
+		this.mailBcc = editor.mailBcc;
+		this.mailFrom = editor.mailFrom;
+		this.mailSuccessSubject = editor.mailSuccessSubject;
+		this.mailFailureSubject = editor.mailFailureSubject;
+		this.mailSuccessBody = editor.mailSuccessBody;
+		this.mailFailureBody = editor.mailFailureBody;
+		this.mailAttachReport = editor.mailAttachReport;
+		this.mailHtml = editor.mailHtml;
+		this.threadCount = editor.threadCount;
+		this.isActuate = editor.isActuate;
+		this.unsecuredDesignFilePattern = editor.unsecuredDesignFilePattern;
+		logger.info("outputDirectory = " + outputDirectory.getAbsolutePath());
+		logger.info("workspace = " + workspace.getAbsolutePath());
+		logger.info("birtRuntimeHome = " + birtRuntimeHome.getAbsolutePath());
+		logger.info("resourcePath = " + resourcePath.getAbsolutePath());
+		logger.info("scriptLib = " + scriptLib.getAbsolutePath());
+		logger.info("reportFormat = " + reportFormat);
+		logger.info("baseImageURL = " + baseImageURL);
+		logger.info("loggingPropertiesFile = " + loggingPropertiesFile.getAbsolutePath());
+		logger.info("loggingDir = " + loggingDir.getAbsolutePath());
+		logger.info("dbDriver = " + dbDriver);
+		logger.info("dbUrl = " + dbUrl);
+		logger.info("dbUsername = " + dbUsername);
+		logger.info("dbPassword = " + dbPassword);
+		logger.info("dbQuery = " + dbQuery);
+		logger.info("dbTimeout = " + dbTimeout);
+		logger.info("mailUsername = " + mailUsername);
+		logger.info("mailPassword = " + mailPassword);
+		logger.info("mailPropertiesFile = "
+			+ (mailPropertiesFile == null ? "null" : mailPropertiesFile.getAbsolutePath()));
+		logger.info("mailSuccess = " + mailSuccess);
+		logger.info("mailFailure = " + mailFailure);
+		logger.info("mailTo = " + mailTo);
+		logger.info("mailCc = " + mailCc);
+		logger.info("mailBcc = " + mailBcc);
+		logger.info("mailFrom = " + mailFrom);
+		logger.info("mailSuccessSubject = " + mailSuccessSubject);
+		logger.info("mailFailureSubject = " + mailFailureSubject);
+		logger.info("mailSuccessBody = " + mailSuccessBody);
+		logger.info("mailFailureBody = " + mailFailureBody);
+		logger.info("mailAttachReport = " + mailAttachReport);
+		logger.info("mailHtml = " + mailHtml);
+		logger.info("threadCount = " + threadCount);
+		logger.info("isActuate = " + isActuate);
+		logger.info("unsecuredDesignFilePattern = " + unsecuredDesignFilePattern);
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("Configuration ");
+		sb.append("birtRuntimeHome = " + birtRuntimeHome);
+		return sb.toString();
+	}
+}

@@ -7,7 +7,6 @@ Steve Schafer;
 :toclevels: 4
 :sectlinks:
 
-[introduction]
 = Introduction
 
 Report runner service is a microservice for generating BIRT reports.
@@ -304,7 +303,9 @@ If it is not specified then other security constraints (if any) are applied to a
 
 == Database Secured Requests
 
-A SQL database server can be used as a back channel to secure requests.  To enable this, 
+A SQL database server can be used as a back channel to secure requests.  This serves to
+ensure that only your application (or any application that can insert into
+your database) can make report requests.  To enable this, 
 specify all the "db" properties in the configuration.  Then for each request you will need to
 create a random security token (UUID.getRandomUUID() is a good way to do this).
 Then you'll need to insert a row into a table prior to making a /run or /submit request.

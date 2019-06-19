@@ -1,4 +1,4 @@
-package com.innoventsolutions.birt.runner;
+package com.innoventsolutions.reportrunneracsbms;
 
 import java.beans.PropertyVetoException;
 import java.sql.Connection;
@@ -9,17 +9,21 @@ import java.sql.Timestamp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
+import com.innoventsolutions.birt.runner.BadRequestException;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-public class DbInterface {
-	Logger logger = LoggerFactory.getLogger(DbInterface.class);
+@Service
+public class DatabaseService {
+	Logger logger = LoggerFactory.getLogger(DatabaseService.class);
 	private final ComboPooledDataSource pool;
 	private final String query;
 	private final Long timeout;
 
-	public DbInterface(final Configuration configuration) {
+	public DatabaseService(@Autowired final ConfigService configuration) {
 		if (configuration.dbDriver == null) {
 			logger.info("dbInterface is disabled because dbDriver property is missing");
 			pool = null;

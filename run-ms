@@ -3,10 +3,12 @@ LOGS=$HOME/logs
 mkdir -p $LOGS
 # keystore needed for private email server
 KEYSTORE="-Djavax.net.ssl.trustStore=$HOME/truststore"
+DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000"
 PROJECT=$HOME/projects/BIRT-Report-Runner-REST-Service
 TARGET=$PROJECT/target
 SRC=$PROJECT/src
 cd $TARGET
 export REPORT_RUNNER_PROPERTIES="$SRC/test/resources/com/innoventsolutions/birt/test/report-runner.properties"
-java $KEYSTORE -jar report-runner-ac-sbms-0.0.1-SNAPSHOT.jar > $LOGS/run-ms.log 2> $LOGS/run-ms.err.log &
+#  --spring.config.location=file:$HOME/reportRunnerTest/runner.properties
+java $DEBUG $KEYSTORE -jar report-runner-ac-sbms-0.0.1-SNAPSHOT.jar > $LOGS/run-ms.log 2> $LOGS/run-ms.err.log &
 echo "running..."
