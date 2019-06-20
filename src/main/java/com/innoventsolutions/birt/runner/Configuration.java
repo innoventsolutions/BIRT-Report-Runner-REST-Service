@@ -17,7 +17,9 @@ import java.util.regex.Pattern;
  * The immutable class that contains all configuration values.
  *
  * @author Steve Schafer, Innovent Solutions Inc.
+ * @deprecated Use ConfigService instead.
  */
+@Deprecated
 public class Configuration {
 	/**
 	 * The mutable class that contains all configuration values. Values can be

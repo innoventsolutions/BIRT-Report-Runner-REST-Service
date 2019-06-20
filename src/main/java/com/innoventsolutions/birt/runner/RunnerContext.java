@@ -53,6 +53,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
+/**
+ * @author Steve Schafer, InnoventSolutions
+ * @deprecated Use RunnerService instead.
+ */
+@Deprecated
 public class RunnerContext {
 	Logger logger = LoggerFactory.getLogger(RunnerContext.class);
 	public final Configuration configuration;

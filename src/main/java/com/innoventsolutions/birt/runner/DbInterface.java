@@ -13,6 +13,11 @@ import org.springframework.http.HttpStatus;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
+/**
+ * @author Steve Schafer, InnoventSolutions
+ * @deprecated Use DatabaseService instead.
+ */
+@Deprecated
 public class DbInterface {
 	Logger logger = LoggerFactory.getLogger(DbInterface.class);
 	private final ComboPooledDataSource pool;

@@ -428,15 +428,71 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel0">
-<li><a href="#_introduction">Introduction</a></li>
 <li><a href="#_overview">Overview</a></li>
 <li><a href="#_requests">Requests</a>
 <ul class="sectlevel1">
-<li><a href="#_report_run_request">Report run request</a></li>
-<li><a href="#_report_submit_request">Report submit request</a></li>
-<li><a href="#_report_status_request">Report status request</a></li>
-<li><a href="#_report_get_request">Report get request</a></li>
-<li><a href="#_report_download_request">Report download request</a></li>
+<li><a href="#_post_run">POST /run</a>
+<ul class="sectlevel2">
+<li><a href="#_request_fields">Request fields:</a></li>
+<li><a href="#_response_codes">Response codes:</a></li>
+<li><a href="#_examples">Examples:</a>
+<ul class="sectlevel3">
+<li><a href="#_curl">Curl:</a></li>
+<li><a href="#_http_request">HTTP request:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_post_submit">POST /submit</a>
+<ul class="sectlevel2">
+<li><a href="#_request_fields_2">Request fields:</a></li>
+<li><a href="#_response_fields">Response fields:</a></li>
+<li><a href="#_response_codes_2">Response codes:</a></li>
+<li><a href="#_examples_2">Examples:</a>
+<ul class="sectlevel3">
+<li><a href="#_curl_2">Curl:</a></li>
+<li><a href="#_http_request_2">HTTP request:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_get_status">GET /status</a>
+<ul class="sectlevel2">
+<li><a href="#_request_path_parameters">Request path parameters:</a></li>
+<li><a href="#_response_fields_2">Response fields:</a></li>
+<li><a href="#_response_codes_3">Response codes:</a></li>
+<li><a href="#_examples_3">Examples:</a>
+<ul class="sectlevel3">
+<li><a href="#_curl_3">Curl:</a></li>
+<li><a href="#_http_request_3">HTTP request:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_get_get">GET /get</a>
+<ul class="sectlevel2">
+<li><a href="#_request_path_parameters_2">Request path parameters:</a></li>
+<li><a href="#_response_codes_4">Response codes:</a></li>
+<li><a href="#_examples_4">Examples:</a>
+<ul class="sectlevel3">
+<li><a href="#_curl_4">Curl:</a></li>
+<li><a href="#_http_request_4">HTTP request:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_get_download">GET /download</a>
+<ul class="sectlevel2">
+<li><a href="#_request_path_parameters_3">Request path parameters:</a></li>
+<li><a href="#_response_codes_5">Response codes:</a></li>
+<li><a href="#_examples_5">Examples:</a>
+<ul class="sectlevel3">
+<li><a href="#_curl_5">Curl:</a></li>
+<li><a href="#_http_request_5">HTTP request:</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#_parameters">Parameters</a></li>
@@ -455,15 +511,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
-<h1 id="_introduction" class="sect0"><a class="link" href="#_introduction">Introduction</a></h1>
-<div class="openblock partintro">
-<div class="content">
-Report runner service is a microservice for generating BIRT reports.
-</div>
-</div>
 <h1 id="_overview" class="sect0"><a class="link" href="#_overview">Overview</a></h1>
 <div class="openblock partintro">
 <div class="content">
+<div class="paragraph">
+<p>Report runner service is a microservice for generating BIRT reports.</p>
+</div>
 <div class="paragraph">
 <p>We attempt to adhere to REST standards although running a report is really an action and not a resource.  However we use POST for report run actions because it can be thought of as adding a new request, where a request is a resource.  We use GET for retrieving reports and report status.</p>
 </div>
@@ -477,14 +530,15 @@ Report runner service is a microservice for generating BIRT reports.
 </div>
 <h1 id="_requests" class="sect0"><a class="link" href="#_requests">Requests</a></h1>
 <div class="sect1">
-<h2 id="_report_run_request"><a class="link" href="#_report_run_request">Report run request</a></h2>
+<h2 id="_post_run"><a class="link" href="#_post_run">POST /run</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This request is used to immediately generate a report and return the output in the response.</p>
+<p>This request is used to immediately generate a report and return the output in the response.
+The request content type is application/json.
+The response content type will correspond to the requested format.</p>
 </div>
-<div class="paragraph">
-<p>request fields:</p>
-</div>
+<div class="sect2">
+<h3 id="_request_fields"><a class="link" href="#_request_fields">Request fields:</a></h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 33%;">
@@ -526,12 +580,58 @@ Report runner service is a microservice for generating BIRT reports.
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>Examples:</p>
 </div>
-<div class="paragraph">
-<p>curl:</p>
+<div class="sect2">
+<h3 id="_response_codes"><a class="link" href="#_response_codes">Response codes:</a></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Success</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The operation completed successfully.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>401</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Unauthorized</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The report requires a security token, but the security token was missing from the request or was
+not found in the database or the report design file specified in the database didn&#8217;t match the
+request or the request was made beyond the timeout period.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The design file specified in the request was not found.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>406</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Acceptable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A parameter value was not of the expected data type and could not be converted or
+and explictly typed parameter was not specified correctly or an unsupported format was specified.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>500</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal Server Error</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Some internal error prevented the operation from completing.  See the log file for a full description and traceback.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
+<div class="sect2">
+<h3 id="_examples"><a class="link" href="#_examples">Examples:</a></h3>
+<div class="sect3">
+<h4 id="_curl"><a class="link" href="#_curl">Curl:</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/run' -i -X POST \
@@ -547,9 +647,9 @@ Report runner service is a microservice for generating BIRT reports.
 }'</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>http request:</p>
 </div>
+<div class="sect3">
+<h4 id="_http_request"><a class="link" href="#_http_request">HTTP request:</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /run HTTP/1.1
@@ -568,32 +668,19 @@ Host: localhost:8080
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>request body:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight nowrap"><code>{
-	"designFile": "/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/src/test/resources/com/innoventsolutions/birt/test/test.rptdesign",
-	"format": "pdf",
-	"runThenRender": true,
-	"parameters": {
-		"keyFilter": "a.*"
-	}
-}</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_report_submit_request"><a class="link" href="#_report_submit_request">Report submit request</a></h2>
+<h2 id="_post_submit"><a class="link" href="#_post_submit">POST /submit</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This request is used to start generating the report asynchronously.  A string is returned that identifies the job.</p>
+<p>This request is used to start generating the report asynchronously.  A string is returned that identifies the job.
+Both the request and the response content types are application/json.</p>
 </div>
-<div class="paragraph">
-<p>Request fields:</p>
-</div>
+<div class="sect2">
+<h3 id="_request_fields_2"><a class="link" href="#_request_fields_2">Request fields:</a></h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 33%;">
@@ -685,9 +772,9 @@ Host: localhost:8080
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>Response fields:</p>
 </div>
+<div class="sect2">
+<h3 id="_response_fields"><a class="link" href="#_response_fields">Response fields:</a></h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 33%;">
@@ -724,12 +811,58 @@ Host: localhost:8080
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>Examples:</p>
 </div>
-<div class="paragraph">
-<p>curl:</p>
+<div class="sect2">
+<h3 id="_response_codes_2"><a class="link" href="#_response_codes_2">Response codes:</a></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Success</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The operation completed successfully.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>401</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Unauthorized</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The report requires a security token, but the security token was missing from the request or was
+not found in the database or the report design file specified in the database didn&#8217;t match the
+request or the request was made beyond the timeout period.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The design file specified in the request was not found.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>406</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Acceptable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A parameter value was not of the expected data type and could not be converted or
+and explictly typed parameter was not specified correctly or an unsupported format was specified.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>500</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal Server Error</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Some internal error prevented the operation from completing.  See the log file for a full description and traceback.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
+<div class="sect2">
+<h3 id="_examples_2"><a class="link" href="#_examples_2">Examples:</a></h3>
+<div class="sect3">
+<h4 id="_curl_2"><a class="link" href="#_curl_2">Curl:</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/submit' -i -X POST \
@@ -744,9 +877,9 @@ Host: localhost:8080
 }'</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>http request:</p>
 </div>
+<div class="sect3">
+<h4 id="_http_request_2"><a class="link" href="#_http_request_2">HTTP request:</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /submit HTTP/1.1
@@ -764,33 +897,22 @@ Host: localhost:8080
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>request body:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight nowrap"><code>{
-	"designFile": "/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/src/test/resources/com/innoventsolutions/birt/test/test.rptdesign",
-	"format": "PDF",
-	"runThenRender": true,
-	"nameForHumans": "Test Report",
-	"sendEmailOnSuccess": false
-}</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_report_status_request"><a class="link" href="#_report_status_request">Report status request</a></h2>
+<h2 id="_get_status"><a class="link" href="#_get_status">GET /status</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This request is used to get the status of a running or finished job.</p>
+<p>This request is used to get the status of a running or finished job.
+The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
+The response content type is application/json.</p>
 </div>
-<div class="paragraph">
-<p>Request path parameters:
-./status/{uuid}</p>
-</div>
+<div class="sect2">
+<h3 id="_request_path_parameters"><a class="link" href="#_request_path_parameters">Request path parameters:</a></h3>
 <table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. /status/{uuid}</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -808,9 +930,9 @@ Host: localhost:8080
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>Response fields:</p>
 </div>
+<div class="sect2">
+<h3 id="_response_fields_2"><a class="link" href="#_response_fields_2">Response fields:</a></h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 33%;">
@@ -872,41 +994,82 @@ Host: localhost:8080
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>Examples:</p>
 </div>
-<div class="paragraph">
-<p>curl:</p>
+<div class="sect2">
+<h3 id="_response_codes_3"><a class="link" href="#_response_codes_3">Response codes:</a></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Success</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The operation completed successfully.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No report identified by the specified UUID was found.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>406</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Acceptable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The UUID was not found in the path or it was not properly formatted.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>500</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal Server Error</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Some internal error prevented the operation from completing.  See the log file for a full description and traceback.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
+<div class="sect2">
+<h3 id="_examples_3"><a class="link" href="#_examples_3">Examples:</a></h3>
+<div class="sect3">
+<h4 id="_curl_3"><a class="link" href="#_curl_3">Curl:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/9a15c889-b3e0-435b-98e5-ac63c9a92f91' -i -X GET \
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/d5982ccc-66b1-43c4-a9e8-22610e24b60d' -i -X GET \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>http request:</p>
 </div>
+<div class="sect3">
+<h4 id="_http_request_3"><a class="link" href="#_http_request_3">HTTP request:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/9a15c889-b3e0-435b-98e5-ac63c9a92f91 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/d5982ccc-66b1-43c4-a9e8-22610e24b60d HTTP/1.1
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
 </div>
+</div>
+</div>
 <div class="sect1">
-<h2 id="_report_get_request"><a class="link" href="#_report_get_request">Report get request</a></h2>
+<h2 id="_get_get"><a class="link" href="#_get_get">GET /get</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This request is used to retrieve the output of a report that was run asynchronously (using submit).</p>
+<p>This request is used to retrieve the output of a report that was run asynchronously (using submit).
+The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
+The response content type will correspond to the requested format.</p>
 </div>
-<div class="paragraph">
-<p>Request path parameters:
-./status/{uuid}</p>
-</div>
+<div class="sect2">
+<h3 id="_request_path_parameters_2"><a class="link" href="#_request_path_parameters_2">Request path parameters:</a></h3>
 <table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. /get/{uuid}</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -924,41 +1087,87 @@ Host: localhost:8080</code></pre>
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>Examples:</p>
 </div>
-<div class="paragraph">
-<p>curl:</p>
+<div class="sect2">
+<h3 id="_response_codes_4"><a class="link" href="#_response_codes_4">Response codes:</a></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Success</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The operation completed successfully.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>400</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bad Request</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The report was found but it was not finished generating.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No report identified by the specified UUID was found.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>406</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Acceptable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The UUID was not found in the path or it was not properly formatted.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>500</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal Server Error</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Some internal error prevented the operation from completing.  See the log file for a full description and traceback.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
+<div class="sect2">
+<h3 id="_examples_4"><a class="link" href="#_examples_4">Examples:</a></h3>
+<div class="sect3">
+<h4 id="_curl_4"><a class="link" href="#_curl_4">Curl:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/9a15c889-b3e0-435b-98e5-ac63c9a92f91' -i -X GET \
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/get/c3b01d73-c51a-4a66-80ed-3be192d95bc6' -i -X GET \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>http request:</p>
 </div>
+<div class="sect3">
+<h4 id="_http_request_4"><a class="link" href="#_http_request_4">HTTP request:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/9a15c889-b3e0-435b-98e5-ac63c9a92f91 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /get/c3b01d73-c51a-4a66-80ed-3be192d95bc6 HTTP/1.1
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
 </div>
+</div>
+</div>
 <div class="sect1">
-<h2 id="_report_download_request"><a class="link" href="#_report_download_request">Report download request</a></h2>
+<h2 id="_get_download"><a class="link" href="#_get_download">GET /download</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This request is used to retrieve the output of a report that was run asynchronously (using submit).  It&#8217;s the same as /get except that the report output is treated as an attachment.</p>
+<p>This request is used to retrieve the output of a report that was run asynchronously (using submit).  It&#8217;s the same as /get except that the report output is treated as an attachment.
+The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
+The response content type will correspond to the requested format.</p>
 </div>
-<div class="paragraph">
-<p>Request path parameters:
-./status/{uuid}</p>
-</div>
+<div class="sect2">
+<h3 id="_request_path_parameters_3"><a class="link" href="#_request_path_parameters_3">Request path parameters:</a></h3>
 <table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 3. /download/{uuid}</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -976,26 +1185,71 @@ Host: localhost:8080</code></pre>
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>Examples:</p>
 </div>
-<div class="paragraph">
-<p>curl:</p>
+<div class="sect2">
+<h3 id="_response_codes_5"><a class="link" href="#_response_codes_5">Response codes:</a></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Success</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The operation completed successfully.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>400</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bad Request</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The report was found but it was not finished generating.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No report identified by the specified UUID was found.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>406</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Acceptable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The UUID was not found in the path or it was not properly formatted.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>500</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal Server Error</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Some internal error prevented the operation from completing.  See the log file for a full description and traceback.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
+<div class="sect2">
+<h3 id="_examples_5"><a class="link" href="#_examples_5">Examples:</a></h3>
+<div class="sect3">
+<h4 id="_curl_5"><a class="link" href="#_curl_5">Curl:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/9a15c889-b3e0-435b-98e5-ac63c9a92f91' -i -X GET \
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/download/c0079cf7-1f58-47bb-8428-32f0fb0b4bf4' -i -X GET \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>http request:</p>
 </div>
+<div class="sect3">
+<h4 id="_http_request_5"><a class="link" href="#_http_request_5">HTTP request:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/9a15c889-b3e0-435b-98e5-ac63c9a92f91 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /download/c0079cf7-1f58-47bb-8428-32f0fb0b4bf4 HTTP/1.1
 Accept: application/json
 Host: localhost:8080</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1378,7 +1632,7 @@ then change directory to the target folder under the root folder (the folder con
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-06-18 06:58:48 MDT
+Last updated 2019-06-20 09:44:39 MDT
 </div>
 </div>
 </body>

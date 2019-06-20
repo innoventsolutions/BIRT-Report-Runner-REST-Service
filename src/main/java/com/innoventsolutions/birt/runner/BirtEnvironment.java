@@ -30,6 +30,11 @@ import org.eclipse.birt.report.model.api.DesignConfig;
 import org.eclipse.birt.report.model.api.IDesignEngine;
 import org.eclipse.birt.report.model.api.IDesignEngineFactory;
 
+/**
+ * @author Steve Schafer, Innovent Solutions Inc.
+ * @deprecated Use BirtService instead.
+ */
+@Deprecated
 public class BirtEnvironment {
 	// private static final Logger logger = Logger.getLogger( BirtEnvironment.class.getName() );
 	final File workspace;

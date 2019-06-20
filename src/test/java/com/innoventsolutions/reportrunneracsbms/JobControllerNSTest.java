@@ -24,20 +24,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -45,85 +37,81 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = ReportRunnerAcSbmsApplication.class)
-@WebAppConfiguration
-public class JobControllerTest {
+// @RunWith(SpringJUnit4ClassRunner.class)
+// @SpringBootTest(classes = ReportRunnerAcSbmsApplication.class)
+// @WebAppConfiguration
+public class JobControllerNSTest {
 	private static final Object DESIGN_FILE_DESCRIPTION = "The full path to the BIRT design file on the server file system";
 	private static final Object FORMAT_DESCRIPTION = "The report output format: HTML, PDF, XLS, or any other format supported by the BIRT engine";
 	private static final Object RUN_THEN_RENDER_DESCRIPTION = "Whether to build with separate run and render phases";
 	private static final Object PARAMETERS_DESCRIPTION = "The parameters in the form {\"name\": value, ...}, where value may be a string, number or boolean for single value parameters or an array of string, number, or boolean for multi-valued parameters.";
 	private static final Object TOKEN_DESCRIPTION = "The security token for this request.  This is required only if database security has been enabled in the configuration.";
-	Logger logger = LoggerFactory.getLogger(JobControllerTest.class);
-	@Rule
+	Logger logger = LoggerFactory.getLogger(JobControllerNSTest.class);
+	// @Rule
 	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation(
 			"target/generated-snippets");
-	@Autowired
+	// @Autowired
 	private WebApplicationContext context;
 	private MockMvc mockMvc;
 
-	@Before
+	// @Before
 	public void setUp() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context).apply(
 			documentationConfiguration(this.restDocumentation)).build();
 	}
 
-	@Test
+	// @Test
 	public void testRun() throws Exception {
-		JobController.initializeRunnerContextFromResource(
+		JobControllerNS.initializeRunnerContextFromResource(
 			this.getClass().getResource("report-runner.properties"));
 		final String requestString = getResourceAsString("unit-test-request.json");
 		logger.info("testRun request = " + requestString);
-		this.mockMvc.perform(
-			post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
-					document("run",
-						requestFields(
-							fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
-							fieldWithPath("format").optional().description(FORMAT_DESCRIPTION),
-							fieldWithPath("runThenRender").optional().description(
-								RUN_THEN_RENDER_DESCRIPTION),
-							subsectionWithPath("parameters").optional().type(
-								JsonFieldType.OBJECT).description(PARAMETERS_DESCRIPTION),
-							fieldWithPath("securityToken").type(
-								JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION)),
-						responseHeaders(headerWithName("Content-Type").description(
-							"The content type of the payload"))));
+		this.mockMvc.perform(post("/nonspring/run").contentType(MediaType.APPLICATION_JSON).content(
+			requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
+				document("nonspring/run",
+					requestFields(fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
+						fieldWithPath("format").optional().description(FORMAT_DESCRIPTION),
+						fieldWithPath("runThenRender").optional().description(
+							RUN_THEN_RENDER_DESCRIPTION),
+						subsectionWithPath("parameters").optional().type(
+							JsonFieldType.OBJECT).description(PARAMETERS_DESCRIPTION),
+						fieldWithPath("securityToken").type(
+							JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION)),
+					responseHeaders(headerWithName("Content-Type").description(
+						"The content type of the payload"))));
 	}
 
-	@Test
+	// @Test
 	public void testRunNoParams() throws Exception {
-		JobController.initializeRunnerContextFromResource(
+		JobControllerNS.initializeRunnerContextFromResource(
 			this.getClass().getResource("report-runner.properties"));
 		final String requestString = getResourceAsString("unit-test-request-noparams.json");
 		logger.info("testRunNoParams request = " + requestString);
-		this.mockMvc.perform(
-			post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		this.mockMvc.perform(post("/nonspring/run").contentType(MediaType.APPLICATION_JSON).content(
+			requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
-	@Test
+	// @Test
 	public void testRunRowCount() throws Exception {
-		JobController.initializeRunnerContextFromResource(
+		JobControllerNS.initializeRunnerContextFromResource(
 			this.getClass().getResource("report-runner.properties"));
 		final String requestString = getResourceAsString("unit-test-request-rowcount.json");
 		logger.info("testRunRowCount request = " + requestString);
-		this.mockMvc.perform(
-			post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		this.mockMvc.perform(post("/nonspring/run").contentType(MediaType.APPLICATION_JSON).content(
+			requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
-	@Test
+	// @Test
 	public void testSubmit() throws Exception {
-		JobController.initializeRunnerContextFromResource(
+		JobControllerNS.initializeRunnerContextFromResource(
 			this.getClass().getResource("report-runner.properties"));
 		final String requestString = getResourceAsString("unit-test-submit-request.json");
 		logger.info("testSubmit request = " + requestString);
 		final MvcResult result = this.mockMvc.perform(
-			post("/submit").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
-					"submit",
-					requestFields(fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
+			post("/nonspring/submit").contentType(MediaType.APPLICATION_JSON).content(
+				requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
+					document("nonspring/submit", requestFields(
+						fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
 						fieldWithPath("format").optional().description(FORMAT_DESCRIPTION),
 						fieldWithPath("runThenRender").optional().description(
 							RUN_THEN_RENDER_DESCRIPTION),
@@ -157,15 +145,15 @@ public class JobControllerTest {
 						fieldWithPath("mailFailureBody").type(
 							JsonFieldType.STRING).optional().description(
 								"Email body for failed reports")),
-					responseFields(
-						fieldWithPath("exception").description(
-							"Returns the exception object in case of failure"),
-						fieldWithPath("exceptionString").description(
-							"Returns the exception message string in case of failure"),
-						fieldWithPath("success").description(
-							"Returns true if the request was successfully processed"),
-						fieldWithPath("uuid").description(
-							"Returns the UUID that identifies the job")))).andReturn();
+						responseFields(
+							fieldWithPath("exception").description(
+								"Returns the exception object in case of failure"),
+							fieldWithPath("exceptionString").description(
+								"Returns the exception message string in case of failure"),
+							fieldWithPath("success").description(
+								"Returns true if the request was successfully processed"),
+							fieldWithPath("uuid").description(
+								"Returns the UUID that identifies the job")))).andReturn();
 		final MockHttpServletResponse response = result.getResponse();
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));
 		final String jsonString = response.getContentAsString();
@@ -183,13 +171,14 @@ public class JobControllerTest {
 	}
 
 	public String submit() throws Exception {
-		JobController.initializeRunnerContextFromResource(
+		JobControllerNS.initializeRunnerContextFromResource(
 			this.getClass().getResource("report-runner.properties"));
 		final String requestString = getResourceAsString("unit-test-submit-request.json");
 		logger.info("testStatus request = " + requestString);
 		final MvcResult result = this.mockMvc.perform(
-			post("/submit").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+			post("/nonspring/submit").contentType(MediaType.APPLICATION_JSON).content(
+				requestString).accept(MediaType.APPLICATION_JSON)).andExpect(
+					status().isOk()).andReturn();
 		final MockHttpServletResponse response = result.getResponse();
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));
 		final String jsonString = response.getContentAsString();
@@ -209,9 +198,9 @@ public class JobControllerTest {
 
 	private Map<String, Object> testStatus(final String op) throws Exception {
 		final String jobId = submit();
-		final MvcResult statusResult = this.mockMvc.perform(get("/" + op + "/{uuid}", jobId).accept(
-			MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
-				op,
+		final MvcResult statusResult = this.mockMvc.perform(get("/nonspring/" + op + "/{uuid}",
+			jobId).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
+				"nonspring/" + op,
 				pathParameters(
 					parameterWithName("uuid").description("The identifier returned from submit")),
 				responseFields(
@@ -242,12 +231,12 @@ public class JobControllerTest {
 		return responseMap;
 	}
 
-	@Test
+	// @Test
 	public void testStatus() throws Exception {
 		testStatus("status");
 	}
 
-	@Test
+	// @Test
 	public void testWaitFor() throws Exception {
 		final Map<String, Object> responseMap = testStatus("waitfor");
 		@SuppressWarnings("unchecked")
@@ -261,13 +250,26 @@ public class JobControllerTest {
 		Assert.assertTrue("emailErrors should be empty", emailErrors.isEmpty());
 	}
 
-	@Test
+	// @Test
 	public void testGet() throws Exception {
 		final String jobId = submit();
 		this.mockMvc.perform(
-			get("/get/{uuid}", jobId).accept(MediaType.APPLICATION_JSON)).andExpect(
+			get("/nonspring/get/{uuid}", jobId).accept(MediaType.APPLICATION_JSON)).andExpect(
 				status().isOk()).andDo(
-					document("get",
+					document("nonspring/get",
+						pathParameters(parameterWithName("uuid").description(
+							"The identifier returned from submit")),
+						responseHeaders(headerWithName("Content-Type").description(
+							"The content type of the payload")))).andReturn();
+	}
+
+	// @Test
+	public void testDownload() throws Exception {
+		final String jobId = submit();
+		this.mockMvc.perform(
+			get("/nonspring/download/{uuid}", jobId).accept(MediaType.APPLICATION_JSON)).andExpect(
+				status().isOk()).andDo(
+					document("nonspring/download",
 						pathParameters(parameterWithName("uuid").description(
 							"The identifier returned from submit")),
 						responseHeaders(headerWithName("Content-Type").description(
@@ -275,7 +277,7 @@ public class JobControllerTest {
 	}
 
 	private static String getResourceAsString(final String name) throws IOException {
-		final URL requestURL = JobControllerTest.class.getResource(name);
+		final URL requestURL = JobControllerNSTest.class.getResource(name);
 		if (requestURL == null) {
 			Assert.fail(name + " not found in classpath");
 		}

@@ -7,11 +7,9 @@ Steve Schafer;
 :toclevels: 4
 :sectlinks:
 
-= Introduction
+= Overview
 
 Report runner service is a microservice for generating BIRT reports.
-
-= Overview
 
 We attempt to adhere to REST standards although running a report is really an action and not a resource.  However we use POST for report run actions because it can be thought of as adding a new request, where a request is a resource.  We use GET for retrieving reports and report status.
 
@@ -21,87 +19,249 @@ The server can be configured to use the open-source BIRT libraries or the OpenTe
 
 = Requests
 
-== Report run request
-This request is used to immediately generate a report and return the output in the response.
+== POST /run
 
-request fields:
+This request is used to immediately generate a report and return the output in the response. 
+The request content type is application/json.
+The response content type will correspond to the requested format.
+
+=== Request fields:
+
 include::{snippets}/run/request-fields.adoc[]
 
-Examples:
+=== Response codes:
 
-curl:
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+401+`
+|`+Unauthorized+`
+|The report requires a security token, but the security token was missing from the request or was 
+not found in the database or the report design file specified in the database didn't match the
+request or the request was made beyond the timeout period.
+
+|`+404+`
+|`+Not Found+`
+|The design file specified in the request was not found.
+
+|`+406+`
+|`+Not Acceptable+`
+|A parameter value was not of the expected data type and could not be converted or
+and explictly typed parameter was not specified correctly or an unsupported format was specified.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
 include::{snippets}/run/curl-request.adoc[]
 
-http request:
+==== HTTP request:
+
 include::{snippets}/run/http-request.adoc[]
 
-request body:
-include::{snippets}/run/request-body.adoc[]
+== POST /submit
 
-== Report submit request
 This request is used to start generating the report asynchronously.  A string is returned that identifies the job.
+Both the request and the response content types are application/json.
 
-Request fields:
+=== Request fields:
+
 include::{snippets}/submit/request-fields.adoc[]
 
-Response fields:
+=== Response fields:
+
 include::{snippets}/submit/response-fields.adoc[]
 
-Examples:
+=== Response codes:
 
-curl:
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+401+`
+|`+Unauthorized+`
+|The report requires a security token, but the security token was missing from the request or was 
+not found in the database or the report design file specified in the database didn't match the
+request or the request was made beyond the timeout period.
+
+|`+404+`
+|`+Not Found+`
+|The design file specified in the request was not found.
+
+|`+406+`
+|`+Not Acceptable+`
+|A parameter value was not of the expected data type and could not be converted or
+and explictly typed parameter was not specified correctly or an unsupported format was specified.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
 include::{snippets}/submit/curl-request.adoc[]
 
-http request:
+==== HTTP request:
+
 include::{snippets}/submit/http-request.adoc[]
 
-request body:
-include::{snippets}/submit/request-body.adoc[]
+== GET /status
 
-== Report status request
 This request is used to get the status of a running or finished job.
+The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
+The response content type is application/json.
 
-Request path parameters:
+=== Request path parameters:
+
 include::{snippets}/status/path-parameters.adoc[]
 
-Response fields:
+=== Response fields:
+
 include::{snippets}/status/response-fields.adoc[]
 
-Examples:
+=== Response codes:
 
-curl:
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+404+`
+|`+Not Found+`
+|No report identified by the specified UUID was found.
+
+|`+406+`
+|`+Not Acceptable+`
+|The UUID was not found in the path or it was not properly formatted.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
 include::{snippets}/status/curl-request.adoc[]
 
-http request:
+==== HTTP request:
+
 include::{snippets}/status/http-request.adoc[]
 
-== Report get request
+== GET /get
+
 This request is used to retrieve the output of a report that was run asynchronously (using submit).
+The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
+The response content type will correspond to the requested format.
 
-Request path parameters:
-include::{snippets}/status/path-parameters.adoc[]
+=== Request path parameters:
 
-Examples:
+include::{snippets}/get/path-parameters.adoc[]
 
-curl:
-include::{snippets}/status/curl-request.adoc[]
+=== Response codes:
 
-http request:
-include::{snippets}/status/http-request.adoc[]
+|===
+|Code|Name|Description
 
-== Report download request
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+400+`
+|`+Bad Request+`
+|The report was found but it was not finished generating.
+
+|`+404+`
+|`+Not Found+`
+|No report identified by the specified UUID was found.
+
+|`+406+`
+|`+Not Acceptable+`
+|The UUID was not found in the path or it was not properly formatted.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
+include::{snippets}/get/curl-request.adoc[]
+
+==== HTTP request:
+
+include::{snippets}/get/http-request.adoc[]
+
+== GET /download
+
 This request is used to retrieve the output of a report that was run asynchronously (using submit).  It's the same as /get except that the report output is treated as an attachment.
+The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
+The response content type will correspond to the requested format.
 
-Request path parameters:
-include::{snippets}/status/path-parameters.adoc[]
+=== Request path parameters:
 
-Examples:
+include::{snippets}/download/path-parameters.adoc[]
 
-curl:
-include::{snippets}/status/curl-request.adoc[]
+=== Response codes:
 
-http request:
-include::{snippets}/status/http-request.adoc[]
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+400+`
+|`+Bad Request+`
+|The report was found but it was not finished generating.
+
+|`+404+`
+|`+Not Found+`
+|No report identified by the specified UUID was found.
+
+|`+406+`
+|`+Not Acceptable+`
+|The UUID was not found in the path or it was not properly formatted.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
+include::{snippets}/download/curl-request.adoc[]
+
+==== HTTP request:
+
+include::{snippets}/download/http-request.adoc[]
 
 = Parameters
 

@@ -34,6 +34,11 @@ import javax.mail.internet.MimeMultipart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Steve Schafer, InnoventSolutions
+ * @deprecated Use MailerService instead.
+ */
+@Deprecated
 public class Mailer {
 	Logger logger = LoggerFactory.getLogger(Mailer.class);
 	private final Configuration configuration;
