@@ -11,10 +11,21 @@ package com.innoventsolutions.reportrunneracsbms;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class ReportRunnerAcSbmsApplication {
 	public static void main(final String[] args) {
 		SpringApplication.run(ReportRunnerAcSbmsApplication.class, args);
+	}
+
+	@Bean
+	public ServletRegistrationBean<HelloServlet> helloServletRegistrationBean() {
+		final ServletRegistrationBean<HelloServlet> result = new ServletRegistrationBean<>(
+				new HelloServlet(), "/hello"); // Comma separated url paths.
+		result.setName("helloServlet");
+		result.setOrder(1);
+		return result;
 	}
 }
