@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (C) 2019 Innovent Solutions
- * 
+ *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  ******************************************************************************/
 package com.innoventsolutions.reportrunneracsbms;
@@ -65,20 +65,20 @@ public class RunnerService {
 	private final ConfigService configService;
 	private final BirtService birtService;
 	private final MailerService mailerService;
-	private final DatabaseService databaseService;
+	private final AuthorizationService authorizationService;
 	public final IReportEngine engine;
 	public final ExecutorService threadPool;
 	public final Map<UUID, ReportRunStatus> reports = new HashMap<>();
 
 	@Autowired
 	public RunnerService(final ConfigService configService, final BirtService birtService,
-			final MailerService mailerService, final DatabaseService databaseService)
+			final MailerService mailerService, final AuthorizationService authorizationService)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			IOException, BirtException {
 		this.configService = configService;
 		this.birtService = birtService;
 		this.mailerService = mailerService;
-		this.databaseService = databaseService;
+		this.authorizationService = authorizationService;
 		this.threadPool = Executors.newFixedThreadPool(configService.threadCount);
 		this.engine = birtService.getReportEngine();
 	}
@@ -269,7 +269,7 @@ public class RunnerService {
 				return; // allow
 			}
 		}
-		databaseService.authorize(reportRun.securityToken, designFile);
+		authorizationService.authorize(reportRun.securityToken, designFile);
 	}
 
 	/*

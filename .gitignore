@@ -12,6 +12,11 @@ HELP.md
 /bin/
 /log/
 !.mvn/wrapper/maven-wrapper.jar
+/sample/log/
+/sample/derby.log
+/sample/logs/
+/sample/output/
+derby.log
 
 ### STS ###
 .apt_generated

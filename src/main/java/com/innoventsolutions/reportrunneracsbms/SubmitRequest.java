@@ -17,6 +17,7 @@ public class SubmitRequest {
 	private String format;
 	private boolean runThenRender;
 	private Map<String, Object> parameters = new HashMap<>();
+	private String securityToken;
 	private String nameForHumans;
 	private Boolean sendEmailOnSuccess;
 	private Boolean sendEmailOnFailure;
@@ -164,5 +165,13 @@ public class SubmitRequest {
 
 	public void setMailHtml(final Boolean mailHtml) {
 		this.mailHtml = mailHtml;
+	}
+
+	public String getSecurityToken() {
+		return securityToken;
+	}
+
+	public void setSecurityToken(final String securityToken) {
+		this.securityToken = securityToken;
 	}
 }

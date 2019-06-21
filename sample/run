@@ -1,0 +1,13 @@
+#!/bin/sh
+PROJECT=$HOME/projects/BIRT-Report-Runner-REST-Service
+TARGET=$PROJECT/target
+JAR=$TARGET/report-runner-ac-sbms-0.0.1-SNAPSHOT.jar
+LOGS=$PROJECT/sample/logs
+mkdir -p $LOGS
+PROPERTIES="-Dspring.config.location=file:$PROJECT/sample/application.properties"
+# keystore needed for private email server
+KEYSTORE="-Djavax.net.ssl.trustStore=$PROJECT/sample/truststore"
+DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000"
+cd $PROJECT/sample
+java $DEBUG $PROPERTIES $KEYSTORE -jar $JAR > $LOGS/run.log 2> $LOGS/run.err.log &
+echo "running..."

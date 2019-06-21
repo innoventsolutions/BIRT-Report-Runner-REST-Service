@@ -139,7 +139,7 @@ public class JobController {
 			final String outputFilename = uuid + "." + format;
 			final ReportRun reportRun = new ReportRun(request.getDesignFile(),
 					request.getNameForHumans(), format, outputFilename, request.isRunThenRender(),
-					fixParameterTypes(request.getParameters()), null);
+					fixParameterTypes(request.getParameters()), request.getSecurityToken());
 			final ReportEmail email = new ReportEmail(request.isSendEmailOnSuccess(),
 					request.isSendEmailOnFailure(), request.getMailTo(), request.getMailCc(),
 					request.getMailBcc(), request.getMailSuccessSubject(),
@@ -164,7 +164,7 @@ public class JobController {
 			final String outputFilename = UUID.randomUUID() + "." + format;
 			final ReportRun reportRun = new ReportRun(request.getDesignFile(), null, format,
 					outputFilename, request.isRunThenRender(),
-					fixParameterTypes(request.getParameters()), null);
+					fixParameterTypes(request.getParameters()), request.getSecurityToken());
 			final List<Exception> exceptions = runner.runReport(reportRun);
 			if (!exceptions.isEmpty()) {
 				for (final Throwable e : exceptions) {
