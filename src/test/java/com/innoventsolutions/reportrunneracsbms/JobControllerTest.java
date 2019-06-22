@@ -79,8 +79,6 @@ public class JobControllerTest {
 
 	@Test
 	public void testRun() throws Exception {
-		JobControllerNS.initializeRunnerContextFromResource(
-			this.getClass().getResource("report-runner.properties"));
 		final String requestString = getResourceAsString("unit-test-request.json");
 		logger.info("testRun request = " + requestString);
 		this.mockMvc.perform(
@@ -102,8 +100,6 @@ public class JobControllerTest {
 
 	@Test
 	public void testRunNoParams() throws Exception {
-		JobControllerNS.initializeRunnerContextFromResource(
-			this.getClass().getResource("report-runner.properties"));
 		final String requestString = getResourceAsString("unit-test-request-noparams.json");
 		logger.info("testRunNoParams request = " + requestString);
 		this.mockMvc.perform(
@@ -113,8 +109,6 @@ public class JobControllerTest {
 
 	@Test
 	public void testRunRowCount() throws Exception {
-		JobControllerNS.initializeRunnerContextFromResource(
-			this.getClass().getResource("report-runner.properties"));
 		final String requestString = getResourceAsString("unit-test-request-rowcount.json");
 		logger.info("testRunRowCount request = " + requestString);
 		this.mockMvc.perform(
@@ -124,8 +118,6 @@ public class JobControllerTest {
 
 	@Test
 	public void testSubmit() throws Exception {
-		JobControllerNS.initializeRunnerContextFromResource(
-			this.getClass().getResource("report-runner.properties"));
 		final String requestString = getResourceAsString("unit-test-submit-request.json");
 		logger.info("testSubmit request = " + requestString);
 		final MvcResult result = this.mockMvc.perform(
@@ -192,8 +184,6 @@ public class JobControllerTest {
 	}
 
 	public String submit() throws Exception {
-		JobControllerNS.initializeRunnerContextFromResource(
-			this.getClass().getResource("report-runner.properties"));
 		final String requestString = getResourceAsString("unit-test-submit-request.json");
 		logger.info("testStatus request = " + requestString);
 		final MvcResult result = this.mockMvc.perform(
