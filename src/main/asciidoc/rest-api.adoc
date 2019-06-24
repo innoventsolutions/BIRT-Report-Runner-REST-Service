@@ -169,6 +169,53 @@ include::{snippets}/status/curl-request.adoc[]
 
 include::{snippets}/status/http-request.adoc[]
 
+== GET /waitfor
+
+This request is used to first wait for a running job to finish if necessary and then get the status of the job.
+The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
+The response content type is application/json.
+
+=== Request path parameters:
+
+include::{snippets}/waitfor/path-parameters.adoc[]
+
+=== Response fields:
+
+include::{snippets}/waitfor/response-fields.adoc[]
+
+=== Response codes:
+
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+404+`
+|`+Not Found+`
+|No report identified by the specified UUID was found.
+
+|`+406+`
+|`+Not Acceptable+`
+|The UUID was not found in the path or it was not properly formatted.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
+include::{snippets}/waitfor/curl-request.adoc[]
+
+==== HTTP request:
+
+include::{snippets}/waitfor/http-request.adoc[]
+
 == GET /get
 
 This request is used to retrieve the output of a report that was run asynchronously (using submit).
@@ -263,6 +310,11 @@ include::{snippets}/download/curl-request.adoc[]
 
 include::{snippets}/download/http-request.adoc[]
 
+= Actuator
+
+The spring boot actuator is enabled.  See https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html.  Actuator endpoints are available on the administration port which is designated as management.server.port
+in application.properties.  The /actuator/health and /actuator/shutdown endpoints are useful, amongst many others.
+
 = Parameters
 
 In the run and submit requests, parameters are specified in JSON as an object in the form
@@ -285,19 +337,26 @@ The build will run a series of unit tests and also build the documentation you a
 
 = Runtime Configuration
 
-This server is configured by a java properties file.  The full path to the properties file must be
-specified in an environment variable named REPORT_RUNNER_PROPERTIES prior to executing
-the jar file.  The following properies may be specified.
+This server is configured spring application.properties, located by default in the jar file
+but an external location may be specified by passing the following argument on the command
+line when executing the jar:
+
+-----
+-Dspring.config.location=file:some-file
+-----
+
+See sample/run for an example.
+The following properies may be specified.
 
 =====
 Note: in the following, ~ refers to your home directory.
 =====
 
-birt.runner.outputDir::
+birt.runner.outputDirectory::
   The default location of output files.
   If not absolute it will be relative to ~.
   The default is ~/reportRunnerTest/output.
- 
+
 birt.runner.workspace::
   The default location of report design files.
   If not absolute it will be relative to ~.

@@ -10,7 +10,6 @@
 package com.innoventsolutions.reportrunneracsbms;
 
 import java.io.File;
-import java.util.Properties;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -18,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.innoventsolutions.birt.runner.PropertiesHelper;
 
 @Service
 public class ConfigService {
@@ -31,7 +28,7 @@ public class ConfigService {
 		public File outputDirectory;
 		@Value("${birt.runner.workspace:${user.home}/reportRunnerTest/workspace}")
 		public File workspace = null;
-		@Value("${birt.runner.runtime:unknown}")
+		@Value("${birt.runner.runtime:not-specified}")
 		public File birtRuntimeHome = null;
 		@Value("${birt.runner.resources:${user.home}/reportRunnerTest/resources}")
 		public File resourcePath = null;
@@ -94,97 +91,6 @@ public class ConfigService {
 		@Value("${birt.runner.unsecuredDesignFilePattern:.*}")
 		public Pattern unsecuredDesignFilePattern = null;
 
-		/**
-		 * Load the properties from a Properties object. All fields are public.
-		 * Any values set to these fields prior to calling this method will
-		 * serve as defaults.
-		 *
-		 * @param properties
-		 *            The properties object
-		 * @param propertiesDir
-		 *            The default location for some properties
-		 */
-		public void loadProperties(final Properties properties, final File propertiesDir) {
-			final String userHome = System.getProperty("user.home");
-			final File userHomeDir = userHome == null ? null : new File(userHome);
-			final File defaultWorkDir = new File(userHomeDir, "reportRunnerTest");
-			final PropertiesHelper ph = new PropertiesHelper(properties);
-			File defaultOutputDirectory = outputDirectory;
-			if (defaultOutputDirectory == null) {
-				defaultOutputDirectory = new File(defaultWorkDir, "output");
-			}
-			outputDirectory = ph.get("birt.runner.outputDir", defaultOutputDirectory, userHomeDir);
-			File defaultWorkspace = workspace;
-			if (defaultWorkspace == null) {
-				defaultWorkspace = new File(defaultWorkDir, "reports");
-			}
-			workspace = ph.get("birt.runner.workspace", defaultWorkspace, userHomeDir);
-			birtRuntimeHome = ph.get("birt.runner.runtime", birtRuntimeHome, propertiesDir);
-			File defaultResourcePath = resourcePath;
-			if (defaultResourcePath == null) {
-				defaultResourcePath = new File(propertiesDir, "resources");
-			}
-			resourcePath = ph.get("birt.runner.resources", defaultResourcePath, propertiesDir);
-			File defaultScriptLib = scriptLib;
-			if (defaultScriptLib == null) {
-				defaultScriptLib = new File(propertiesDir, "lib");
-			}
-			scriptLib = ph.get("birt.runner.scriptlib", defaultScriptLib, propertiesDir);
-			reportFormat = ph.get("birt.runner.reportFormat", reportFormat);
-			baseImageURL = ph.get("birt.runner.baseImageURL", baseImageURL);
-			File defaultLoggingPropertiesFile = loggingPropertiesFile;
-			if (defaultLoggingPropertiesFile == null) {
-				defaultLoggingPropertiesFile = new File(propertiesDir, "logging.properties");
-			}
-			loggingPropertiesFile = ph.get("birt.runner.logging.properties",
-				defaultLoggingPropertiesFile, propertiesDir);
-			File defaultLoggingDir = loggingDir;
-			if (defaultLoggingDir == null) {
-				defaultLoggingDir = new File(defaultWorkDir, "log");
-			}
-			loggingDir = ph.get("birt.runner.logging.dir", defaultLoggingDir, propertiesDir);
-			dbDriver = ph.get("birt.runner.db.driver", dbDriver);
-			dbUrl = ph.get("birt.runner.db.url", dbUrl);
-			dbUsername = ph.get("birt.runner.db.username", dbUsername);
-			dbPassword = ph.get("birt.runner.db.password", dbPassword);
-			dbQuery = ph.get("birt.runner.db.query", dbQuery);
-			Long defaultDbTimeout = dbTimeout;
-			if (defaultDbTimeout == null) {
-				defaultDbTimeout = Long.valueOf(5000);
-			}
-			dbTimeout = ph.get("birt.runner.db.timeout", defaultDbTimeout);
-			mailUsername = ph.get("birt.runner.mail.username", mailUsername);
-			mailPassword = ph.get("birt.runner.mail.password", mailPassword);
-			File defaultMailPropertiesFile = mailPropertiesFile;
-			if (defaultMailPropertiesFile == null) {
-				defaultMailPropertiesFile = new File(propertiesDir, "smtp.properties");
-			}
-			mailPropertiesFile = ph.get("birt.runner.mail.properties", defaultMailPropertiesFile,
-				propertiesDir);
-			mailSuccess = ph.get("birt.runner.mail.success", mailSuccess);
-			mailFailure = ph.get("birt.runner.mail.failure", mailFailure);
-			mailTo = ph.get("birt.runner.mail.to", mailTo);
-			mailCc = ph.get("birt.runner.mail.cc", mailCc);
-			mailBcc = ph.get("birt.runner.mail.bcc", mailBcc);
-			mailFrom = ph.get("birt.runner.mail.from", mailFrom);
-			mailSuccessSubject = ph.get("birt.runner.mail.subject.success", mailSuccessSubject);
-			mailFailureSubject = ph.get("birt.runner.mail.subject.failure", mailFailureSubject);
-			mailSuccessBody = ph.get("birt.runner.mail.body.success", mailSuccessBody);
-			mailFailureBody = ph.get("birt.runner.mail.body.failure", mailFailureBody);
-			mailAttachReport = ph.get("birt.runner.mail.attachReport", true);
-			mailHtml = ph.get("birt.runner.mail.html", true);
-			threadCount = ph.get("birt.runner.threadCount", threadCount);
-			isActuate = ph.get("birt.runner.isActuate", isActuate);
-			final String patternString = ph.get("birt.runner.unsecuredDesignFilePattern",
-				unsecuredDesignFilePattern == null ? null : unsecuredDesignFilePattern.pattern());
-			if (patternString != null) {
-				unsecuredDesignFilePattern = Pattern.compile(patternString);
-			}
-			else {
-				unsecuredDesignFilePattern = null;
-			}
-		}
-
 		public void applyDefaults() {
 			if (loggingPropertiesFile.isDirectory()) {
 				loggingPropertiesFile = new File(loggingPropertiesFile, "logging.properties");
@@ -202,6 +108,9 @@ public class ConfigService {
 			if (dbDriver.length() == 0) {
 				// disables authorization
 				dbDriver = null;
+			}
+			if (birtRuntimeHome.getName().equals("not-specified")) {
+				birtRuntimeHome = null;
 			}
 		}
 	}
@@ -277,7 +186,8 @@ public class ConfigService {
 		this.unsecuredDesignFilePattern = editor.unsecuredDesignFilePattern;
 		logger.info("outputDirectory = " + outputDirectory.getAbsolutePath());
 		logger.info("workspace = " + workspace.getAbsolutePath());
-		logger.info("birtRuntimeHome = " + birtRuntimeHome.getAbsolutePath());
+		logger.info("birtRuntimeHome = "
+			+ (birtRuntimeHome == null ? "null" : birtRuntimeHome.getAbsolutePath()));
 		logger.info("resourcePath = " + resourcePath.getAbsolutePath());
 		logger.info("scriptLib = " + scriptLib.getAbsolutePath());
 		logger.info("reportFormat = " + reportFormat);

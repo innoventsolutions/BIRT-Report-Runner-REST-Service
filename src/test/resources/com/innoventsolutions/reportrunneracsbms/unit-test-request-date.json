@@ -1,6 +1,0 @@
-{
-	"designFile": "/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/src/test/resources/com/innoventsolutions/birt/test/test.rptdesign",
-	"format": "pdf",
-	"runThenRender": true,
-	"parameters": {"dummyDate": "2019-06-12"}
-}

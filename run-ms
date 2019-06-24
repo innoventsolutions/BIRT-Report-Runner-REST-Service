@@ -1,4 +1,5 @@
 #!/bin/sh
+# this runs the application using the embedded application properties
 LOGS=$HOME/logs
 mkdir -p $LOGS
 # keystore needed for private email server

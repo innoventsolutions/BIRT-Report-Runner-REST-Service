@@ -23,12 +23,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,10 +41,12 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -77,9 +75,29 @@ public class JobControllerTest {
 			documentationConfiguration(this.restDocumentation)).build();
 	}
 
+	static class TestRunRequestParams extends TestRunRequestNoparams {
+		Map<String, Object> parameters;
+
+		public Map<String, Object> getParameters() {
+			return parameters;
+		}
+
+		public void setParameters(final Map<String, Object> parameters) {
+			this.parameters = parameters;
+		}
+	}
+
 	@Test
 	public void testRun() throws Exception {
-		final String requestString = getResourceAsString("unit-test-request.json");
+		final TestRunRequestParams requestObject = new TestRunRequestParams();
+		final URL designFileURL = this.getClass().getResource("test.rptdesign");
+		requestObject.designFile = designFileURL.getPath();
+		requestObject.format = "pdf";
+		requestObject.runThenRender = true;
+		requestObject.parameters = new HashMap<>();
+		requestObject.parameters.put("keyFilter", "a.*");
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(requestObject);
 		logger.info("testRun request = " + requestString);
 		this.mockMvc.perform(
 			post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
@@ -98,9 +116,45 @@ public class JobControllerTest {
 							"The content type of the payload"))));
 	}
 
+	static class TestRunRequestNoparams {
+		String designFile;
+		String format;
+		boolean runThenRender;
+
+		public String getDesignFile() {
+			return designFile;
+		}
+
+		public void setDesignFile(final String designFile) {
+			this.designFile = designFile;
+		}
+
+		public String getFormat() {
+			return format;
+		}
+
+		public void setFormat(final String format) {
+			this.format = format;
+		}
+
+		public boolean isRunThenRender() {
+			return runThenRender;
+		}
+
+		public void setRunThenRender(final boolean runThenRender) {
+			this.runThenRender = runThenRender;
+		}
+	}
+
 	@Test
 	public void testRunNoParams() throws Exception {
-		final String requestString = getResourceAsString("unit-test-request-noparams.json");
+		final TestRunRequestNoparams requestObject = new TestRunRequestNoparams();
+		final URL designFileURL = this.getClass().getResource("test.rptdesign");
+		requestObject.designFile = designFileURL.getPath();
+		requestObject.format = "pdf";
+		requestObject.runThenRender = true;
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(requestObject);
 		logger.info("testRunNoParams request = " + requestString);
 		this.mockMvc.perform(
 			post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
@@ -109,16 +163,43 @@ public class JobControllerTest {
 
 	@Test
 	public void testRunRowCount() throws Exception {
-		final String requestString = getResourceAsString("unit-test-request-rowcount.json");
+		final TestRunRequestParams requestObject = new TestRunRequestParams();
+		final URL designFileURL = this.getClass().getResource("test.rptdesign");
+		requestObject.designFile = designFileURL.getPath();
+		requestObject.format = "pdf";
+		requestObject.runThenRender = true;
+		requestObject.parameters = new HashMap<>();
+		requestObject.parameters.put("rowCount", "5");
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(requestObject);
 		logger.info("testRunRowCount request = " + requestString);
 		this.mockMvc.perform(
 			post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
 				MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
+	static class TestRunRequestSubmit extends TestRunRequestNoparams {
+		String nameForHumans;
+
+		public String getNameForHumans() {
+			return nameForHumans;
+		}
+
+		public void setNameForHumans(final String nameForHumans) {
+			this.nameForHumans = nameForHumans;
+		}
+	}
+
 	@Test
 	public void testSubmit() throws Exception {
-		final String requestString = getResourceAsString("unit-test-submit-request.json");
+		final TestRunRequestSubmit requestObject = new TestRunRequestSubmit();
+		final URL designFileURL = this.getClass().getResource("test.rptdesign");
+		requestObject.designFile = designFileURL.getPath();
+		requestObject.format = "PDF";
+		requestObject.runThenRender = true;
+		requestObject.nameForHumans = "Test Report";
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(requestObject);
 		logger.info("testSubmit request = " + requestString);
 		final MvcResult result = this.mockMvc.perform(
 			post("/submit").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
@@ -171,7 +252,6 @@ public class JobControllerTest {
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));
 		final String jsonString = response.getContentAsString();
 		logger.info("testSubmit response = " + jsonString);
-		final ObjectMapper mapper = new ObjectMapper();
 		@SuppressWarnings("unchecked")
 		final Map<String, String> submitResponse = mapper.readValue(jsonString, Map.class);
 		final String jobId = submitResponse.get("uuid");
@@ -184,8 +264,15 @@ public class JobControllerTest {
 	}
 
 	public String submit() throws Exception {
-		final String requestString = getResourceAsString("unit-test-submit-request.json");
-		logger.info("testStatus request = " + requestString);
+		final TestRunRequestSubmit requestObject = new TestRunRequestSubmit();
+		final URL designFileURL = this.getClass().getResource("test.rptdesign");
+		requestObject.designFile = designFileURL.getPath();
+		requestObject.format = "PDF";
+		requestObject.runThenRender = true;
+		requestObject.nameForHumans = "Test Report";
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(requestObject);
+		logger.info("submit request = " + requestString);
 		final MvcResult result = this.mockMvc.perform(
 			post("/submit").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
 				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
@@ -193,7 +280,6 @@ public class JobControllerTest {
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));
 		final String jsonString = response.getContentAsString();
 		logger.info("testStatus submit response = " + jsonString);
-		final ObjectMapper mapper = new ObjectMapper();
 		@SuppressWarnings("unchecked")
 		final Map<String, String> submitResponse = mapper.readValue(jsonString, Map.class);
 		final String jobId = submitResponse.get("uuid");
@@ -206,13 +292,26 @@ public class JobControllerTest {
 		return jobId;
 	}
 
-	private Map<String, Object> testStatus(final String op) throws Exception {
+	private Map<String, Object> testStatus(final String op, final Long timeout) throws Exception {
 		final String jobId = submit();
-		final MvcResult statusResult = this.mockMvc.perform(get("/" + op + "/{uuid}", jobId).accept(
-			MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
-				"" + op,
-				pathParameters(
-					parameterWithName("uuid").description("The identifier returned from submit")),
+		final MockHttpServletRequestBuilder builder;
+		String fullOp = "/" + op + "/{uuid}";
+		if (timeout == null) {
+			builder = get(fullOp, jobId);
+		}
+		else {
+			fullOp += "/{timeout}";
+			builder = get(fullOp, jobId, timeout.longValue());
+		}
+		final ParameterDescriptor[] params = new ParameterDescriptor[timeout == null ? 1 : 2];
+		params[0] = parameterWithName("uuid").description("The identifier returned from submit");
+		if (timeout != null) {
+			params[1] = parameterWithName("timeout").description(
+				"The maximum number of milliseconds to wait (optional)").optional();
+		}
+		final MvcResult statusResult = this.mockMvc.perform(
+			builder.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
+				op, pathParameters(params),
 				responseFields(
 					subsectionWithPath("reportRun").description("The report run request"),
 					subsectionWithPath("email").description("The email request"),
@@ -243,12 +342,12 @@ public class JobControllerTest {
 
 	@Test
 	public void testStatus() throws Exception {
-		testStatus("status");
+		testStatus("status", null);
 	}
 
 	@Test
 	public void testWaitFor() throws Exception {
-		final Map<String, Object> responseMap = testStatus("waitfor");
+		final Map<String, Object> responseMap = testStatus("waitfor", 5000L);
 		@SuppressWarnings("unchecked")
 		final List<Object> reportErrors = (List<Object>) responseMap.get("errors");
 		Assert.assertNotNull("reportErrors should not be null", reportErrors);
@@ -284,24 +383,5 @@ public class JobControllerTest {
 							"The identifier returned from submit")),
 						responseHeaders(headerWithName("Content-Type").description(
 							"The content type of the payload")))).andReturn();
-	}
-
-	private static String getResourceAsString(final String name) throws IOException {
-		final URL requestURL = JobControllerTest.class.getResource(name);
-		if (requestURL == null) {
-			Assert.fail(name + " not found in classpath");
-		}
-		// get the resource into a string
-		final BufferedInputStream bis = (BufferedInputStream) requestURL.getContent();
-		final Reader r = new InputStreamReader(bis);
-		final BufferedReader br = new BufferedReader(r);
-		final StringBuilder sb = new StringBuilder();
-		final char[] buffer = new char[0x1000];
-		int charsRead = br.read(buffer);
-		while (charsRead >= 0) {
-			sb.append(buffer, 0, charsRead);
-			charsRead = br.read(buffer);
-		}
-		return sb.toString();
 	}
 }

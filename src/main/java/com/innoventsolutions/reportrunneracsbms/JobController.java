@@ -31,11 +31,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.innoventsolutions.birt.runner.BadRequestException;
@@ -49,9 +49,10 @@ public class JobController {
 	@Autowired
 	private RunnerService runner;
 
-	@RequestMapping("/welcome")
-	public String loginMessage() {
-		return "welcome";
+	@GetMapping("/welcome")
+	public String loginMessage(final Model model) {
+		model.addAttribute("message", "test");
+		return "welcome"; // view
 	}
 
 	@GetMapping("/get/{uuid}")
@@ -122,6 +123,21 @@ public class JobController {
 		synchronized (status) {
 			try {
 				status.wait();
+			}
+			catch (final InterruptedException e) {
+			}
+		}
+		return status;
+	}
+
+	@GetMapping("/waitfor/{uuid}/{timeout}")
+	@ResponseBody
+	public ReportRunStatus waitFor(@PathVariable("uuid") final String uuid,
+			@PathVariable("timeout") final long timeout) {
+		final ReportRunStatus status = runner.getStatus(UUID.fromString(uuid));
+		synchronized (status) {
+			try {
+				status.wait(timeout);
 			}
 			catch (final InterruptedException e) {
 			}
