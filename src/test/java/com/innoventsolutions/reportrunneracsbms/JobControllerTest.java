@@ -18,8 +18,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,12 +39,10 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -61,6 +57,7 @@ public class JobControllerTest {
 	private static final Object RUN_THEN_RENDER_DESCRIPTION = "Whether to build with separate run and render phases";
 	private static final Object PARAMETERS_DESCRIPTION = "The parameters in the form {\"name\": value, ...}, where value may be a string, number or boolean for single value parameters or an array of string, number, or boolean for multi-valued parameters.";
 	private static final Object TOKEN_DESCRIPTION = "The security token for this request.  This is required only if database security has been enabled in the configuration.";
+	private static final Object JOB_ID_DESCRIPTION = "The job ID";
 	Logger logger = LoggerFactory.getLogger(JobControllerTest.class);
 	@Rule
 	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation(
@@ -292,62 +289,98 @@ public class JobControllerTest {
 		return jobId;
 	}
 
-	private Map<String, Object> testStatus(final String op, final Long timeout) throws Exception {
-		final String jobId = submit();
-		final MockHttpServletRequestBuilder builder;
-		String fullOp = "/" + op + "/{uuid}";
-		if (timeout == null) {
-			builder = get(fullOp, jobId);
-		}
-		else {
-			fullOp += "/{timeout}";
-			builder = get(fullOp, jobId, timeout.longValue());
-		}
-		final ParameterDescriptor[] params = new ParameterDescriptor[timeout == null ? 1 : 2];
-		params[0] = parameterWithName("uuid").description("The identifier returned from submit");
-		if (timeout != null) {
-			params[1] = parameterWithName("timeout").description(
-				"The maximum number of milliseconds to wait (optional)").optional();
-		}
+	@Test
+	public void testStatus() throws Exception {
+		final StatusRequest request = new StatusRequest();
+		request.setSecurityToken(null);
+		request.setJobId(submit());
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(request);
+		logger.info("status request = " + requestString);
 		final MvcResult statusResult = this.mockMvc.perform(
-			builder.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
-				op, pathParameters(params),
-				responseFields(
-					subsectionWithPath("reportRun").description("The report run request"),
-					subsectionWithPath("email").description("The email request"),
-					fieldWithPath("startTime").description(
-						"The time when the report generation started"),
-					fieldWithPath("finishTime").description(
-						"The time when report generation and email finished or null if not finished"),
-					fieldWithPath("reportFinishTime").description(
-						"The time when the report generation finished or null if it is still running"),
-					fieldWithPath("duration").description(
-						"The number of milliseconds it took to generate the report"),
-					fieldWithPath("finished").description(
-						"Whether the report generation is finished"),
-					subsectionWithPath("errors").description(
-						"List of exceptions that were encountered during report generation"),
-					subsectionWithPath("emailErrors").description(
-						"List of exceptions that were encountered during sending email")))).andReturn();
+			get("/status").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
+				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
+					"status",
+					requestFields(fieldWithPath("jobId").description(JOB_ID_DESCRIPTION),
+						fieldWithPath("securityToken").type(
+							JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION)),
+					responseFields(
+						subsectionWithPath("reportRun").description("The report run request"),
+						subsectionWithPath("email").description("The email request"),
+						fieldWithPath("startTime").description(
+							"The time when the report generation started"),
+						fieldWithPath("finishTime").description(
+							"The time when report generation and email finished or null if not finished"),
+						fieldWithPath("reportFinishTime").description(
+							"The time when the report generation finished or null if it is still running"),
+						fieldWithPath("duration").description(
+							"The number of milliseconds it took to generate the report"),
+						fieldWithPath("finished").description(
+							"Whether the report generation is finished"),
+						subsectionWithPath("errors").description(
+							"List of exceptions that were encountered during report generation"),
+						subsectionWithPath("emailErrors").description(
+							"List of exceptions that were encountered during sending email")))).andReturn();
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
 		logger.info("testStatus response = " + jsonString2);
-		final ObjectMapper mapper = new ObjectMapper();
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> responseMap = mapper.readValue(jsonString2, Map.class);
 		logger.info("responseMap = " + responseMap);
-		return responseMap;
-	}
-
-	@Test
-	public void testStatus() throws Exception {
-		testStatus("status", null);
+		@SuppressWarnings("unchecked")
+		final List<Object> reportErrors = (List<Object>) responseMap.get("errors");
+		Assert.assertNotNull("reportErrors should not be null", reportErrors);
+		Assert.assertTrue("reportErrors should be empty", reportErrors.isEmpty());
+		@SuppressWarnings("unchecked")
+		final Map<String, Object> emailErrors = (Map<String, Object>) responseMap.get(
+			"emailErrors");
+		Assert.assertNotNull("emailErrors should not be null", emailErrors);
+		Assert.assertTrue("emailErrors should be empty", emailErrors.isEmpty());
 	}
 
 	@Test
 	public void testWaitFor() throws Exception {
-		final Map<String, Object> responseMap = testStatus("waitfor", 5000L);
+		final WaitforRequest request = new WaitforRequest();
+		request.setSecurityToken(null);
+		request.setJobId(submit());
+		request.setTimeout(Long.valueOf(5000L));
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(request);
+		logger.info("status request = " + requestString);
+		final MvcResult statusResult = this.mockMvc.perform(
+			get("/waitfor").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
+				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
+					"waitfor",
+					requestFields(fieldWithPath("jobId").description(JOB_ID_DESCRIPTION),
+						fieldWithPath("securityToken").type(
+							JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION),
+						fieldWithPath("timeout").description(
+							"The maximum number of milliseconds to wait")),
+					responseFields(
+						subsectionWithPath("reportRun").description("The report run request"),
+						subsectionWithPath("email").description("The email request"),
+						fieldWithPath("startTime").description(
+							"The time when the report generation started"),
+						fieldWithPath("finishTime").description(
+							"The time when report generation and email finished or null if not finished"),
+						fieldWithPath("reportFinishTime").description(
+							"The time when the report generation finished or null if it is still running"),
+						fieldWithPath("duration").description(
+							"The number of milliseconds it took to generate the report"),
+						fieldWithPath("finished").description(
+							"Whether the report generation is finished"),
+						subsectionWithPath("errors").description(
+							"List of exceptions that were encountered during report generation"),
+						subsectionWithPath("emailErrors").description(
+							"List of exceptions that were encountered during sending email")))).andReturn();
+		final MockHttpServletResponse response2 = statusResult.getResponse();
+		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
+		final String jsonString2 = response2.getContentAsString();
+		logger.info("testStatus response = " + jsonString2);
+		@SuppressWarnings("unchecked")
+		final Map<String, Object> responseMap = mapper.readValue(jsonString2, Map.class);
+		logger.info("responseMap = " + responseMap);
 		@SuppressWarnings("unchecked")
 		final List<Object> reportErrors = (List<Object>) responseMap.get("errors");
 		Assert.assertNotNull("reportErrors should not be null", reportErrors);
@@ -361,26 +394,38 @@ public class JobControllerTest {
 
 	@Test
 	public void testGet() throws Exception {
-		final String jobId = submit();
+		final StatusRequest request = new StatusRequest();
+		request.setSecurityToken(null);
+		request.setJobId(submit());
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(request);
+		logger.info("get request = " + requestString);
 		this.mockMvc.perform(
-			get("/get/{uuid}", jobId).accept(MediaType.APPLICATION_JSON)).andExpect(
-				status().isOk()).andDo(
+			get("/get").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
+				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
 					document("get",
-						pathParameters(parameterWithName("uuid").description(
-							"The identifier returned from submit")),
+						requestFields(fieldWithPath("jobId").description(JOB_ID_DESCRIPTION),
+							fieldWithPath("securityToken").type(
+								JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION)),
 						responseHeaders(headerWithName("Content-Type").description(
 							"The content type of the payload")))).andReturn();
 	}
 
 	@Test
 	public void testDownload() throws Exception {
-		final String jobId = submit();
+		final StatusRequest request = new StatusRequest();
+		request.setSecurityToken(null);
+		request.setJobId(submit());
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(request);
+		logger.info("get request = " + requestString);
 		this.mockMvc.perform(
-			get("/download/{uuid}", jobId).accept(MediaType.APPLICATION_JSON)).andExpect(
-				status().isOk()).andDo(
+			get("/download").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
+				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
 					document("download",
-						pathParameters(parameterWithName("uuid").description(
-							"The identifier returned from submit")),
+						requestFields(fieldWithPath("jobId").description(JOB_ID_DESCRIPTION),
+							fieldWithPath("securityToken").type(
+								JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION)),
 						responseHeaders(headerWithName("Content-Type").description(
 							"The content type of the payload")))).andReturn();
 	}

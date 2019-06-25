@@ -458,7 +458,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_get_status">GET /status</a>
 <ul class="sectlevel2">
-<li><a href="#_request_path_parameters">Request path parameters:</a></li>
+<li><a href="#_request_fields_3">Request fields:</a></li>
 <li><a href="#_response_fields_2">Response fields:</a></li>
 <li><a href="#_response_codes_3">Response codes:</a></li>
 <li><a href="#_examples_3">Examples:</a>
@@ -471,7 +471,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_get_waitfor">GET /waitfor</a>
 <ul class="sectlevel2">
-<li><a href="#_request_path_parameters_2">Request path parameters:</a></li>
+<li><a href="#_request_fields_4">Request fields:</a></li>
 <li><a href="#_response_fields_3">Response fields:</a></li>
 <li><a href="#_response_codes_4">Response codes:</a></li>
 <li><a href="#_examples_4">Examples:</a>
@@ -484,7 +484,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_get_get">GET /get</a>
 <ul class="sectlevel2">
-<li><a href="#_request_path_parameters_3">Request path parameters:</a></li>
+<li><a href="#_request_fields_5">Request fields:</a></li>
 <li><a href="#_response_codes_5">Response codes:</a></li>
 <li><a href="#_examples_5">Examples:</a>
 <ul class="sectlevel3">
@@ -496,7 +496,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_get_download">GET /download</a>
 <ul class="sectlevel2">
-<li><a href="#_request_path_parameters_4">Request path parameters:</a></li>
+<li><a href="#_request_fields_6">Request fields:</a></li>
 <li><a href="#_response_codes_6">Response codes:</a></li>
 <li><a href="#_examples_6">Examples:</a>
 <ul class="sectlevel3">
@@ -898,23 +898,30 @@ The UUID of the job, which is returned by the /submit request, must be supplied 
 The response content type is application/json.</p>
 </div>
 <div class="sect2">
-<h3 id="_request_path_parameters"><a class="link" href="#_request_path_parameters">Request path parameters:</a></h3>
+<h3 id="_request_fields_3"><a class="link" href="#_request_fields_3">Request fields:</a></h3>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 1. /status/{uuid}</caption>
 <colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>uuid</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The identifier returned from submit</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jobId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The job ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>securityToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The security token for this request.  This is required only if database security has been enabled in the configuration.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1028,8 +1035,10 @@ The response content type is application/json.</p>
 <h4 id="_curl_3"><a class="link" href="#_curl_3">Curl:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status/c166c53a-d758-493f-93ff-b5a6afc95a4b' -i -X GET \
-    -H 'Accept: application/json'</code></pre>
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status' -i -X GET \
+    -H 'Accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{"jobId":"d8af1157-d4ae-4ab7-b9c6-7da18b4948ef","securityToken":null}'</code></pre>
 </div>
 </div>
 </div>
@@ -1037,9 +1046,13 @@ The response content type is application/json.</p>
 <h4 id="_http_request_3"><a class="link" href="#_http_request_3">HTTP request:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status/c166c53a-d758-493f-93ff-b5a6afc95a4b HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status HTTP/1.1
 Accept: application/json
-Host: localhost:8080</code></pre>
+Content-Type: application/json
+Host: localhost:8080
+Content-Length: 69
+
+{"jobId":"d8af1157-d4ae-4ab7-b9c6-7da18b4948ef","securityToken":null}</code></pre>
 </div>
 </div>
 </div>
@@ -1055,27 +1068,35 @@ The UUID of the job, which is returned by the /submit request, must be supplied 
 The response content type is application/json.</p>
 </div>
 <div class="sect2">
-<h3 id="_request_path_parameters_2"><a class="link" href="#_request_path_parameters_2">Request path parameters:</a></h3>
+<h3 id="_request_fields_4"><a class="link" href="#_request_fields_4">Request fields:</a></h3>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 2. /waitfor/{uuid}/{timeout}</caption>
 <colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>uuid</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The identifier returned from submit</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jobId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The job ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>securityToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The security token for this request.  This is required only if database security has been enabled in the configuration.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>timeout</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum number of milliseconds to wait (optional)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum number of milliseconds to wait</p></td>
 </tr>
 </tbody>
 </table>
@@ -1189,8 +1210,10 @@ The response content type is application/json.</p>
 <h4 id="_curl_4"><a class="link" href="#_curl_4">Curl:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/waitfor/59ed9241-b59b-43a5-ba6c-8fa122b436cc/5000' -i -X GET \
-    -H 'Accept: application/json'</code></pre>
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/waitfor' -i -X GET \
+    -H 'Accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{"jobId":"91694ba1-c42e-4b80-8dba-aa27b3e5859b","securityToken":null,"timeout":5000}'</code></pre>
 </div>
 </div>
 </div>
@@ -1198,9 +1221,13 @@ The response content type is application/json.</p>
 <h4 id="_http_request_4"><a class="link" href="#_http_request_4">HTTP request:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /waitfor/59ed9241-b59b-43a5-ba6c-8fa122b436cc/5000 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /waitfor HTTP/1.1
 Accept: application/json
-Host: localhost:8080</code></pre>
+Content-Length: 84
+Content-Type: application/json
+Host: localhost:8080
+
+{"jobId":"91694ba1-c42e-4b80-8dba-aa27b3e5859b","securityToken":null,"timeout":5000}</code></pre>
 </div>
 </div>
 </div>
@@ -1216,23 +1243,30 @@ The UUID of the job, which is returned by the /submit request, must be supplied 
 The response content type will correspond to the requested format.</p>
 </div>
 <div class="sect2">
-<h3 id="_request_path_parameters_3"><a class="link" href="#_request_path_parameters_3">Request path parameters:</a></h3>
+<h3 id="_request_fields_5"><a class="link" href="#_request_fields_5">Request fields:</a></h3>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 3. /get/{uuid}</caption>
 <colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>uuid</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The identifier returned from submit</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jobId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The job ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>securityToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The security token for this request.  This is required only if database security has been enabled in the configuration.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1287,8 +1321,10 @@ The response content type will correspond to the requested format.</p>
 <h4 id="_curl_5"><a class="link" href="#_curl_5">Curl:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/get/86ca9b66-3de9-4421-a0ad-304dc78309ad' -i -X GET \
-    -H 'Accept: application/json'</code></pre>
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/get' -i -X GET \
+    -H 'Accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{"jobId":"54605170-e03a-48cf-bc7f-d3f5b729fe7f","securityToken":null}'</code></pre>
 </div>
 </div>
 </div>
@@ -1296,9 +1332,13 @@ The response content type will correspond to the requested format.</p>
 <h4 id="_http_request_5"><a class="link" href="#_http_request_5">HTTP request:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /get/86ca9b66-3de9-4421-a0ad-304dc78309ad HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /get HTTP/1.1
 Accept: application/json
-Host: localhost:8080</code></pre>
+Content-Type: application/json
+Host: localhost:8080
+Content-Length: 69
+
+{"jobId":"54605170-e03a-48cf-bc7f-d3f5b729fe7f","securityToken":null}</code></pre>
 </div>
 </div>
 </div>
@@ -1314,23 +1354,30 @@ The UUID of the job, which is returned by the /submit request, must be supplied 
 The response content type will correspond to the requested format.</p>
 </div>
 <div class="sect2">
-<h3 id="_request_path_parameters_4"><a class="link" href="#_request_path_parameters_4">Request path parameters:</a></h3>
+<h3 id="_request_fields_6"><a class="link" href="#_request_fields_6">Request fields:</a></h3>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 4. /download/{uuid}</caption>
 <colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
 <th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>uuid</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The identifier returned from submit</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jobId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The job ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>securityToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The security token for this request.  This is required only if database security has been enabled in the configuration.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1385,8 +1432,10 @@ The response content type will correspond to the requested format.</p>
 <h4 id="_curl_6"><a class="link" href="#_curl_6">Curl:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/download/a170b90d-66e0-475c-b7c8-efe7e3143c99' -i -X GET \
-    -H 'Accept: application/json'</code></pre>
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/download' -i -X GET \
+    -H 'Accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{"jobId":"2b9547ba-ecc0-4d5d-bf7c-ecce33466c20","securityToken":null}'</code></pre>
 </div>
 </div>
 </div>
@@ -1394,9 +1443,13 @@ The response content type will correspond to the requested format.</p>
 <h4 id="_http_request_6"><a class="link" href="#_http_request_6">HTTP request:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /download/a170b90d-66e0-475c-b7c8-efe7e3143c99 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /download HTTP/1.1
 Accept: application/json
-Host: localhost:8080</code></pre>
+Content-Type: application/json
+Host: localhost:8080
+Content-Length: 69
+
+{"jobId":"2b9547ba-ecc0-4d5d-bf7c-ecce33466c20","securityToken":null}</code></pre>
 </div>
 </div>
 </div>
@@ -1797,7 +1850,7 @@ then change directory to the target folder under the root folder (the folder con
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-06-22 09:04:00 MDT
+Last updated 2019-06-25 15:56:34 MDT
 </div>
 </div>
 </body>

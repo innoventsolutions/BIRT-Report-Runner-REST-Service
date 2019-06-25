@@ -12,6 +12,7 @@ package com.innoventsolutions.reportrunneracsbms;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +35,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -55,26 +56,48 @@ public class JobController {
 		return "welcome"; // view
 	}
 
-	@GetMapping("/get/{uuid}")
+	@Autowired
+	ConfigService configService;
+	@Autowired
+	AuthorizationService authorizationService;
+
+	@GetMapping("/get")
 	@ResponseBody
-	public ResponseEntity<Resource> getReport(@PathVariable("uuid") final String uuidString) {
-		return getReport(uuidString, false);
+	public ResponseEntity<Resource> getReport(@RequestBody final StatusRequest request) {
+		return getReport(request, false);
 	}
 
-	@GetMapping("/download/{uuid}")
+	@GetMapping("/download")
 	@ResponseBody
-	public ResponseEntity<Resource> downloadReport(@PathVariable("uuid") final String uuidString) {
-		return getReport(uuidString, true);
+	public ResponseEntity<Resource> downloadReport(@RequestBody final StatusRequest request) {
+		return getReport(request, true);
 	}
 
-	public ResponseEntity<Resource> getReport(final String uuidString, final boolean isAttachment) {
+	public ResponseEntity<Resource> getReport(final StatusRequest request,
+			final boolean isAttachment) {
 		try {
-			logger.info("getReport " + uuidString + " " + isAttachment);
+			logger.info("getReport " + request + " " + isAttachment);
+			if (configService.unsecuredOperationPattern != null) {
+				final Matcher matcher = configService.unsecuredOperationPattern.matcher(
+					isAttachment ? "download" : "get");
+				if (!matcher.matches()) {
+					final String securityToken = request.getSecurityToken();
+					try {
+						authorizationService.authorize(securityToken, null);
+					}
+					catch (final BadRequestException e) {
+						return new ResponseEntity<Resource>(e.getCode());
+					}
+					catch (final SQLException e) {
+						return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
+					}
+				}
+			}
 			final File outputDir = runner.getOutputDirectory();
 			logger.info("outputDir = " + outputDir);
 			UUID uuid;
 			try {
-				uuid = UUID.fromString(uuidString);
+				uuid = UUID.fromString(request.getJobId());
 			}
 			catch (final IllegalArgumentException e) {
 				return getErrorResponse(HttpStatus.NOT_ACCEPTABLE, "Invalid or missing UUID");
@@ -110,39 +133,75 @@ public class JobController {
 		}
 	}
 
-	@GetMapping("/status/{uuid}")
+	@GetMapping("/status")
 	@ResponseBody
-	public ReportRunStatus getStatus(@PathVariable("uuid") final String uuid) {
-		return runner.getStatus(UUID.fromString(uuid));
+	public ResponseEntity<ReportRunStatus> getStatus(@RequestBody final StatusRequest request) {
+		if (configService.unsecuredOperationPattern != null) {
+			final Matcher matcher = configService.unsecuredOperationPattern.matcher("status");
+			if (!matcher.matches()) {
+				final String securityToken = request.getSecurityToken();
+				try {
+					authorizationService.authorize(securityToken, null);
+				}
+				catch (final BadRequestException e) {
+					return new ResponseEntity<ReportRunStatus>(e.getCode());
+				}
+				catch (final SQLException e) {
+					return new ResponseEntity<ReportRunStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}
+		}
+		UUID uuid;
+		try {
+			uuid = UUID.fromString(request.getJobId());
+		}
+		catch (final IllegalArgumentException e) {
+			return new ResponseEntity<ReportRunStatus>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		final ReportRunStatus status = runner.getStatus(uuid);
+		return new ResponseEntity<ReportRunStatus>(status, HttpStatus.OK);
 	}
 
-	@GetMapping("/waitfor/{uuid}")
+	@GetMapping("/waitfor")
 	@ResponseBody
-	public ReportRunStatus waitFor(@PathVariable("uuid") final String uuid) {
-		final ReportRunStatus status = runner.getStatus(UUID.fromString(uuid));
+	public ResponseEntity<ReportRunStatus> waitFor(@RequestBody final WaitforRequest request) {
+		if (configService.unsecuredOperationPattern != null) {
+			final Matcher matcher = configService.unsecuredOperationPattern.matcher("waitfor");
+			if (!matcher.matches()) {
+				final String securityToken = request.getSecurityToken();
+				try {
+					authorizationService.authorize(securityToken, null);
+				}
+				catch (final BadRequestException e) {
+					return new ResponseEntity<ReportRunStatus>(e.getCode());
+				}
+				catch (final SQLException e) {
+					return new ResponseEntity<ReportRunStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}
+		}
+		UUID uuid;
+		try {
+			uuid = UUID.fromString(request.getJobId());
+		}
+		catch (final IllegalArgumentException e) {
+			return new ResponseEntity<ReportRunStatus>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		final ReportRunStatus status = runner.getStatus(uuid);
 		synchronized (status) {
+			final Long timeout = request.getTimeout();
 			try {
-				status.wait();
+				if (timeout != null) {
+					status.wait(timeout.longValue());
+				}
+				else {
+					status.wait();
+				}
 			}
 			catch (final InterruptedException e) {
 			}
 		}
-		return status;
-	}
-
-	@GetMapping("/waitfor/{uuid}/{timeout}")
-	@ResponseBody
-	public ReportRunStatus waitFor(@PathVariable("uuid") final String uuid,
-			@PathVariable("timeout") final long timeout) {
-		final ReportRunStatus status = runner.getStatus(UUID.fromString(uuid));
-		synchronized (status) {
-			try {
-				status.wait(timeout);
-			}
-			catch (final InterruptedException e) {
-			}
-		}
-		return status;
+		return new ResponseEntity<ReportRunStatus>(status, HttpStatus.OK);
 	}
 
 	@PostMapping("/submit")

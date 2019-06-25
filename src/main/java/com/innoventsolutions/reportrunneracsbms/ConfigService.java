@@ -90,6 +90,8 @@ public class ConfigService {
 		public boolean isActuate = false;
 		@Value("${birt.runner.unsecuredDesignFilePattern:.*}")
 		public Pattern unsecuredDesignFilePattern = null;
+		@Value("${birt.runner.unsecuredOperationPattern:.*}")
+		public Pattern unsecuredOperationPattern = null;
 
 		public void applyDefaults() {
 			if (loggingPropertiesFile.isDirectory()) {
@@ -148,6 +150,7 @@ public class ConfigService {
 	public final int threadCount;
 	public final boolean isActuate;
 	public final Pattern unsecuredDesignFilePattern;
+	public final Pattern unsecuredOperationPattern;
 
 	public ConfigService(@Autowired final Editor editor) {
 		editor.applyDefaults();
@@ -184,6 +187,7 @@ public class ConfigService {
 		this.threadCount = editor.threadCount;
 		this.isActuate = editor.isActuate;
 		this.unsecuredDesignFilePattern = editor.unsecuredDesignFilePattern;
+		this.unsecuredOperationPattern = editor.unsecuredOperationPattern;
 		logger.info("outputDirectory = " + outputDirectory.getAbsolutePath());
 		logger.info("workspace = " + workspace.getAbsolutePath());
 		logger.info("birtRuntimeHome = "
@@ -219,6 +223,7 @@ public class ConfigService {
 		logger.info("threadCount = " + threadCount);
 		logger.info("isActuate = " + isActuate);
 		logger.info("unsecuredDesignFilePattern = " + unsecuredDesignFilePattern);
+		logger.info("unsecuredOperationPattern = " + unsecuredOperationPattern);
 	}
 
 	@Override

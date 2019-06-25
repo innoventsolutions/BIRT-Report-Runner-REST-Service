@@ -128,9 +128,9 @@ This request is used to get the status of a running or finished job.
 The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
 The response content type is application/json.
 
-=== Request path parameters:
+=== Request fields:
 
-include::{snippets}/status/path-parameters.adoc[]
+include::{snippets}/status/request-fields.adoc[]
 
 === Response fields:
 
@@ -175,9 +175,9 @@ This request is used to first wait for a running job to finish if necessary and 
 The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
 The response content type is application/json.
 
-=== Request path parameters:
+=== Request fields:
 
-include::{snippets}/waitfor/path-parameters.adoc[]
+include::{snippets}/waitfor/request-fields.adoc[]
 
 === Response fields:
 
@@ -222,9 +222,9 @@ This request is used to retrieve the output of a report that was run asynchronou
 The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
 The response content type will correspond to the requested format.
 
-=== Request path parameters:
+=== Request fields:
 
-include::{snippets}/get/path-parameters.adoc[]
+include::{snippets}/get/request-fields.adoc[]
 
 === Response codes:
 
@@ -269,9 +269,9 @@ This request is used to retrieve the output of a report that was run asynchronou
 The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
 The response content type will correspond to the requested format.
 
-=== Request path parameters:
+=== Request fields:
 
-include::{snippets}/download/path-parameters.adoc[]
+include::{snippets}/download/request-fields.adoc[]
 
 === Response codes:
 
