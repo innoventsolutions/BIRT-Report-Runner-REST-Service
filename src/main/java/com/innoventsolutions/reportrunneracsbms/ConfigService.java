@@ -88,9 +88,9 @@ public class ConfigService {
 		public int threadCount = 1;
 		@Value("${birt.runner.isActuate:false}")
 		public boolean isActuate = false;
-		@Value("${birt.runner.unsecuredDesignFilePattern:.*}")
+		@Value("${birt.runner.unsecuredDesignFilePattern:}")
 		public Pattern unsecuredDesignFilePattern = null;
-		@Value("${birt.runner.unsecuredOperationPattern:.*}")
+		@Value("${birt.runner.unsecuredOperationPattern:}")
 		public Pattern unsecuredOperationPattern = null;
 
 		public void applyDefaults() {
