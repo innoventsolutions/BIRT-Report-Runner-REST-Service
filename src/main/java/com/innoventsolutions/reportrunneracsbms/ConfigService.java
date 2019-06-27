@@ -40,7 +40,7 @@ public class ConfigService {
 		public String baseImageURL = null;
 		@Value("${birt.runner.logging.properties:logging.properties}")
 		public File loggingPropertiesFile = null;
-		@Value("${birt.runner.logging.dir:${user.home}reportRunnerTest/log}")
+		@Value("${birt.runner.logging.dir:${user.home}/reportRunnerTest/log}")
 		public File loggingDir = null;
 		@Value("${birt.runner.db.driver:}")
 		public String dbDriver = null;
