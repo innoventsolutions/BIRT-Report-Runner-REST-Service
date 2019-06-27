@@ -6,7 +6,6 @@ import java.sql.Timestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,10 +18,6 @@ import com.innoventsolutions.birt.runner.BadRequestException;
 public class AuthorizationService {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 	final ConfigService configService;
-	@Value("${birt.runner.db.query:}")
-	public String dbQuery = null;
-	@Value("${birt.runner.db.timeout:}")
-	public Long dbTimeout = null;
 
 	@Autowired
 	public AuthorizationService(final ConfigService configService) {
@@ -48,7 +43,8 @@ public class AuthorizationService {
 		}
 		Authorization authorization;
 		try {
-			authorization = jdbcTemplate.queryForObject(dbQuery, new Object[] { securityToken },
+			authorization = jdbcTemplate.queryForObject(configService.dbQuery,
+				new Object[] { securityToken },
 				(rs, rowNum) -> new Authorization(rs.getString(1), rs.getTimestamp(2)));
 		}
 		catch (final IncorrectResultSizeDataAccessException e) {
@@ -62,8 +58,8 @@ public class AuthorizationService {
 			&& !authorization.designFile.equals(requestDesignFile)) {
 			throw new BadRequestException(HttpStatus.UNAUTHORIZED, "Wrong design file");
 		}
-		if (authorization.submitTime != null
-			&& System.currentTimeMillis() - authorization.submitTime.getTime() > dbTimeout) {
+		if (authorization.submitTime != null && System.currentTimeMillis()
+			- authorization.submitTime.getTime() > configService.dbTimeout) {
 			throw new BadRequestException(HttpStatus.UNAUTHORIZED, "Security token has timed out");
 		}
 		// the security token was found, the design file matches, and we are inside

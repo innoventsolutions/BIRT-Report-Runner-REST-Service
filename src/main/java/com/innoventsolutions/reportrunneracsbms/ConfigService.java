@@ -52,7 +52,7 @@ public class ConfigService {
 		public String dbPassword = null;
 		@Value("${birt.runner.db.query:}")
 		public String dbQuery = null;
-		@Value("${birt.runner.db.timeout:}")
+		@Value("${birt.runner.db.timeout:5000}")
 		public Long dbTimeout = null;
 		@Value("${birt.runner.mail.username:}")
 		public String mailUsername = null;
