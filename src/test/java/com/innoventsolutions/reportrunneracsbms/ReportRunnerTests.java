@@ -15,25 +15,20 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.innoventsolutions.birt.runner.ReportRun;
 import com.innoventsolutions.birt.runner.ReportRunStatus;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ReportRunnerAcSbmsApplication.class)
+// @RunWith(SpringRunner.class)
+// @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ReportRunnerAcSbmsApplication.class)
 public class ReportRunnerTests {
 	Logger logger = LoggerFactory.getLogger(ReportRunnerTests.class);
-	@Autowired
+	// @Autowired
 	RunnerService runner;
 
-	@Test
+	// @Test
 	public void testOneAsync() {
 		final URL designURL = this.getClass().getResource("test.rptdesign");
 		final String designFile = designURL.getPath();
@@ -50,7 +45,7 @@ public class ReportRunnerTests {
 		runner.waitForAllReportsToFinish();
 	}
 
-	@Test
+	// @Test
 	public void testMultiAsync() {
 		final URL designURL = this.getClass().getResource("test.rptdesign");
 		final String designFile = designURL.getPath();

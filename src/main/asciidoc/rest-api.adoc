@@ -579,8 +579,7 @@ Single forward slashes can also be used.  On Windows they will be automatically 
 
 = Startup
 
-To start the server, first make sure you have defined the REPORT_RUNNER_PROPERTIES environment variable.
-then change directory to the target folder under the root folder (the folder containing pom.xml) and type:
+To start change directory to the target folder under the root folder (the folder containing pom.xml) and type:
 
 ------
 java -jar BIRT-Report-Runner-REST-Service-0.0.1-SNAPSHOT.jar
