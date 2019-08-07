@@ -9,14 +9,23 @@
  ******************************************************************************/
 package com.innoventsolutions.reportrunneracsbms;
 
-public class WaitforRequest extends StatusRequest {
-	private Long timeout;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-	public Long getTimeout() {
-		return timeout;
+import org.quartz.JobKey;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class SchedulerService {
+	private final Map<JobKey, UUID> running = new HashMap<>();
+
+	@Autowired
+	public SchedulerService() {
 	}
 
-	public void setTimeout(final Long timeout) {
-		this.timeout = timeout;
+	public void addRunning(final JobKey jobKey, final UUID uuid) {
+		this.running.put(jobKey, uuid);
 	}
 }

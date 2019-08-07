@@ -9,14 +9,14 @@
  ******************************************************************************/
 package com.innoventsolutions.reportrunneracsbms;
 
-public class WaitforRequest extends StatusRequest {
-	private Long timeout;
+public class BaseRequest {
+	private String securityToken;
 
-	public Long getTimeout() {
-		return timeout;
+	final public String getSecurityToken() {
+		return securityToken;
 	}
 
-	public void setTimeout(final Long timeout) {
-		this.timeout = timeout;
+	final public void setSecurityToken(final String securityToken) {
+		this.securityToken = securityToken;
 	}
 }
