@@ -165,6 +165,10 @@ public class RunnerService {
 		for (final String key : reportRun.parameters.keySet()) {
 			final Object paramValue = reportRun.parameters.get(key);
 			final IParameterDefnBase defn = pdTask.getParameterDefn(key);
+			if (defn == null) {
+				throw new BadRequestException(HttpStatus.BAD_REQUEST,
+						"Parameter " + key + " not found in report");
+			}
 			final ParameterHandle handle = (ParameterHandle) defn.getHandle();
 			final Object dataType = handle.getProperty("dataType");
 			logger.info(" param " + key + " = " + paramValue + ", type = " + dataType + " "
