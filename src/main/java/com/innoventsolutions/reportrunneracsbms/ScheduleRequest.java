@@ -11,6 +11,8 @@ package com.innoventsolutions.reportrunneracsbms;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 abstract public class ScheduleRequest extends BaseRequest {
 	private String group;
 	private String name;
@@ -41,10 +43,12 @@ abstract public class ScheduleRequest extends BaseRequest {
 		this.submit = submit;
 	}
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public Date getStartDate() {
 		return startDate;
 	}
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public void setStartDate(final Date startDate) {
 		this.startDate = startDate;
 	}

@@ -54,7 +54,7 @@ public class RunReportQuartzJob implements Job {
 					request.getMailFailureBody(), request.getMailAttachReport(),
 					request.getMailHtml());
 			final UUID jobUUID = runner.startReport(reportRun, email, false);
-			scheduler.addRunning(jobKey, jobUUID);
+			scheduler.addJob(jobKey, jobUUID);
 		}
 		catch (final Throwable e) {
 			throw new JobExecutionException("Failed to submit report", e, false);

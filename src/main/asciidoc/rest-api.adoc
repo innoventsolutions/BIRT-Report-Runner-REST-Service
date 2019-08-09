@@ -122,10 +122,194 @@ include::{snippets}/submit/curl-request.adoc[]
 
 include::{snippets}/submit/http-request.adoc[]
 
+== POST /schedule-cron
+
+This request is used to schedule a report to run at one or more times in the future using the cron syntax.
+
+=== Request fields:
+
+include::{snippets}/schedule-cron/request-fields.adoc[]
+
+=== Response fields:
+
+include::{snippets}/schedule-cron/response-fields.adoc[]
+
+=== Response codes:
+
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+401+`
+|`+Unauthorized+`
+|The report requires a security token, but the security token was missing from the request or was 
+not found in the database or the report design file specified in the database didn't match the
+request or the request was made beyond the timeout period.
+
+|`+404+`
+|`+Not Found+`
+|The design file specified in the request was not found.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
+include::{snippets}/schedule-cron/curl-request.adoc[]
+
+==== HTTP request:
+
+include::{snippets}/schedule-cron/http-request.adoc[]
+
+== POST /schedule-simple
+
+This request is used to schedule a report to run at one or more times in the future based on a start time, repeat interval and repeat count.
+
+=== Request fields:
+
+include::{snippets}/schedule-simple/request-fields.adoc[]
+
+=== Response fields:
+
+include::{snippets}/schedule-simple/response-fields.adoc[]
+
+=== Response codes:
+
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+401+`
+|`+Unauthorized+`
+|The report requires a security token, but the security token was missing from the request or was 
+not found in the database or the report design file specified in the database didn't match the
+request or the request was made beyond the timeout period.
+
+|`+404+`
+|`+Not Found+`
+|The design file specified in the request was not found.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
+include::{snippets}/schedule-cron/curl-request.adoc[]
+
+==== HTTP request:
+
+include::{snippets}/schedule-cron/http-request.adoc[]
+
+== GET /job
+
+This request is used to get the status of a scheduled job.
+The name and group of the job that was used when scheduling the job must be supplied.
+The response content type is application/json.
+
+=== Request fields:
+
+include::{snippets}/job/request-fields.adoc[]
+
+=== Response fields:
+
+include::{snippets}/job/response-fields.adoc[]
+
+=== Response codes:
+
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+404+`
+|`+Not Found+`
+|No schedule identified by the specified name and group was found.
+
+|`+406+`
+|`+Not Acceptable+`
+|The request was not properly formatted.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
+include::{snippets}/job/curl-request.adoc[]
+
+==== HTTP request:
+
+include::{snippets}/job/http-request.adoc[]
+
+== GET /jobs
+
+This request is used to get the status of all scheduled jobs.
+The response content type is application/json.
+
+=== Request fields:
+
+include::{snippets}/jobs/request-fields.adoc[]
+
+=== Response fields:
+
+The response is an object where each key is a schedule name/group and the value is the
+same as what is returned from /job.
+
+=== Response codes:
+
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+406+`
+|`+Not Acceptable+`
+|The request was not properly formatted.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
+include::{snippets}/jobs/curl-request.adoc[]
+
+==== HTTP request:
+
+include::{snippets}/jobs/http-request.adoc[]
+
 == GET /status
 
 This request is used to get the status of a running or finished job.
-The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
+The UUID of the job, which is returned by the /submit request, must be supplied.
 The response content type is application/json.
 
 === Request fields:
@@ -151,7 +335,7 @@ include::{snippets}/status/response-fields.adoc[]
 
 |`+406+`
 |`+Not Acceptable+`
-|The UUID was not found in the path or it was not properly formatted.
+|The request was not properly formatted.
 
 |`+500+`
 |`+Internal Server Error+`
@@ -169,10 +353,57 @@ include::{snippets}/status/curl-request.adoc[]
 
 include::{snippets}/status/http-request.adoc[]
 
+== GET /status-all
+
+This request is used to get the status of all running or finished jobs.
+The response content type is application/json.
+
+=== Request fields:
+
+include::{snippets}/status-all/request-fields.adoc[]
+
+=== Response fields:
+
+The response is an object where each key is a report run UUID and the value is the
+same as what is returned from /status.
+
+=== Response codes:
+
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+404+`
+|`+Not Found+`
+|No report identified by the specified UUID was found.
+
+|`+406+`
+|`+Not Acceptable+`
+|The request was not properly formatted.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
+include::{snippets}/status-all/curl-request.adoc[]
+
+==== HTTP request:
+
+include::{snippets}/status-all/http-request.adoc[]
+
 == GET /waitfor
 
 This request is used to first wait for a running job to finish if necessary and then get the status of the job.
-The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
+The UUID of the job, which is returned by the /submit request, must be supplied.
 The response content type is application/json.
 
 === Request fields:
@@ -198,7 +429,7 @@ include::{snippets}/waitfor/response-fields.adoc[]
 
 |`+406+`
 |`+Not Acceptable+`
-|The UUID was not found in the path or it was not properly formatted.
+|The request was not properly formatted.
 
 |`+500+`
 |`+Internal Server Error+`
@@ -219,7 +450,7 @@ include::{snippets}/waitfor/http-request.adoc[]
 == GET /get
 
 This request is used to retrieve the output of a report that was run asynchronously (using submit).
-The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
+The UUID of the job, which is returned by the /submit request, must be supplied.
 The response content type will correspond to the requested format.
 
 === Request fields:
@@ -245,7 +476,7 @@ include::{snippets}/get/request-fields.adoc[]
 
 |`+406+`
 |`+Not Acceptable+`
-|The UUID was not found in the path or it was not properly formatted.
+|The request was not properly formatted.
 
 |`+500+`
 |`+Internal Server Error+`
@@ -266,7 +497,7 @@ include::{snippets}/get/http-request.adoc[]
 == GET /download
 
 This request is used to retrieve the output of a report that was run asynchronously (using submit).  It's the same as /get except that the report output is treated as an attachment.
-The UUID of the job, which is returned by the /submit request, must be supplied as part of the URL.
+The UUID of the job, which is returned by the /submit request, must be supplied.
 The response content type will correspond to the requested format.
 
 === Request fields:
@@ -292,7 +523,7 @@ include::{snippets}/download/request-fields.adoc[]
 
 |`+406+`
 |`+Not Acceptable+`
-|The UUID was not found in the path or it was not properly formatted.
+|The request was not properly formatted.
 
 |`+500+`
 |`+Internal Server Error+`

@@ -9,7 +9,9 @@
  ******************************************************************************/
 package com.innoventsolutions.reportrunneracsbms;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,13 +21,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SchedulerService {
-	private final Map<JobKey, UUID> running = new HashMap<>();
+	private final Map<JobKey, List<UUID>> jobs = new HashMap<>();
 
 	@Autowired
 	public SchedulerService() {
 	}
 
-	public void addRunning(final JobKey jobKey, final UUID uuid) {
-		this.running.put(jobKey, uuid);
+	public void addJob(final JobKey jobKey, final UUID uuid) {
+		List<UUID> uuids = jobs.get(jobKey);
+		if (uuids == null) {
+			uuids = new ArrayList<>();
+			jobs.put(jobKey, uuids);
+		}
+		uuids.add(uuid);
+	}
+
+	public List<UUID> getJob(final JobKey jobKey) {
+		return jobs.get(jobKey);
 	}
 }

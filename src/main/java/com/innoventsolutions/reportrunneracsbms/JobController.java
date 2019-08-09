@@ -186,7 +186,7 @@ public class JobController {
 
 	@GetMapping("/status-all")
 	@ResponseBody
-	public ResponseEntity<Map<UUID, ReportRunStatus>> getAllStati(
+	public ResponseEntity<Map<UUID, ReportRunStatus>> getStatusAll(
 			@RequestBody final BaseRequest request) {
 		if (configService.unsecuredOperationPattern != null) {
 			final Matcher matcher = configService.unsecuredOperationPattern.matcher("status");
@@ -414,14 +414,18 @@ public class JobController {
 			final TriggerBuilder<Trigger> triggerBuilder = newTrigger().withIdentity(
 				request.getName() + "-trigger", request.getGroup());
 			final Date startDate = request.getStartDate();
+			logger.info("startDate = " + startDate);
 			if (startDate == null) {
 				triggerBuilder.startNow();
 			}
 			else {
 				triggerBuilder.startAt(startDate);
 			}
-			final CronScheduleBuilder scheduleBuilder = cronSchedule(request.getCronString());
+			final String cronString = request.getCronString();
+			logger.info("cronString = " + cronString);
+			final CronScheduleBuilder scheduleBuilder = cronSchedule(cronString);
 			final String misfireInstruction = request.getMisfireInstruction();
+			logger.info("misfireInstruction = " + misfireInstruction);
 			if ("ignore".equals(misfireInstruction)) {
 				scheduleBuilder.withMisfireHandlingInstructionIgnoreMisfires();
 			}
@@ -452,41 +456,112 @@ public class JobController {
 		}
 	}
 
-	@GetMapping("/schedules")
+	static class JobResponse {
+		List<Trigger> triggers;
+		Map<UUID, ReportRunStatus> runs;
+
+		public List<Trigger> getTriggers() {
+			return triggers;
+		}
+
+		public void setTriggers(final List<Trigger> triggers) {
+			this.triggers = triggers;
+		}
+
+		public Map<UUID, ReportRunStatus> getRuns() {
+			return runs;
+		}
+
+		public void setRuns(final Map<UUID, ReportRunStatus> runs) {
+			this.runs = runs;
+		}
+	}
+
+	@GetMapping("/job")
 	@ResponseBody
-	public ResponseEntity<Map<JobKey, List<Trigger>>> getSchedules(
-			@RequestBody final BaseRequest request) {
-		logger.info("schedules " + request);
+	public ResponseEntity<JobResponse> getJob(@RequestBody final GetJobRequest request) {
+		logger.info("job " + request);
 		if (configService.unsecuredOperationPattern != null) {
-			final Matcher matcher = configService.unsecuredOperationPattern.matcher("schedules");
+			final Matcher matcher = configService.unsecuredOperationPattern.matcher("job");
 			if (!matcher.matches()) {
 				final String securityToken = request.getSecurityToken();
 				try {
 					authorizationService.authorize(securityToken, null);
 				}
 				catch (final BadRequestException e) {
-					return new ResponseEntity<Map<JobKey, List<Trigger>>>(e.getCode());
+					return new ResponseEntity<JobResponse>(e.getCode());
 				}
 				catch (final SQLException e) {
-					return new ResponseEntity<Map<JobKey, List<Trigger>>>(
+					return new ResponseEntity<JobResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}
+		}
+		try {
+			final Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+			final JobKey jobKey = new JobKey(request.getName(), request.getGroup());
+			final JobResponse jobResponse = new JobResponse();
+			@SuppressWarnings("unchecked")
+			final List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
+			jobResponse.triggers = triggers;
+			final List<UUID> uuids = schedulerService.getJob(jobKey);
+			jobResponse.runs = new HashMap<>();
+			if (uuids != null) {
+				for (final UUID uuid : uuids) {
+					jobResponse.runs.put(uuid, runner.getStati().get(uuid));
+				}
+			}
+			return new ResponseEntity<JobResponse>(jobResponse, HttpStatus.OK);
+		}
+		catch (final SchedulerException e) {
+			logger.error("Exception", e);
+			return new ResponseEntity<JobResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/jobs")
+	@ResponseBody
+	public ResponseEntity<Map<JobKey, JobResponse>> getJobs(
+			@RequestBody final BaseRequest request) {
+		logger.info("jobs " + request);
+		if (configService.unsecuredOperationPattern != null) {
+			final Matcher matcher = configService.unsecuredOperationPattern.matcher("jobs");
+			if (!matcher.matches()) {
+				final String securityToken = request.getSecurityToken();
+				try {
+					authorizationService.authorize(securityToken, null);
+				}
+				catch (final BadRequestException e) {
+					return new ResponseEntity<Map<JobKey, JobResponse>>(e.getCode());
+				}
+				catch (final SQLException e) {
+					return new ResponseEntity<Map<JobKey, JobResponse>>(
 							HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 			}
 		}
-		final Map<JobKey, List<Trigger>> response = new HashMap<>();
+		final Map<JobKey, JobResponse> response = new HashMap<>();
 		try {
 			final Scheduler scheduler = new StdSchedulerFactory().getScheduler();
 			for (final JobKey jobKey : scheduler.getJobKeys(GroupMatcher.anyJobGroup())) {
+				final JobResponse jobResponse = new JobResponse();
 				@SuppressWarnings("unchecked")
 				final List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
-				response.put(jobKey, triggers);
+				jobResponse.triggers = triggers;
+				final List<UUID> uuids = schedulerService.getJob(jobKey);
+				jobResponse.runs = new HashMap<>();
+				if (uuids != null) {
+					for (final UUID uuid : uuids) {
+						jobResponse.runs.put(uuid, runner.getStati().get(uuid));
+					}
+				}
+				response.put(jobKey, jobResponse);
 			}
 		}
 		catch (final SchedulerException e) {
 			logger.error("Exception", e);
-			return new ResponseEntity<Map<JobKey, List<Trigger>>>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Map<JobKey, JobResponse>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<Map<JobKey, List<Trigger>>>(response, HttpStatus.OK);
+		return new ResponseEntity<Map<JobKey, JobResponse>>(response, HttpStatus.OK);
 	}
 
 	@PostMapping("/run")
