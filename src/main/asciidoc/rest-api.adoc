@@ -306,6 +306,53 @@ include::{snippets}/jobs/curl-request.adoc[]
 
 include::{snippets}/jobs/http-request.adoc[]
 
+== DELETE /job
+
+This request is used to delete a scheduled job.
+The name and group of the job that was used when scheduling the job must be supplied.
+The response content type is application/json.
+
+=== Request fields:
+
+include::{snippets}/delete-job/request-fields.adoc[]
+
+=== Response fields:
+
+include::{snippets}/delete-job/response-fields.adoc[]
+
+=== Response codes:
+
+|===
+|Code|Name|Description
+
+|`+200+`
+|`+Success+`
+|The operation completed successfully.
+
+|`+404+`
+|`+Not Found+`
+|No schedule identified by the specified name and group was found.
+
+|`+406+`
+|`+Not Acceptable+`
+|The request was not properly formatted.
+
+|`+500+`
+|`+Internal Server Error+`
+|Some internal error prevented the operation from completing.  See the log file for a full description and traceback.
+
+|===
+
+=== Examples:
+
+==== Curl:
+
+include::{snippets}/delete-job/curl-request.adoc[]
+
+==== HTTP request:
+
+include::{snippets}/delete-job/http-request.adoc[]
+
 == GET /status
 
 This request is used to get the status of a running or finished job.

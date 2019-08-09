@@ -13,6 +13,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
@@ -811,5 +812,35 @@ public class JobControllerTest {
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> responseMap = mapper.readValue(jsonString2, Map.class);
 		logger.info("responseMap = " + responseMap);
+	}
+
+	@Test
+	public void testDeleteJob() throws Exception {
+		final GetJobRequest request = new GetJobRequest();
+		request.setSecurityToken(null);
+		request.setName("simple-test");
+		request.setGroup("simple-test");
+		final ObjectMapper mapper = new ObjectMapper();
+		final String requestString = mapper.writeValueAsString(request);
+		logger.info("testDeleteJob request = " + requestString);
+		final MvcResult statusResult = this.mockMvc.perform(
+			delete("/job").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
+				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
+					document("delete-job",
+						requestFields(
+							fieldWithPath("securityToken").type(
+								JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION),
+							fieldWithPath("name").description(
+								JOB_NAME_DESCRIPTION + " that was used to create the schedule"),
+							fieldWithPath("group").description(
+								JOB_GROUP_DESCRIPTION + " that was used to create the schedule")),
+						responseFields(fieldWithPath("jobDeleted").description(
+							"True if the job was deleted")))).andReturn();
+		final MockHttpServletResponse response2 = statusResult.getResponse();
+		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
+		final String jsonString2 = response2.getContentAsString();
+		logger.info("testDeleteJob response = " + jsonString2);
+		final Object response = mapper.readValue(jsonString2, Object.class);
+		logger.info("response = " + response);
 	}
 }

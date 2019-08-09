@@ -508,7 +508,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
-<li><a href="#_get_status">GET /status</a>
+<li><a href="#_delete_job">DELETE /job</a>
 <ul class="sectlevel2">
 <li><a href="#_request_fields_7">Request fields:</a></li>
 <li><a href="#_response_fields_6">Response fields:</a></li>
@@ -521,7 +521,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
-<li><a href="#_get_status_all">GET /status-all</a>
+<li><a href="#_get_status">GET /status</a>
 <ul class="sectlevel2">
 <li><a href="#_request_fields_8">Request fields:</a></li>
 <li><a href="#_response_fields_7">Response fields:</a></li>
@@ -534,7 +534,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
-<li><a href="#_get_waitfor">GET /waitfor</a>
+<li><a href="#_get_status_all">GET /status-all</a>
 <ul class="sectlevel2">
 <li><a href="#_request_fields_9">Request fields:</a></li>
 <li><a href="#_response_fields_8">Response fields:</a></li>
@@ -547,9 +547,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
-<li><a href="#_get_get">GET /get</a>
+<li><a href="#_get_waitfor">GET /waitfor</a>
 <ul class="sectlevel2">
 <li><a href="#_request_fields_10">Request fields:</a></li>
+<li><a href="#_response_fields_9">Response fields:</a></li>
 <li><a href="#_response_codes_10">Response codes:</a></li>
 <li><a href="#_examples_10">Examples:</a>
 <ul class="sectlevel3">
@@ -559,7 +560,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
-<li><a href="#_get_download">GET /download</a>
+<li><a href="#_get_get">GET /get</a>
 <ul class="sectlevel2">
 <li><a href="#_request_fields_11">Request fields:</a></li>
 <li><a href="#_response_codes_11">Response codes:</a></li>
@@ -567,6 +568,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel3">
 <li><a href="#_curl_11">Curl:</a></li>
 <li><a href="#_http_request_11">HTTP request:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_get_download">GET /download</a>
+<ul class="sectlevel2">
+<li><a href="#_request_fields_12">Request fields:</a></li>
+<li><a href="#_response_codes_12">Response codes:</a></li>
+<li><a href="#_examples_12">Examples:</a>
+<ul class="sectlevel3">
+<li><a href="#_curl_12">Curl:</a></li>
+<li><a href="#_http_request_12">HTTP request:</a></li>
 </ul>
 </li>
 </ul>
@@ -1163,7 +1176,7 @@ request or the request was made beyond the timeout period.</p></td>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/schedule-cron' -i -X POST \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"38 10 8 9 9 ? 2019","misfireInstruction":null}'</code></pre>
+    -d '{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"7 44 0 9 9 ? 2019","misfireInstruction":null}'</code></pre>
 </div>
 </div>
 </div>
@@ -1173,11 +1186,11 @@ request or the request was made beyond the timeout period.</p></td>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /schedule-cron HTTP/1.1
 Accept: application/json
-Content-Length: 347
+Content-Length: 346
 Content-Type: application/json
 Host: localhost:8080
 
-{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"38 10 8 9 9 ? 2019","misfireInstruction":null}</code></pre>
+{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"7 44 0 9 9 ? 2019","misfireInstruction":null}</code></pre>
 </div>
 </div>
 </div>
@@ -1398,7 +1411,7 @@ request or the request was made beyond the timeout period.</p></td>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/schedule-cron' -i -X POST \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"38 10 8 9 9 ? 2019","misfireInstruction":null}'</code></pre>
+    -d '{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"7 44 0 9 9 ? 2019","misfireInstruction":null}'</code></pre>
 </div>
 </div>
 </div>
@@ -1408,11 +1421,11 @@ request or the request was made beyond the timeout period.</p></td>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /schedule-cron HTTP/1.1
 Accept: application/json
-Content-Length: 347
+Content-Length: 346
 Content-Type: application/json
 Host: localhost:8080
 
-{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"38 10 8 9 9 ? 2019","misfireInstruction":null}</code></pre>
+{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"7 44 0 9 9 ? 2019","misfireInstruction":null}</code></pre>
 </div>
 </div>
 </div>
@@ -1662,6 +1675,141 @@ Host: localhost:8080
 </div>
 </div>
 <div class="sect1">
+<h2 id="_delete_job"><a class="link" href="#_delete_job">DELETE /job</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This request is used to delete a scheduled job.
+The name and group of the job that was used when scheduling the job must be supplied.
+The response content type is application/json.</p>
+</div>
+<div class="sect2">
+<h3 id="_request_fields_7"><a class="link" href="#_request_fields_7">Request fields:</a></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>securityToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The security token for this request.  This is required only if database security has been enabled in the configuration.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The job name that was used to create the schedule</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>group</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The job group name that was used to create the schedule</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_response_fields_6"><a class="link" href="#_response_fields_6">Response fields:</a></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jobDeleted</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">True if the job was deleted</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_response_codes_7"><a class="link" href="#_response_codes_7">Response codes:</a></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Success</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The operation completed successfully.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No schedule identified by the specified name and group was found.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>406</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Acceptable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The request was not properly formatted.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>500</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal Server Error</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Some internal error prevented the operation from completing.  See the log file for a full description and traceback.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_examples_7"><a class="link" href="#_examples_7">Examples:</a></h3>
+<div class="sect3">
+<h4 id="_curl_7"><a class="link" href="#_curl_7">Curl:</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/job' -i -X DELETE \
+    -H 'Accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{"securityToken":null,"name":"simple-test","group":"simple-test"}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_http_request_7"><a class="link" href="#_http_request_7">HTTP request:</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /job HTTP/1.1
+Accept: application/json
+Content-Length: 65
+Content-Type: application/json
+Host: localhost:8080
+
+{"securityToken":null,"name":"simple-test","group":"simple-test"}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_get_status"><a class="link" href="#_get_status">GET /status</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -1670,7 +1818,7 @@ The UUID of the job, which is returned by the /submit request, must be supplied.
 The response content type is application/json.</p>
 </div>
 <div class="sect2">
-<h3 id="_request_fields_7"><a class="link" href="#_request_fields_7">Request fields:</a></h3>
+<h3 id="_request_fields_8"><a class="link" href="#_request_fields_8">Request fields:</a></h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 33%;">
@@ -1699,7 +1847,7 @@ The response content type is application/json.</p>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_response_fields_6"><a class="link" href="#_response_fields_6">Response fields:</a></h3>
+<h3 id="_response_fields_7"><a class="link" href="#_response_fields_7">Response fields:</a></h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 33%;">
@@ -1761,113 +1909,6 @@ The response content type is application/json.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect2">
-<h3 id="_response_codes_7"><a class="link" href="#_response_codes_7">Response codes:</a></h3>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Success</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The operation completed successfully.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Found</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">No report identified by the specified UUID was found.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>406</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Acceptable</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The request was not properly formatted.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>500</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal Server Error</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Some internal error prevented the operation from completing.  See the log file for a full description and traceback.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_examples_7"><a class="link" href="#_examples_7">Examples:</a></h3>
-<div class="sect3">
-<h4 id="_curl_7"><a class="link" href="#_curl_7">Curl:</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status' -i -X GET \
-    -H 'Accept: application/json' \
-    -H 'Content-Type: application/json' \
-    -d '{"securityToken":null,"jobId":"70929e72-c424-4316-8cbd-a0b1d1cf8702"}'</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_http_request_7"><a class="link" href="#_http_request_7">HTTP request:</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status HTTP/1.1
-Accept: application/json
-Content-Type: application/json
-Host: localhost:8080
-Content-Length: 69
-
-{"securityToken":null,"jobId":"70929e72-c424-4316-8cbd-a0b1d1cf8702"}</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_get_status_all"><a class="link" href="#_get_status_all">GET /status-all</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This request is used to get the status of all running or finished jobs.
-The response content type is application/json.</p>
-</div>
-<div class="sect2">
-<h3 id="_request_fields_8"><a class="link" href="#_request_fields_8">Request fields:</a></h3>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Path</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>securityToken</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The security token for this request.  This is required only if database security has been enabled in the configuration.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_response_fields_7"><a class="link" href="#_response_fields_7">Response fields:</a></h3>
-<div class="paragraph">
-<p>The response is an object where each key is a report run UUID and the value is the
-same as what is returned from /status.</p>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_response_codes_8"><a class="link" href="#_response_codes_8">Response codes:</a></h3>
@@ -1914,6 +1955,113 @@ same as what is returned from /status.</p>
 <h4 id="_curl_8"><a class="link" href="#_curl_8">Curl:</a></h4>
 <div class="listingblock">
 <div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status' -i -X GET \
+    -H 'Accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{"securityToken":null,"jobId":"82269cb0-f47c-44ae-87ce-08229f94392e"}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_http_request_8"><a class="link" href="#_http_request_8">HTTP request:</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Host: localhost:8080
+Content-Length: 69
+
+{"securityToken":null,"jobId":"82269cb0-f47c-44ae-87ce-08229f94392e"}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_get_status_all"><a class="link" href="#_get_status_all">GET /status-all</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This request is used to get the status of all running or finished jobs.
+The response content type is application/json.</p>
+</div>
+<div class="sect2">
+<h3 id="_request_fields_9"><a class="link" href="#_request_fields_9">Request fields:</a></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>securityToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The security token for this request.  This is required only if database security has been enabled in the configuration.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_response_fields_8"><a class="link" href="#_response_fields_8">Response fields:</a></h3>
+<div class="paragraph">
+<p>The response is an object where each key is a report run UUID and the value is the
+same as what is returned from /status.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_response_codes_9"><a class="link" href="#_response_codes_9">Response codes:</a></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Success</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The operation completed successfully.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No report identified by the specified UUID was found.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>406</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Acceptable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The request was not properly formatted.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>500</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal Server Error</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Some internal error prevented the operation from completing.  See the log file for a full description and traceback.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_examples_9"><a class="link" href="#_examples_9">Examples:</a></h3>
+<div class="sect3">
+<h4 id="_curl_9"><a class="link" href="#_curl_9">Curl:</a></h4>
+<div class="listingblock">
+<div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status-all' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
@@ -1922,7 +2070,7 @@ same as what is returned from /status.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_http_request_8"><a class="link" href="#_http_request_8">HTTP request:</a></h4>
+<h4 id="_http_request_9"><a class="link" href="#_http_request_9">HTTP request:</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /status-all HTTP/1.1
@@ -1947,7 +2095,7 @@ The UUID of the job, which is returned by the /submit request, must be supplied.
 The response content type is application/json.</p>
 </div>
 <div class="sect2">
-<h3 id="_request_fields_9"><a class="link" href="#_request_fields_9">Request fields:</a></h3>
+<h3 id="_request_fields_10"><a class="link" href="#_request_fields_10">Request fields:</a></h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 33%;">
@@ -1981,7 +2129,7 @@ The response content type is application/json.</p>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_response_fields_8"><a class="link" href="#_response_fields_8">Response fields:</a></h3>
+<h3 id="_response_fields_9"><a class="link" href="#_response_fields_9">Response fields:</a></h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 33%;">
@@ -2045,112 +2193,6 @@ The response content type is application/json.</p>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_response_codes_9"><a class="link" href="#_response_codes_9">Response codes:</a></h3>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Success</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The operation completed successfully.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Found</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">No report identified by the specified UUID was found.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>406</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Acceptable</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The request was not properly formatted.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>500</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal Server Error</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Some internal error prevented the operation from completing.  See the log file for a full description and traceback.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_examples_9"><a class="link" href="#_examples_9">Examples:</a></h3>
-<div class="sect3">
-<h4 id="_curl_9"><a class="link" href="#_curl_9">Curl:</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/waitfor' -i -X GET \
-    -H 'Accept: application/json' \
-    -H 'Content-Type: application/json' \
-    -d '{"securityToken":null,"jobId":"51697f32-4616-4cf4-b499-9e986697a6eb","timeout":5000}'</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_http_request_9"><a class="link" href="#_http_request_9">HTTP request:</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /waitfor HTTP/1.1
-Accept: application/json
-Content-Length: 84
-Content-Type: application/json
-Host: localhost:8080
-
-{"securityToken":null,"jobId":"51697f32-4616-4cf4-b499-9e986697a6eb","timeout":5000}</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_get_get"><a class="link" href="#_get_get">GET /get</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This request is used to retrieve the output of a report that was run asynchronously (using submit).
-The UUID of the job, which is returned by the /submit request, must be supplied.
-The response content type will correspond to the requested format.</p>
-</div>
-<div class="sect2">
-<h3 id="_request_fields_10"><a class="link" href="#_request_fields_10">Request fields:</a></h3>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 33%;">
-<col style="width: 33%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Path</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jobId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The job ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>securityToken</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The security token for this request.  This is required only if database security has been enabled in the configuration.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
 <h3 id="_response_codes_10"><a class="link" href="#_response_codes_10">Response codes:</a></h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
@@ -2170,11 +2212,6 @@ The response content type will correspond to the requested format.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Success</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The operation completed successfully.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>400</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bad Request</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The report was found but it was not finished generating.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
@@ -2200,10 +2237,10 @@ The response content type will correspond to the requested format.</p>
 <h4 id="_curl_10"><a class="link" href="#_curl_10">Curl:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/get' -i -X GET \
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/waitfor' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":null,"jobId":"a639569a-acad-457d-92eb-05a4b4add32c"}'</code></pre>
+    -d '{"securityToken":null,"jobId":"2895e38b-15ff-40cf-94e7-357cf57fe7d0","timeout":5000}'</code></pre>
 </div>
 </div>
 </div>
@@ -2211,13 +2248,13 @@ The response content type will correspond to the requested format.</p>
 <h4 id="_http_request_10"><a class="link" href="#_http_request_10">HTTP request:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /get HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /waitfor HTTP/1.1
 Accept: application/json
+Content-Length: 84
 Content-Type: application/json
 Host: localhost:8080
-Content-Length: 69
 
-{"securityToken":null,"jobId":"a639569a-acad-457d-92eb-05a4b4add32c"}</code></pre>
+{"securityToken":null,"jobId":"2895e38b-15ff-40cf-94e7-357cf57fe7d0","timeout":5000}</code></pre>
 </div>
 </div>
 </div>
@@ -2225,10 +2262,10 @@ Content-Length: 69
 </div>
 </div>
 <div class="sect1">
-<h2 id="_get_download"><a class="link" href="#_get_download">GET /download</a></h2>
+<h2 id="_get_get"><a class="link" href="#_get_get">GET /get</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This request is used to retrieve the output of a report that was run asynchronously (using submit).  It&#8217;s the same as /get except that the report output is treated as an attachment.
+<p>This request is used to retrieve the output of a report that was run asynchronously (using submit).
 The UUID of the job, which is returned by the /submit request, must be supplied.
 The response content type will correspond to the requested format.</p>
 </div>
@@ -2311,15 +2348,126 @@ The response content type will correspond to the requested format.</p>
 <h4 id="_curl_11"><a class="link" href="#_curl_11">Curl:</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/download' -i -X GET \
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/get' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":null,"jobId":"ac5ed569-7d46-444d-b8a1-1a2aa4614987"}'</code></pre>
+    -d '{"securityToken":null,"jobId":"5207adc2-e3b1-4f2d-ba52-e8404b33506e"}'</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_http_request_11"><a class="link" href="#_http_request_11">HTTP request:</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /get HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Host: localhost:8080
+Content-Length: 69
+
+{"securityToken":null,"jobId":"5207adc2-e3b1-4f2d-ba52-e8404b33506e"}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_get_download"><a class="link" href="#_get_download">GET /download</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This request is used to retrieve the output of a report that was run asynchronously (using submit).  It&#8217;s the same as /get except that the report output is treated as an attachment.
+The UUID of the job, which is returned by the /submit request, must be supplied.
+The response content type will correspond to the requested format.</p>
+</div>
+<div class="sect2">
+<h3 id="_request_fields_12"><a class="link" href="#_request_fields_12">Request fields:</a></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jobId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The job ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>securityToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The security token for this request.  This is required only if database security has been enabled in the configuration.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_response_codes_12"><a class="link" href="#_response_codes_12">Response codes:</a></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33%;">
+<col style="width: 33%;">
+<col style="width: 33%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Success</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The operation completed successfully.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>400</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bad Request</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The report was found but it was not finished generating.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Found</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No report identified by the specified UUID was found.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>406</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Not Acceptable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The request was not properly formatted.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>500</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal Server Error</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Some internal error prevented the operation from completing.  See the log file for a full description and traceback.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_examples_12"><a class="link" href="#_examples_12">Examples:</a></h3>
+<div class="sect3">
+<h4 id="_curl_12"><a class="link" href="#_curl_12">Curl:</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/download' -i -X GET \
+    -H 'Accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{"securityToken":null,"jobId":"15e4293d-1def-466d-903c-c7f599c622a9"}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_http_request_12"><a class="link" href="#_http_request_12">HTTP request:</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /download HTTP/1.1
@@ -2328,7 +2476,7 @@ Content-Type: application/json
 Host: localhost:8080
 Content-Length: 69
 
-{"securityToken":null,"jobId":"ac5ed569-7d46-444d-b8a1-1a2aa4614987"}</code></pre>
+{"securityToken":null,"jobId":"15e4293d-1def-466d-903c-c7f599c622a9"}</code></pre>
 </div>
 </div>
 </div>
@@ -2728,7 +2876,7 @@ Single forward slashes can also be used.  On Windows they will be automatically 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-08-09 08:08:15 MDT
+Last updated 2019-08-09 12:43:55 MDT
 </div>
 </div>
 </body>

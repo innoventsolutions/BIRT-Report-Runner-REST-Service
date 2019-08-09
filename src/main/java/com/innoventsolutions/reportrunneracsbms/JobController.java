@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 
+import javax.annotation.PreDestroy;
+
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -48,6 +50,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -456,6 +459,50 @@ public class JobController {
 		}
 	}
 
+	public static class DeleteJobResponse {
+		private final boolean jobDeleted;
+
+		public DeleteJobResponse(final boolean jobDeleted) {
+			this.jobDeleted = jobDeleted;
+		}
+
+		public boolean isJobDeleted() {
+			return jobDeleted;
+		}
+	}
+
+	@DeleteMapping("/job")
+	@ResponseBody
+	public ResponseEntity<DeleteJobResponse> deleteJob(@RequestBody final GetJobRequest request) {
+		logger.info("delete-job " + request);
+		if (configService.unsecuredOperationPattern != null) {
+			final Matcher matcher = configService.unsecuredOperationPattern.matcher("delete-job");
+			if (!matcher.matches()) {
+				final String securityToken = request.getSecurityToken();
+				try {
+					authorizationService.authorize(securityToken, null);
+				}
+				catch (final BadRequestException e) {
+					return new ResponseEntity<DeleteJobResponse>(e.getCode());
+				}
+				catch (final SQLException e) {
+					return new ResponseEntity<DeleteJobResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}
+		}
+		try {
+			final Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+			final JobKey jobKey = new JobKey(request.getName(), request.getGroup());
+			final boolean result = scheduler.deleteJob(jobKey);
+			return new ResponseEntity<DeleteJobResponse>(new DeleteJobResponse(result),
+					HttpStatus.OK);
+		}
+		catch (final SchedulerException e) {
+			logger.error("Exception", e);
+			return new ResponseEntity<DeleteJobResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	static class JobResponse {
 		List<Trigger> triggers;
 		Map<UUID, ReportRunStatus> runs;
@@ -646,5 +693,19 @@ public class JobController {
 		final ByteArrayResource resource = new ByteArrayResource(reason.getBytes());
 		return ResponseEntity.status(code).headers(headers).contentType(MediaType.TEXT_PLAIN).body(
 			resource);
+	}
+
+	@PreDestroy
+	public void onExit() {
+		logger.info("onExit");
+		try {
+			final Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+			if (!scheduler.isShutdown()) {
+				scheduler.shutdown(true);
+			}
+		}
+		catch (final SchedulerException e) {
+			logger.error("Unable to acquire scheduler", e);
+		}
 	}
 }

@@ -19,4 +19,9 @@ public class GetJobRequest extends BaseRequest {
 	public void setGroup(final String group) {
 		this.group = group;
 	}
+
+	@Override
+	public String toString() {
+		return name + "/" + group;
+	}
 }
