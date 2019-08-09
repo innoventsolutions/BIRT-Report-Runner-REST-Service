@@ -9,14 +9,22 @@
  ******************************************************************************/
 package com.innoventsolutions.reportrunneracsbms;
 
-public class WaitforRequest extends StatusRequest {
-	private Long timeout;
+import org.quartz.JobKey;
 
-	public Long getTimeout() {
-		return timeout;
+public class ScheduleResponse {
+	private final JobKey jobKey;
+	private final String message;
+
+	public ScheduleResponse(final JobKey jobKey, final String message) {
+		this.jobKey = jobKey;
+		this.message = message;
 	}
 
-	public void setTimeout(final Long timeout) {
-		this.timeout = timeout;
+	public JobKey getJobKey() {
+		return jobKey;
+	}
+
+	public String getMessage() {
+		return message;
 	}
 }

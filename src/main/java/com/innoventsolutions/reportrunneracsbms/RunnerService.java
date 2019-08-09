@@ -83,10 +83,12 @@ public class RunnerService {
 		this.engine = birtService.getReportEngine();
 	}
 
-	public UUID startReport(final ReportRun reportRun, final ReportEmail email)
-			throws BadRequestException, SQLException {
+	public UUID startReport(final ReportRun reportRun, final ReportEmail email,
+			final boolean authorize) throws BadRequestException, SQLException {
 		logger.debug("startReport reportRun = " + reportRun + ", email = " + email);
-		authorize(reportRun);
+		if (authorize) {
+			authorize(reportRun);
+		}
 		final ReportRunStatus status = new ReportRunStatus(reportRun, email);
 		UUID uuid = null; // job identifier
 		synchronized (reports) {
@@ -485,7 +487,90 @@ public class RunnerService {
 		return reports.get(uuid);
 	}
 
+	public Map<UUID, ReportRunStatus> getStati() {
+		return reports;
+	}
+
 	public File getOutputDirectory() {
 		return configService.outputDirectory;
+	}
+
+	public Map<String, Object> fixParameterTypes(final Map<String, Object> parameters)
+			throws BadRequestException {
+		if (parameters == null) {
+			return null;
+		}
+		final Map<String, Object> fixedParameters = new HashMap<>();
+		for (final String paramName : parameters.keySet()) {
+			Object paramValue = parameters.get(paramName);
+			if (paramValue instanceof Object[]) {
+				final Object[] valueArray = (Object[]) paramValue;
+				for (int i = 0; i < valueArray.length; i++) {
+					valueArray[i] = fixParameterType(paramName, valueArray[i]);
+				}
+			}
+			paramValue = fixParameterType(paramName, paramValue);
+			fixedParameters.put(paramName, paramValue);
+		}
+		return fixedParameters;
+	}
+
+	private Object fixParameterType(final Object name, final Object value)
+			throws BadRequestException {
+		if (!(value instanceof Map)) {
+			return value;
+		}
+		final Map<?, ?> map = (Map<?, ?>) value;
+		final Object type = map.get("type");
+		if (type == null) {
+			logger.error("parameter value type is missing");
+			throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE,
+					"Parameter " + name + " is an object but the type field is missing");
+		}
+		final Object subValue = map.get("value");
+		if (!(subValue instanceof String)) {
+			logger.error("parameter sub-value is not a string");
+			throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE, "Parameter " + name
+				+ " is an object but the value field is missing or isn't a string");
+		}
+		if ("date".equals(type)) {
+			final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			try {
+				final java.util.Date date = df.parse((String) subValue);
+				return new java.sql.Date(date.getTime());
+			}
+			catch (final ParseException e) {
+				logger.error("parameter date sub-value is malformed");
+				throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE, "Parameter " + name
+					+ " is an object and the type is date but the value isn't a valid date");
+			}
+		}
+		if ("datetime".equals(type)) {
+			final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			try {
+				final java.util.Date date = df.parse((String) subValue);
+				return new java.sql.Date(date.getTime());
+			}
+			catch (final ParseException e) {
+				logger.error("parameter date sub-value is malformed");
+				throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE, "Parameter " + name
+					+ " is an object and the type is datetime but the value isn't a valid datetime");
+			}
+		}
+		if ("time".equals(type)) {
+			final DateFormat df = new SimpleDateFormat("HH:mm:ss");
+			try {
+				final java.util.Date date = df.parse((String) subValue);
+				return new java.sql.Time(date.getTime());
+			}
+			catch (final ParseException e) {
+				logger.error("parameter date sub-value is malformed");
+				throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE, "Parameter " + name
+					+ " is an object and the type is time but the value isn't a valid time");
+			}
+		}
+		logger.error("unrecognized parameter value type: " + type);
+		throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE, "Parameter " + name
+			+ " is an object and the type field is present but is not recognized");
 	}
 }

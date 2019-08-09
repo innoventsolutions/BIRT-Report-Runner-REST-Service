@@ -12,12 +12,11 @@ package com.innoventsolutions.reportrunneracsbms;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RunRequest {
+public class RunRequest extends BaseRequest {
 	private String designFile;
 	private String format;
 	private boolean runThenRender;
 	private Map<String, Object> parameters = new HashMap<>();
-	private String securityToken;
 
 	public String getDesignFile() {
 		return designFile;
@@ -49,13 +48,5 @@ public class RunRequest {
 
 	public void setRunThenRender(final boolean runThenRender) {
 		this.runThenRender = runThenRender;
-	}
-
-	public String getSecurityToken() {
-		return securityToken;
-	}
-
-	public void setSecurityToken(final String securityToken) {
-		this.securityToken = securityToken;
 	}
 }

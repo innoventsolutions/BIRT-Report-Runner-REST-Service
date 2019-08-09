@@ -9,14 +9,23 @@
  ******************************************************************************/
 package com.innoventsolutions.reportrunneracsbms;
 
-public class WaitforRequest extends StatusRequest {
-	private Long timeout;
+public class CronScheduleRequest extends ScheduleRequest {
+	private String cronString;
+	private String misfireInstruction;
 
-	public Long getTimeout() {
-		return timeout;
+	public String getCronString() {
+		return cronString;
 	}
 
-	public void setTimeout(final Long timeout) {
-		this.timeout = timeout;
+	public void setCronString(final String cronString) {
+		this.cronString = cronString;
+	}
+
+	public String getMisfireInstruction() {
+		return misfireInstruction;
+	}
+
+	public void setMisfireInstruction(final String misfireInstruction) {
+		this.misfireInstruction = misfireInstruction;
 	}
 }

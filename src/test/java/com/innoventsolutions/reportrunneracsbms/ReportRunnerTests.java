@@ -35,7 +35,7 @@ public class ReportRunnerTests {
 		final ReportRun reportRun = new ReportRun(designFile, "Test Report", "pdf", "test.pdf",
 				true, new HashMap<>(), null);
 		try {
-			runner.startReport(reportRun, null);
+			runner.startReport(reportRun, null, false);
 		}
 		catch (final Throwable e) {
 			e.printStackTrace();
@@ -63,7 +63,7 @@ public class ReportRunnerTests {
 		for (int i = 0; i < reportRuns.length; i++) {
 			final ReportRun reportRun = reportRuns[i];
 			try {
-				uuids[i] = runner.startReport(reportRun, null);
+				uuids[i] = runner.startReport(reportRun, null, false);
 			}
 			catch (final Throwable e) {
 				e.printStackTrace();

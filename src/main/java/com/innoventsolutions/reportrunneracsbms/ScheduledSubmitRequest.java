@@ -12,7 +12,7 @@ package com.innoventsolutions.reportrunneracsbms;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SubmitRequest extends BaseRequest {
+public class ScheduledSubmitRequest {
 	private String designFile;
 	private String format;
 	private boolean runThenRender;
