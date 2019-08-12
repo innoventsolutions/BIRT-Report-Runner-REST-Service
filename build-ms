@@ -14,7 +14,7 @@ FAILURE_MESSAGE="$(grep "\[INFO\] BUILD FAILURE" $LOGS/build-ms.log)"
 if [ -z "$FAILURE_MESSAGE" ]; then
 	echo "succeeded"
 	mkdir -p docs
-	mv target/generated-docs/rest-api.html docs
+	mv target/generated-docs/rest-api.html index.html
 else
 	echo "failed"
 fi
