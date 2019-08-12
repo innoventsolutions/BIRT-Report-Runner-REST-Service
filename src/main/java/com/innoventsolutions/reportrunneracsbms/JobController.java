@@ -94,24 +94,20 @@ public class JobController {
 
 	public ResponseEntity<Resource> getReport(final StatusRequest request,
 			final boolean isAttachment) {
-		try {
-			logger.info("getReport " + request + " " + isAttachment);
-			if (configService.unsecuredOperationPattern != null) {
-				final Matcher matcher = configService.unsecuredOperationPattern.matcher(
-					isAttachment ? "download" : "get");
-				if (!matcher.matches()) {
-					final String securityToken = request.getSecurityToken();
-					try {
-						authorizationService.authorize(securityToken, null);
-					}
-					catch (final BadRequestException e) {
-						return new ResponseEntity<Resource>(e.getCode());
-					}
-					catch (final SQLException e) {
-						return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
-					}
-				}
+		logger.info("getReport " + request + " " + isAttachment);
+		if (!allow(isAttachment ? "download" : "get")) {
+			final String securityToken = request.getSecurityToken();
+			try {
+				authorizationService.authorize(securityToken, null);
 			}
+			catch (final BadRequestException e) {
+				return new ResponseEntity<Resource>(e.getCode());
+			}
+			catch (final SQLException e) {
+				return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		try {
 			final File outputDir = runner.getOutputDirectory();
 			logger.info("outputDir = " + outputDir);
 			UUID uuid;
@@ -161,19 +157,17 @@ public class JobController {
 	@GetMapping("/status")
 	@ResponseBody
 	public ResponseEntity<ReportRunStatus> getStatus(@RequestBody final StatusRequest request) {
-		if (configService.unsecuredOperationPattern != null) {
-			final Matcher matcher = configService.unsecuredOperationPattern.matcher("status");
-			if (!matcher.matches()) {
-				final String securityToken = request.getSecurityToken();
-				try {
-					authorizationService.authorize(securityToken, null);
-				}
-				catch (final BadRequestException e) {
-					return new ResponseEntity<ReportRunStatus>(e.getCode());
-				}
-				catch (final SQLException e) {
-					return new ResponseEntity<ReportRunStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
-				}
+		logger.info("getStatus " + request);
+		if (!allow("status")) {
+			final String securityToken = request.getSecurityToken();
+			try {
+				authorizationService.authorize(securityToken, null);
+			}
+			catch (final BadRequestException e) {
+				return new ResponseEntity<ReportRunStatus>(e.getCode());
+			}
+			catch (final SQLException e) {
+				return new ResponseEntity<ReportRunStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 		UUID uuid;
@@ -191,42 +185,38 @@ public class JobController {
 	@ResponseBody
 	public ResponseEntity<Map<UUID, ReportRunStatus>> getStatusAll(
 			@RequestBody final BaseRequest request) {
-		if (configService.unsecuredOperationPattern != null) {
-			final Matcher matcher = configService.unsecuredOperationPattern.matcher("status");
-			if (!matcher.matches()) {
-				final String securityToken = request.getSecurityToken();
-				try {
-					authorizationService.authorize(securityToken, null);
-				}
-				catch (final BadRequestException e) {
-					return new ResponseEntity<Map<UUID, ReportRunStatus>>(e.getCode());
-				}
-				catch (final SQLException e) {
-					return new ResponseEntity<Map<UUID, ReportRunStatus>>(
-							HttpStatus.INTERNAL_SERVER_ERROR);
-				}
+		logger.info("getStatusAll " + request);
+		if (!allow("status-all")) {
+			final String securityToken = request.getSecurityToken();
+			try {
+				authorizationService.authorize(securityToken, null);
+			}
+			catch (final BadRequestException e) {
+				return new ResponseEntity<Map<UUID, ReportRunStatus>>(e.getCode());
+			}
+			catch (final SQLException e) {
+				return new ResponseEntity<Map<UUID, ReportRunStatus>>(
+						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
-		final Map<UUID, ReportRunStatus> status = runner.getStati();
+		final Map<UUID, ReportRunStatus> status = runner.getStatusAll();
 		return new ResponseEntity<Map<UUID, ReportRunStatus>>(status, HttpStatus.OK);
 	}
 
 	@GetMapping("/waitfor")
 	@ResponseBody
 	public ResponseEntity<ReportRunStatus> waitFor(@RequestBody final WaitforRequest request) {
-		if (configService.unsecuredOperationPattern != null) {
-			final Matcher matcher = configService.unsecuredOperationPattern.matcher("waitfor");
-			if (!matcher.matches()) {
-				final String securityToken = request.getSecurityToken();
-				try {
-					authorizationService.authorize(securityToken, null);
-				}
-				catch (final BadRequestException e) {
-					return new ResponseEntity<ReportRunStatus>(e.getCode());
-				}
-				catch (final SQLException e) {
-					return new ResponseEntity<ReportRunStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
-				}
+		logger.info("waitFor " + request);
+		if (!allow("waitfor")) {
+			final String securityToken = request.getSecurityToken();
+			try {
+				authorizationService.authorize(securityToken, null);
+			}
+			catch (final BadRequestException e) {
+				return new ResponseEntity<ReportRunStatus>(e.getCode());
+			}
+			catch (final SQLException e) {
+				return new ResponseEntity<ReportRunStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 		UUID uuid;
@@ -286,20 +276,17 @@ public class JobController {
 	public ResponseEntity<ScheduleResponse> scheduleSimple(
 			@RequestBody final SimpleScheduleRequest request) {
 		logger.info("schedule-simple " + request);
-		if (configService.unsecuredOperationPattern != null) {
-			final Matcher matcher = configService.unsecuredOperationPattern.matcher(
-				"schedule-simple");
-			if (!matcher.matches()) {
-				final String securityToken = request.getSecurityToken();
-				try {
-					authorizationService.authorize(securityToken, null);
-				}
-				catch (final BadRequestException e) {
-					return new ResponseEntity<ScheduleResponse>(e.getCode());
-				}
-				catch (final SQLException e) {
-					return new ResponseEntity<ScheduleResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
-				}
+		final String designFileName = request.getSubmit().getDesignFile();
+		if (!allowReport(designFileName)) {
+			final String securityToken = request.getSecurityToken();
+			try {
+				authorizationService.authorize(securityToken, designFileName);
+			}
+			catch (final BadRequestException e) {
+				return new ResponseEntity<ScheduleResponse>(e.getCode());
+			}
+			catch (final SQLException e) {
+				return new ResponseEntity<ScheduleResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 		try {
@@ -383,21 +370,17 @@ public class JobController {
 	public ResponseEntity<ScheduleResponse> scheduleCron(
 			@RequestBody final CronScheduleRequest request) {
 		logger.info("schedule-cron " + request);
-		if (configService.unsecuredOperationPattern != null) {
-			final Matcher matcher = configService.unsecuredOperationPattern.matcher(
-				"schedule-cron");
-			if (!matcher.matches()) {
-				final String securityToken = request.getSecurityToken();
-				try {
-					authorizationService.authorize(securityToken,
-						request.getSubmit().getDesignFile());
-				}
-				catch (final BadRequestException e) {
-					return new ResponseEntity<ScheduleResponse>(e.getCode());
-				}
-				catch (final SQLException e) {
-					return new ResponseEntity<ScheduleResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
-				}
+		final String designFileName = request.getSubmit().getDesignFile();
+		if (!allowReport(designFileName)) {
+			final String securityToken = request.getSecurityToken();
+			try {
+				authorizationService.authorize(securityToken, designFileName);
+			}
+			catch (final BadRequestException e) {
+				return new ResponseEntity<ScheduleResponse>(e.getCode());
+			}
+			catch (final SQLException e) {
+				return new ResponseEntity<ScheduleResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 		try {
@@ -475,19 +458,16 @@ public class JobController {
 	@ResponseBody
 	public ResponseEntity<DeleteJobResponse> deleteJob(@RequestBody final GetJobRequest request) {
 		logger.info("delete-job " + request);
-		if (configService.unsecuredOperationPattern != null) {
-			final Matcher matcher = configService.unsecuredOperationPattern.matcher("delete-job");
-			if (!matcher.matches()) {
-				final String securityToken = request.getSecurityToken();
-				try {
-					authorizationService.authorize(securityToken, null);
-				}
-				catch (final BadRequestException e) {
-					return new ResponseEntity<DeleteJobResponse>(e.getCode());
-				}
-				catch (final SQLException e) {
-					return new ResponseEntity<DeleteJobResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
-				}
+		if (!allow("delete-job")) {
+			final String securityToken = request.getSecurityToken();
+			try {
+				authorizationService.authorize(securityToken, null);
+			}
+			catch (final BadRequestException e) {
+				return new ResponseEntity<DeleteJobResponse>(e.getCode());
+			}
+			catch (final SQLException e) {
+				return new ResponseEntity<DeleteJobResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 		try {
@@ -528,19 +508,16 @@ public class JobController {
 	@ResponseBody
 	public ResponseEntity<JobResponse> getJob(@RequestBody final GetJobRequest request) {
 		logger.info("job " + request);
-		if (configService.unsecuredOperationPattern != null) {
-			final Matcher matcher = configService.unsecuredOperationPattern.matcher("job");
-			if (!matcher.matches()) {
-				final String securityToken = request.getSecurityToken();
-				try {
-					authorizationService.authorize(securityToken, null);
-				}
-				catch (final BadRequestException e) {
-					return new ResponseEntity<JobResponse>(e.getCode());
-				}
-				catch (final SQLException e) {
-					return new ResponseEntity<JobResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
-				}
+		if (!allow("job")) {
+			final String securityToken = request.getSecurityToken();
+			try {
+				authorizationService.authorize(securityToken, null);
+			}
+			catch (final BadRequestException e) {
+				return new ResponseEntity<JobResponse>(e.getCode());
+			}
+			catch (final SQLException e) {
+				return new ResponseEntity<JobResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 		try {
@@ -554,7 +531,7 @@ public class JobController {
 			jobResponse.runs = new HashMap<>();
 			if (uuids != null) {
 				for (final UUID uuid : uuids) {
-					jobResponse.runs.put(uuid, runner.getStati().get(uuid));
+					jobResponse.runs.put(uuid, runner.getStatusAll().get(uuid));
 				}
 			}
 			return new ResponseEntity<JobResponse>(jobResponse, HttpStatus.OK);
@@ -570,20 +547,17 @@ public class JobController {
 	public ResponseEntity<Map<JobKey, JobResponse>> getJobs(
 			@RequestBody final BaseRequest request) {
 		logger.info("jobs " + request);
-		if (configService.unsecuredOperationPattern != null) {
-			final Matcher matcher = configService.unsecuredOperationPattern.matcher("jobs");
-			if (!matcher.matches()) {
-				final String securityToken = request.getSecurityToken();
-				try {
-					authorizationService.authorize(securityToken, null);
-				}
-				catch (final BadRequestException e) {
-					return new ResponseEntity<Map<JobKey, JobResponse>>(e.getCode());
-				}
-				catch (final SQLException e) {
-					return new ResponseEntity<Map<JobKey, JobResponse>>(
-							HttpStatus.INTERNAL_SERVER_ERROR);
-				}
+		if (!allow("jobs")) {
+			final String securityToken = request.getSecurityToken();
+			try {
+				authorizationService.authorize(securityToken, null);
+			}
+			catch (final BadRequestException e) {
+				return new ResponseEntity<Map<JobKey, JobResponse>>(e.getCode());
+			}
+			catch (final SQLException e) {
+				return new ResponseEntity<Map<JobKey, JobResponse>>(
+						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 		final Map<JobKey, JobResponse> response = new HashMap<>();
@@ -598,7 +572,7 @@ public class JobController {
 				jobResponse.runs = new HashMap<>();
 				if (uuids != null) {
 					for (final UUID uuid : uuids) {
-						jobResponse.runs.put(uuid, runner.getStati().get(uuid));
+						jobResponse.runs.put(uuid, runner.getStatusAll().get(uuid));
 					}
 				}
 				response.put(jobKey, jobResponse);
@@ -707,5 +681,22 @@ public class JobController {
 		catch (final SchedulerException e) {
 			logger.error("Unable to acquire scheduler", e);
 		}
+	}
+
+	private boolean allow(final String opName) {
+		if (configService.unsecuredOperationPattern != null) {
+			final Matcher matcher = configService.unsecuredOperationPattern.matcher(opName);
+			return matcher.matches();
+		}
+		return false;
+	}
+
+	private boolean allowReport(final String designFileName) {
+		if (configService.unsecuredDesignFilePattern != null) {
+			final Matcher matcher = configService.unsecuredDesignFilePattern.matcher(
+				designFileName);
+			return matcher.matches();
+		}
+		return false;
 	}
 }

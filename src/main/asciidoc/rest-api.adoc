@@ -694,9 +694,11 @@ birt.runner.db.query::
   accept a single parameter denoted by a question mark in which the
   security token will be passed and return the full report design file path/name and
   the timestamp of the request time in that order.
+  Note that the report design file path/name should be null for requests that
+  do not require a report design file path/name.
 +
   Example: select design_file, request_time from reports where security_token = ?;
-  
+    
 birt.runner.db.timeout::
   The maximum number of milliseconds allowed between the timestamp returned
   by the database query (birt.runner.db.query) and the actual time the report
@@ -707,8 +709,13 @@ birt.runner.db.timeout::
 birt.runner.unsecuredDesignFilePattern::
   This is an optional regular expression that is matched against the full design file path/names.
   If it matches, the request is allowed with no further security checks.
-  If it is missing then other security measures, if any, will be enforced for all reports.
+  If it does not match or is not specified, then the database security is checked.
 
+birt.runner.unsecuredOperationPattern::
+  This is an optional regular expression that is matched against the operation name.
+  If it matches, the request is allowed with no further security checks.
+  If it does not match or is not specified, then the database security is checked.
+  
 birt.runner.mail.username::
   The user name required for SMTP server authentication.
   
@@ -793,10 +800,60 @@ birt.runner.isActuate::
 
 == Unsecured Reports
 
-A subset of reports can be unsecured by specifying the birt.runner.unsecuredDesignFilePattern
+A subset of reports can be allowed by specifying the birt.runner.unsecuredDesignFilePattern
 property.  This is a regular expression that is matched against the full report design path/name
-in the request.  If it matches, the request is allowed without any further security checks.
-If it is not specified then other security constraints (if any) are applied to all reports.
+in the request.  
+If it matches, the request is allowed without any further security checks.
+If it does not match or is not specified, then the database security is checked.
+
+Note that this property is only useful to allow reports that would otherwise be forbidden by
+database security.  If there is no database security due to lack of SQL connection properties, then
+all reports will be allowed.
+
+== Other Unsecured Operations
+
+Requests that do not involve specific report design files can be allowed by specifying the
+birt.runner.unsecuredOperationPattern property.  This is a regular expression that is matched
+against one of the following:
+
+|===
+|Pattern|Request
+
+|`+get+`
+|GET /get
+
+|`+download+`
+|GET /download
+
+|`+status+`
+|GET /status
+
+|`+status-all+`
+|GET /status-all
+
+|`+waitfor+`
+|GET /waitfor
+
+|`+delete-job+`
+|DELETE /job
+
+|`+job+`
+|GET /job
+
+|`+jobs+`
+|GET /jobs
+
+|===
+
+Note that /run, /submit, /schedule-simple, and /schedule-cron are not included because
+they are authorized based on the report name (see birt.runner.unsecuredDesignFilePattern).
+If it matches, the request is allowed without any further security checks.
+If it does not match or is not specified, then the database security is checked.
+An example regular expression that will allow /status, /status-all, and /waitfor is "status|status-all|waitfor".
+
+Note that this property is only useful to allow operations that would otherwise be forbidden by
+database security.  If there is no database security due to lack of SQL connection properties, then
+everything will be allowed.
 
 == Database Secured Requests
 
@@ -805,13 +862,22 @@ ensure that only your application (or any application that can insert into
 your database) can make report requests.  To enable this, 
 specify all the "db" properties in the configuration.  Then for each request you will need to
 create a random security token (UUID.getRandomUUID() is a good way to do this).
-Then you'll need to insert a row into a table prior to making a /run or /submit request.
-The table should contain the security token, the full path/name of the report design file,
-and the current timestamp.  The security token must also be included in the /run or /submit
-request.  The configuration will provide a query that can retrieve these values
-from the database.  If the security token is not found or the report request name doesn't
-match the request or the request is received later than a timeout specified in the configuration,
-then the request will be rejected.
+Then you'll need to insert a row into a table prior to making a request.
+
+The table should contain the security token, the current timestamp, 
+and if the request involves a specific report design file such as running or scheduling a report,
+the full path/name of the report design file.  
+The security token must also be included in the request.
+
+You must provide a query that can retrieve these values
+from the database in the configuration.  
+The request will be allowed only if all of the following conditions are met:
+
+- The query returns a row.
+- The timestamp returned is not later than the timeout specified in the configuration.
+- Either
+the request is one of /run, /submit, /schedule-simple, and /schedule-cron and the report design file name returned by the query matches the one in the request,
+or the design file name returned by the query is null.
 
 == Client Certificates
 

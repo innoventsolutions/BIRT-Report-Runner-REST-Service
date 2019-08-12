@@ -487,7 +487,7 @@ public class RunnerService {
 		return reports.get(uuid);
 	}
 
-	public Map<UUID, ReportRunStatus> getStati() {
+	public Map<UUID, ReportRunStatus> getStatusAll() {
 		return reports;
 	}
 

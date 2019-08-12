@@ -13,6 +13,8 @@ mvn $NOTESTS $KEYSTORE clean package > $LOGS/build-ms.log 2> $LOGS/build-ms.err.
 FAILURE_MESSAGE="$(grep "\[INFO\] BUILD FAILURE" $LOGS/build-ms.log)"
 if [ -z "$FAILURE_MESSAGE" ]; then
 	echo "succeeded"
+	mkdir -p docs
+	mv target/generated-docs/rest-api.html docs
 else
 	echo "failed"
 fi

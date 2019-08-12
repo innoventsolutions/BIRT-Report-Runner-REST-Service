@@ -593,6 +593,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_security">Security</a>
 <ul class="sectlevel1">
 <li><a href="#_unsecured_reports">Unsecured Reports</a></li>
+<li><a href="#_other_unsecured_operations">Other Unsecured Operations</a></li>
 <li><a href="#_database_secured_requests">Database Secured Requests</a></li>
 <li><a href="#_client_certificates">Client Certificates</a></li>
 </ul>
@@ -1176,7 +1177,7 @@ request or the request was made beyond the timeout period.</p></td>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/schedule-cron' -i -X POST \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"7 44 0 9 9 ? 2019","misfireInstruction":null}'</code></pre>
+    -d '{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"24 28 10 12 9 ? 2019","misfireInstruction":null}'</code></pre>
 </div>
 </div>
 </div>
@@ -1186,11 +1187,11 @@ request or the request was made beyond the timeout period.</p></td>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /schedule-cron HTTP/1.1
 Accept: application/json
-Content-Length: 346
 Content-Type: application/json
+Content-Length: 349
 Host: localhost:8080
 
-{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"7 44 0 9 9 ? 2019","misfireInstruction":null}</code></pre>
+{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"24 28 10 12 9 ? 2019","misfireInstruction":null}</code></pre>
 </div>
 </div>
 </div>
@@ -1411,7 +1412,7 @@ request or the request was made beyond the timeout period.</p></td>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/schedule-cron' -i -X POST \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"7 44 0 9 9 ? 2019","misfireInstruction":null}'</code></pre>
+    -d '{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"24 28 10 12 9 ? 2019","misfireInstruction":null}'</code></pre>
 </div>
 </div>
 </div>
@@ -1421,11 +1422,11 @@ request or the request was made beyond the timeout period.</p></td>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /schedule-cron HTTP/1.1
 Accept: application/json
-Content-Length: 346
 Content-Type: application/json
+Content-Length: 349
 Host: localhost:8080
 
-{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"7 44 0 9 9 ? 2019","misfireInstruction":null}</code></pre>
+{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"24 28 10 12 9 ? 2019","misfireInstruction":null}</code></pre>
 </div>
 </div>
 </div>
@@ -1958,7 +1959,7 @@ The response content type is application/json.</p>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":null,"jobId":"82269cb0-f47c-44ae-87ce-08229f94392e"}'</code></pre>
+    -d '{"securityToken":null,"jobId":"826721da-fd0a-42c3-a0c3-72e8af66c2c1"}'</code></pre>
 </div>
 </div>
 </div>
@@ -1972,7 +1973,7 @@ Content-Type: application/json
 Host: localhost:8080
 Content-Length: 69
 
-{"securityToken":null,"jobId":"82269cb0-f47c-44ae-87ce-08229f94392e"}</code></pre>
+{"securityToken":null,"jobId":"826721da-fd0a-42c3-a0c3-72e8af66c2c1"}</code></pre>
 </div>
 </div>
 </div>
@@ -2240,7 +2241,7 @@ The response content type is application/json.</p>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/waitfor' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":null,"jobId":"2895e38b-15ff-40cf-94e7-357cf57fe7d0","timeout":5000}'</code></pre>
+    -d '{"securityToken":null,"jobId":"2f6621c6-2600-4049-8429-9e0feed1c675","timeout":5000}'</code></pre>
 </div>
 </div>
 </div>
@@ -2254,7 +2255,7 @@ Content-Length: 84
 Content-Type: application/json
 Host: localhost:8080
 
-{"securityToken":null,"jobId":"2895e38b-15ff-40cf-94e7-357cf57fe7d0","timeout":5000}</code></pre>
+{"securityToken":null,"jobId":"2f6621c6-2600-4049-8429-9e0feed1c675","timeout":5000}</code></pre>
 </div>
 </div>
 </div>
@@ -2351,7 +2352,7 @@ The response content type will correspond to the requested format.</p>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/get' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":null,"jobId":"5207adc2-e3b1-4f2d-ba52-e8404b33506e"}'</code></pre>
+    -d '{"securityToken":null,"jobId":"1b588ed3-ccce-4186-aab6-f70166c4f1fb"}'</code></pre>
 </div>
 </div>
 </div>
@@ -2365,7 +2366,7 @@ Content-Type: application/json
 Host: localhost:8080
 Content-Length: 69
 
-{"securityToken":null,"jobId":"5207adc2-e3b1-4f2d-ba52-e8404b33506e"}</code></pre>
+{"securityToken":null,"jobId":"1b588ed3-ccce-4186-aab6-f70166c4f1fb"}</code></pre>
 </div>
 </div>
 </div>
@@ -2462,7 +2463,7 @@ The response content type will correspond to the requested format.</p>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/download' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":null,"jobId":"15e4293d-1def-466d-903c-c7f599c622a9"}'</code></pre>
+    -d '{"securityToken":null,"jobId":"9bf11f4c-c822-4dd3-b6c1-c976eb358607"}'</code></pre>
 </div>
 </div>
 </div>
@@ -2476,7 +2477,7 @@ Content-Type: application/json
 Host: localhost:8080
 Content-Length: 69
 
-{"securityToken":null,"jobId":"15e4293d-1def-466d-903c-c7f599c622a9"}</code></pre>
+{"securityToken":null,"jobId":"9bf11f4c-c822-4dd3-b6c1-c976eb358607"}</code></pre>
 </div>
 </div>
 </div>
@@ -2626,7 +2627,9 @@ If missing, no database request security will be done.</p>
 <p>The query for database request security.  The query must
 accept a single parameter denoted by a question mark in which the
 security token will be passed and return the full report design file path/name and
-the timestamp of the request time in that order.</p>
+the timestamp of the request time in that order.
+Note that the report design file path/name should be null for requests that
+do not require a report design file path/name.</p>
 <div class="literalblock">
 <div class="content">
 <pre>Example: select design_file, request_time from reports where security_token = ?;</pre>
@@ -2645,7 +2648,13 @@ later than the timestamp in the database plus the timeout.</p>
 <dd>
 <p>This is an optional regular expression that is matched against the full design file path/names.
 If it matches, the request is allowed with no further security checks.
-If it is missing then other security measures, if any, will be enforced for all reports.</p>
+If it does not match or is not specified, then the database security is checked.</p>
+</dd>
+<dt class="hdlist1">birt.runner.unsecuredOperationPattern</dt>
+<dd>
+<p>This is an optional regular expression that is matched against the operation name.
+If it matches, the request is allowed with no further security checks.
+If it does not match or is not specified, then the database security is checked.</p>
 </dd>
 <dt class="hdlist1">birt.runner.mail.username</dt>
 <dd>
@@ -2761,10 +2770,84 @@ Submit requests can override this value.</p>
 <h2 id="_unsecured_reports"><a class="link" href="#_unsecured_reports">Unsecured Reports</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>A subset of reports can be unsecured by specifying the birt.runner.unsecuredDesignFilePattern
+<p>A subset of reports can be allowed by specifying the birt.runner.unsecuredDesignFilePattern
 property.  This is a regular expression that is matched against the full report design path/name
-in the request.  If it matches, the request is allowed without any further security checks.
-If it is not specified then other security constraints (if any) are applied to all reports.</p>
+in the request.
+If it matches, the request is allowed without any further security checks.
+If it does not match or is not specified, then the database security is checked.</p>
+</div>
+<div class="paragraph">
+<p>Note that this property is only useful to allow reports that would otherwise be forbidden by
+database security.  If there is no database security due to lack of SQL connection properties, then
+all reports will be allowed.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_other_unsecured_operations"><a class="link" href="#_other_unsecured_operations">Other Unsecured Operations</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Requests that do not involve specific report design files can be allowed by specifying the
+birt.runner.unsecuredOperationPattern property.  This is a regular expression that is matched
+against one of the following:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Pattern</th>
+<th class="tableblock halign-left valign-top">Request</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>get</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET /get</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>download</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET /download</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>status</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET /status</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>status-all</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET /status-all</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>waitfor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET /waitfor</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>delete-job</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DELETE /job</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>job</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET /job</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jobs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET /jobs</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Note that /run, /submit, /schedule-simple, and /schedule-cron are not included because
+they are authorized based on the report name (see birt.runner.unsecuredDesignFilePattern).
+If it matches, the request is allowed without any further security checks.
+If it does not match or is not specified, then the database security is checked.
+An example regular expression that will allow /status, /status-all, and /waitfor is "status|status-all|waitfor".</p>
+</div>
+<div class="paragraph">
+<p>Note that this property is only useful to allow operations that would otherwise be forbidden by
+database security.  If there is no database security due to lack of SQL connection properties, then
+everything will be allowed.</p>
 </div>
 </div>
 </div>
@@ -2777,13 +2860,33 @@ ensure that only your application (or any application that can insert into
 your database) can make report requests.  To enable this,
 specify all the "db" properties in the configuration.  Then for each request you will need to
 create a random security token (UUID.getRandomUUID() is a good way to do this).
-Then you&#8217;ll need to insert a row into a table prior to making a /run or /submit request.
-The table should contain the security token, the full path/name of the report design file,
-and the current timestamp.  The security token must also be included in the /run or /submit
-request.  The configuration will provide a query that can retrieve these values
-from the database.  If the security token is not found or the report request name doesn&#8217;t
-match the request or the request is received later than a timeout specified in the configuration,
-then the request will be rejected.</p>
+Then you&#8217;ll need to insert a row into a table prior to making a request.</p>
+</div>
+<div class="paragraph">
+<p>The table should contain the security token, the current timestamp,
+and if the request involves a specific report design file such as running or scheduling a report,
+the full path/name of the report design file.
+The security token must also be included in the request.</p>
+</div>
+<div class="paragraph">
+<p>You must provide a query that can retrieve these values
+from the database in the configuration.
+The request will be allowed only if all of the following conditions are met:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The query returns a row.</p>
+</li>
+<li>
+<p>The timestamp returned is not later than the timeout specified in the configuration.</p>
+</li>
+<li>
+<p>Either
+the request is one of /run, /submit, /schedule-simple, and /schedule-cron and the report design file name returned by the query matches the one in the request,
+or the design file name returned by the query is null.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -2876,7 +2979,7 @@ Single forward slashes can also be used.  On Windows they will be automatically 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-08-09 12:43:55 MDT
+Last updated 2019-08-12 10:03:03 MDT
 </div>
 </div>
 </body>

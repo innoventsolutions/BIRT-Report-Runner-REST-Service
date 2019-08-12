@@ -37,7 +37,7 @@ public class AuthorizationService {
 			throws BadRequestException, SQLException {
 		if (configService.dbDriver == null) {
 			logger.info("There is no dbDriver");
-			// If there is no database, all reports are authorized
+			// If there is no database, all requests are authorized
 			return;
 		}
 		final DriverManagerDataSource dataSource = new DriverManagerDataSource();
