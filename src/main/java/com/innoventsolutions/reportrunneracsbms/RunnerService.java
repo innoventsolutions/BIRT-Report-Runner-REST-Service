@@ -115,19 +115,18 @@ public class RunnerService {
 
 		@Override
 		public void run() {
+			List<Exception> errors;
 			try {
-				final List<Exception> errors = runReport(status.reportRun, false);
+				errors = runReport(status.reportRun, false);
 				logger.info("report is finished, errors = " + errors);
-				status.finishReport(errors);
-				mailer.send(status);
 			}
 			catch (final Exception e) {
-				final List<Exception> errors = new ArrayList<>();
+				errors = new ArrayList<>();
 				errors.add(e);
 				logger.info("report failed", e);
-				status.finishReport(errors);
-				mailer.send(status);
 			}
+			status.finishReport(errors);
+			mailer.send(status);
 		}
 	}
 

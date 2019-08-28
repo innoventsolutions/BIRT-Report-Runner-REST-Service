@@ -39,14 +39,13 @@ public class ReportRunStatus {
 		}
 	}
 
-	public void finishEmail(final Map<String, Exception> errors) {
+	public synchronized void finishEmail(final Map<String, Exception> errors) {
+		// issue 10 - set finish time inside synchronization
 		finishTime = new Date();
 		if (errors != null) {
 			this.emailErrors.putAll(errors);
 		}
-		synchronized (this) {
-			notifyAll();
-		}
+		this.notifyAll();
 	}
 
 	public boolean isFinished() {

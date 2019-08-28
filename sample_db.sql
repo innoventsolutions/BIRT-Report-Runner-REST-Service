@@ -19,11 +19,12 @@ insert into authorization values(
 	'test-token', 
 	'/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/sample/test.rptdesign', 
 	'2019-06-21 00:00:00');
-update authorization set submit_time = now() where security_token = 'test-token';
 
 delete from authorization where security_token = 'test-token2';
 insert into authorization values(
 	'test-token2', 
 	null, 
 	'2019-06-21 00:00:00');
+
+update authorization set submit_time = now() where security_token = 'test-token';
 update authorization set submit_time = now() where security_token = 'test-token2';
