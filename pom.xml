@@ -9,8 +9,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.innoventsolutions</groupId>
-	<artifactId>report-runner-ac-sbms</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>birt-report-runner</artifactId>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>report-runner-ac-sbms</name>
 
 	<parent>
@@ -20,14 +20,10 @@
 	</parent>
 
 	<dependencies>
-		<!-- for client certificates: <dependency> <groupId>org.springframework.boot</groupId> 
-			<artifactId>spring-boot-starter-security</artifactId> </dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter</artifactId> 
-			</dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -37,30 +33,27 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- tomcat for jsp - <dependency> <groupId>org.apache.tomcat.embed</groupId> 
-			<artifactId>tomcat-embed-jasper</artifactId> <scope>provided</scope> </dependency> -->
-		<!-- rest docs -->
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
 			<artifactId>spring-restdocs-mockmvc</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- jdbc -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
-		<!-- for jndi -->
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-dbcp</artifactId>
 			<version>8.5.4</version>
 		</dependency>
-		<!-- thymeleaf -->
+		
+		<!-- thymeleaf --> 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+		
 		<!-- hot swapping, disable cache for template, enable live reload -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -78,9 +71,18 @@
 			<groupId>com.innoventsolutions.birt.runtime</groupId>
 			<artifactId>org.eclipse.birt.runtime_4.8.0-20180626</artifactId>
 			<version>4.8.0</version>
+
+			<exclusions>
+				<exclusion>
+					<groupId>
+						com.innoventsolutions.birt.runtime
+					</groupId>
+					<artifactId>
+						org.eclipse.orbit.mongodb_3.2.2.v20170222-2110
+					</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-		<!-- <dependency> <groupId>c3p0</groupId> <artifactId>c3p0</artifactId> 
-			<version>0.9.1.2</version> </dependency> -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
