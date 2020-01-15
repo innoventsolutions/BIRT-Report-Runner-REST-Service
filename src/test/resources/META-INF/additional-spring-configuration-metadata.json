@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "birt.runner.outputDirectory",
+  "type": "java.lang.String",
+  "description": "A description for 'birt.runner.outputDirectory'"
+}]}

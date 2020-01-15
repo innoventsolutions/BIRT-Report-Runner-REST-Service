@@ -2,6 +2,7 @@ HELP.md
 /target/
 /bin/
 /log/
+/data/
 !.mvn/wrapper/maven-wrapper.jar
 /sample/log/
 /sample/derby.log

@@ -1,2 +1,0 @@
-Description	Resource	Path	Location	Type
-Plugin execution not covered by lifecycle configuration: org.apache.maven.plugins:maven-resources-plugin:2.6:resources (execution: default-resources, phase: process-resources)	pom.xml	/report-runner	line 6	Maven Project Build Lifecycle Mapping Problem
