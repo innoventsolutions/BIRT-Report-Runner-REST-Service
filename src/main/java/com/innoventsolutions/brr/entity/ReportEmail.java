@@ -9,33 +9,22 @@
  ******************************************************************************/
 package com.innoventsolutions.brr.entity;
 
-public class ReportEmail {
-	public final Boolean mailSuccess;
-	public final Boolean mailFailure;
-	public final String mailTo;
-	public final String mailCc;
-	public final String mailBcc;
-	public final String mailSuccessSubject;
-	public final String mailFailureSubject;
-	public final String mailSuccessBody;
-	public final String mailFailureBody;
-	public final Boolean mailAttachReport;
-	public final Boolean mailHtml;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-	public ReportEmail(final Boolean mailSuccess, final Boolean mailFailure, final String mailTo,
-			final String mailCc, final String mailBcc, final String mailSuccessSubject,
-			final String mailFailureSubject, final String mailSuccessBody,
-			final String mailFailureBody, final Boolean mailAttachReport, final Boolean mailHtml) {
-		this.mailSuccess = mailSuccess;
-		this.mailFailure = mailFailure;
-		this.mailTo = mailTo;
-		this.mailCc = mailCc;
-		this.mailBcc = mailBcc;
-		this.mailSuccessSubject = mailSuccessSubject;
-		this.mailFailureSubject = mailFailureSubject;
-		this.mailSuccessBody = mailSuccessBody;
-		this.mailFailureBody = mailFailureBody;
-		this.mailAttachReport = mailAttachReport;
-		this.mailHtml = mailHtml;
-	}
+@Getter
+@RequiredArgsConstructor
+public class ReportEmail {
+	private final Boolean mailSuccess;
+	private final Boolean mailFailure;
+	private final String mailTo;
+	private final String mailCc;
+	private final String mailBcc;
+	private final String mailSuccessSubject;
+	private final String mailFailureSubject;
+	private final String mailSuccessBody;
+	private final String mailFailureBody;
+	private final Boolean mailAttachReport;
+	private final Boolean mailHtml;
+
 }

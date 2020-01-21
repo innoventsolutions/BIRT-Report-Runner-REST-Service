@@ -9,23 +9,12 @@
  ******************************************************************************/
 package com.innoventsolutions.brr.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class CronScheduleRequest extends ScheduleRequest {
 	private String cronString;
 	private String misfireInstruction;
 
-	public String getCronString() {
-		return cronString;
-	}
-
-	public void setCronString(final String cronString) {
-		this.cronString = cronString;
-	}
-
-	public String getMisfireInstruction() {
-		return misfireInstruction;
-	}
-
-	public void setMisfireInstruction(final String misfireInstruction) {
-		this.misfireInstruction = misfireInstruction;
-	}
 }

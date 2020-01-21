@@ -13,43 +13,15 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 abstract public class ScheduleRequest extends BaseRequest {
 	private String group;
 	private String name;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date startDate;
 	private ScheduledSubmitRequest submit;
 
-	public String getGroup() {
-		return group;
-	}
-
-	public void setGroup(final String group) {
-		this.group = group;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(final String name) {
-		this.name = name;
-	}
-
-	public ScheduledSubmitRequest getSubmit() {
-		return submit;
-	}
-
-	public void setSubmit(final ScheduledSubmitRequest submit) {
-		this.submit = submit;
-	}
-
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	public Date getStartDate() {
-		return startDate;
-	}
-
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	public void setStartDate(final Date startDate) {
-		this.startDate = startDate;
-	}
 }

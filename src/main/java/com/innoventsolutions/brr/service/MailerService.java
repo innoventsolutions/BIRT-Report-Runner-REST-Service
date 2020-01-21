@@ -73,8 +73,8 @@ public class MailerService {
 				return;
 			}
 			final boolean success = status.getErrors().isEmpty();
-			final boolean sendOnSuccess = email.mailSuccess != null
-				? email.mailSuccess.booleanValue()
+			final boolean sendOnSuccess = email.getMailSuccess() != null
+				? email.getMailSuccess().booleanValue()
 				: configuration.mailSuccess;
 			if (!sendOnSuccess) {
 				if (success) {
@@ -83,8 +83,8 @@ public class MailerService {
 					return;
 				}
 			}
-			final boolean sendOnFailure = email.mailFailure != null
-				? email.mailFailure.booleanValue()
+			final boolean sendOnFailure = email.getMailFailure() != null
+				? email.getMailFailure().booleanValue()
 				: configuration.mailFailure;
 			if (!sendOnFailure) {
 				if (!success) {
@@ -114,7 +114,7 @@ public class MailerService {
 				session = Session.getDefaultInstance(emailProperties);
 			}
 			session.setDebug(true);
-			final String mailTo = join(configuration.mailTo, email.mailTo);
+			final String mailTo = join(configuration.mailTo, email.getMailTo());
 			final String[] recipients = mailTo.split(", *");
 			final Map<String, Exception> exceptions = new HashMap<>();
 			for (final String recipient : recipients) {
@@ -123,7 +123,7 @@ public class MailerService {
 					mimeMessage.setFrom(new InternetAddress(configuration.mailFrom));
 					mimeMessage.addRecipient(Message.RecipientType.TO,
 						new InternetAddress(recipient));
-					final String mailCc = join(configuration.mailCc, email.mailCc);
+					final String mailCc = join(configuration.mailCc, email.getMailCc());
 					if (!mailCc.trim().isEmpty()) {
 						final String[] ccArray = mailCc.split(", *");
 						for (final String cc : ccArray) {
@@ -133,7 +133,7 @@ public class MailerService {
 							}
 						}
 					}
-					final String mailBcc = join(configuration.mailBcc, email.mailBcc);
+					final String mailBcc = join(configuration.mailBcc, email.getMailBcc());
 					if (!mailBcc.trim().isEmpty()) {
 						final String[] ccArray = mailBcc.split(", *");
 						for (final String cc : ccArray) {
@@ -144,9 +144,9 @@ public class MailerService {
 						}
 					}
 					final String mailSuccessSubject = supercede(configuration.mailSuccessSubject,
-						email.mailSuccessSubject);
+						email.getMailSuccessSubject());
 					final String mailFailureSubject = supercede(configuration.mailFailureSubject,
-						email.mailFailureSubject);
+						email.getMailFailureSubject());
 					final String subject = success
 						? mailSuccessSubject.trim().isEmpty() ? "Success"
 							: status.replace(mailSuccessSubject)
@@ -154,21 +154,21 @@ public class MailerService {
 							: status.replace(mailFailureSubject);
 					mimeMessage.setSubject(subject);
 					final String mailSuccessBody = supercede(configuration.mailSuccessBody,
-						email.mailSuccessBody);
+						email.getMailSuccessBody());
 					final String mailFailureBody = supercede(configuration.mailFailureBody,
-						email.mailFailureBody);
+						email.getMailFailureBody());
 					final String body = success ? status.replace(mailSuccessBody)
 						: mailFailureBody.trim().isEmpty() ? null : status.replace(mailFailureBody);
 					final Multipart mp = new MimeMultipart();
 					if (body != null) {
 						final MimeBodyPart mbp = new MimeBodyPart();
-						final boolean html = email.mailHtml != null ? email.mailHtml.booleanValue()
+						final boolean html = email.getMailHtml() != null ? email.getMailHtml().booleanValue()
 							: configuration.mailHtml;
 						mbp.setContent(body, html ? "text/html;charset=utf-8" : "text/plain");
 						mp.addBodyPart(mbp);
 					}
-					final boolean attach = email.mailAttachReport != null
-						? email.mailAttachReport.booleanValue()
+					final boolean attach = email.getMailAttachReport() != null
+						? email.getMailAttachReport().booleanValue()
 						: configuration.mailAttachReport;
 					final File outputFile = new File(configuration.outputDirectory,
 							status.reportRun.outputFile);

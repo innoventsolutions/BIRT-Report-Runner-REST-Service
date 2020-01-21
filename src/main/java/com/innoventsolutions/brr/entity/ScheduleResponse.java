@@ -11,20 +11,12 @@ package com.innoventsolutions.brr.entity;
 
 import org.quartz.JobKey;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter @RequiredArgsConstructor
 public class ScheduleResponse {
 	private final JobKey jobKey;
 	private final String message;
 
-	public ScheduleResponse(final JobKey jobKey, final String message) {
-		this.jobKey = jobKey;
-		this.message = message;
-	}
-
-	public JobKey getJobKey() {
-		return jobKey;
-	}
-
-	public String getMessage() {
-		return message;
-	}
 }

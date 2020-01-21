@@ -48,6 +48,11 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
 <!-- TOMCAT is required? 		
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>

@@ -9,14 +9,10 @@
  ******************************************************************************/
 package com.innoventsolutions.brr.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class StatusRequest extends BaseRequest {
 	private String jobId;
-
-	public String getJobId() {
-		return jobId;
-	}
-
-	public void setJobId(final String jobId) {
-		this.jobId = jobId;
-	}
 }

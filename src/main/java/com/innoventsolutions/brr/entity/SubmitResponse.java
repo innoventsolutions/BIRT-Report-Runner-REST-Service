@@ -11,26 +11,13 @@ package com.innoventsolutions.brr.entity;
 
 import java.util.UUID;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter @RequiredArgsConstructor
 public class SubmitResponse {
-	private final Throwable exception;
 	private final UUID uuid;
-
-	public String getExceptionString() {
-		return exception == null ? "" : exception.toString();
-	}
-
-	public boolean isSuccess() {
-		return exception == null;
-	}
-
-	public UUID getUuid() {
-		return uuid;
-	}
-
-	public SubmitResponse(final UUID uuid, final Throwable exception) {
-		this.exception = exception;
-		this.uuid = uuid;
-	}
+	private final Throwable exception;
 
 	public Throwable getException() {
 		return exception;

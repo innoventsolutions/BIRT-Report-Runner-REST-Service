@@ -50,7 +50,7 @@ public class AuthorizationService {
 				throw new BadRequestException(HttpStatus.UNAUTHORIZED, "Wrong design file");
 			}
 			if (authorization.getSubmitTime() != null
-					&& System.currentTimeMillis() - authorization.getSubmitTime().getTime() > configService.dbTimeout) {
+					&& System.currentTimeMillis() - authorization.getSubmitTime().getTime() > configService.authTimeout) {
 				throw new BadRequestException(HttpStatus.UNAUTHORIZED, "Security token has timed out");
 			}
 			

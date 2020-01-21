@@ -9,14 +9,11 @@
  ******************************************************************************/
 package com.innoventsolutions.brr.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class BaseRequest {
 	private String securityToken;
 
-	final public String getSecurityToken() {
-		return securityToken;
-	}
-
-	final public void setSecurityToken(final String securityToken) {
-		this.securityToken = securityToken;
-	}
 }

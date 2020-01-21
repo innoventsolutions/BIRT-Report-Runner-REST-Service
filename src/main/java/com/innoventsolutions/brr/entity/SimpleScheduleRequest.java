@@ -9,32 +9,13 @@
  ******************************************************************************/
 package com.innoventsolutions.brr.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class SimpleScheduleRequest extends ScheduleRequest {
 	private Long intervalInMilliseconds;
 	private Integer repeatCount;
 	private String misfireInstruction;
 
-	public Long getIntervalInMilliseconds() {
-		return intervalInMilliseconds;
-	}
-
-	public void setIntervalInMilliseconds(final Long intervalInMilliseconds) {
-		this.intervalInMilliseconds = intervalInMilliseconds;
-	}
-
-	public Integer getRepeatCount() {
-		return repeatCount;
-	}
-
-	public void setRepeatCount(final Integer repeatCount) {
-		this.repeatCount = repeatCount;
-	}
-
-	public String getMisfireInstruction() {
-		return misfireInstruction;
-	}
-
-	public void setMisfireInstruction(final String misfireInstruction) {
-		this.misfireInstruction = misfireInstruction;
-	}
 }

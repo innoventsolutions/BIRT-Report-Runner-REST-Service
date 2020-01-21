@@ -52,7 +52,7 @@ public class ConfigService {
 		public String dbPassword = null;
 		@Value("${birt.runner.db.query:}")
 		public String dbQuery = null;
-		@Value("${birt.runner.db.timeout:5000}")
+		@Value("${birt.runner.auth.timeout:5000}")
 		public Long dbTimeout = null;
 		@Value("${birt.runner.mail.username:}")
 		public String mailUsername = null;
@@ -122,19 +122,14 @@ public class ConfigService {
 	public final File birtRuntimeHome;
 	public final File resourcePath;
 	public final File scriptLib;
-	public final String reportFormat;
-	public final String baseImageURL;
+	public final File mailPropertiesFile;
 	public final File loggingPropertiesFile;
 	public final File loggingDir;
-	public final String dbDriver;
-	public final String dbUrl;
-	public final String dbUsername;
-	public final String dbPassword;
-	public final String dbQuery;
-	public final Long dbTimeout;
+	public final String reportFormat;
+	public final String baseImageURL;
+	public final Long authTimeout;
 	public final String mailUsername;
 	public final String mailPassword;
-	public final File mailPropertiesFile;
 	public final boolean mailSuccess;
 	public final boolean mailFailure;
 	public final String mailTo;
@@ -163,12 +158,7 @@ public class ConfigService {
 		this.baseImageURL = editor.baseImageURL;
 		this.loggingPropertiesFile = editor.loggingPropertiesFile;
 		this.loggingDir = editor.loggingDir;
-		this.dbDriver = editor.dbDriver;
-		this.dbUrl = editor.dbUrl;
-		this.dbUsername = editor.dbUsername;
-		this.dbPassword = editor.dbPassword;
-		this.dbQuery = editor.dbQuery;
-		this.dbTimeout = editor.dbTimeout;
+		this.authTimeout = editor.dbTimeout;
 		this.mailUsername = editor.mailUsername;
 		this.mailPassword = editor.mailPassword;
 		this.mailPropertiesFile = editor.mailPropertiesFile;
@@ -198,12 +188,7 @@ public class ConfigService {
 		logger.info("baseImageURL = " + baseImageURL);
 		logger.info("loggingPropertiesFile = " + loggingPropertiesFile.getAbsolutePath());
 		logger.info("loggingDir = " + loggingDir.getAbsolutePath());
-		logger.info("dbDriver = " + dbDriver);
-		logger.info("dbUrl = " + dbUrl);
-		logger.info("dbUsername = " + dbUsername);
-		logger.info("dbPassword = " + dbPassword);
-		logger.info("dbQuery = " + dbQuery);
-		logger.info("dbTimeout = " + dbTimeout);
+		logger.info("dbTimeout = " + authTimeout);
 		logger.info("mailUsername = " + mailUsername);
 		logger.info("mailPassword = " + mailPassword);
 		logger.info("mailPropertiesFile = "

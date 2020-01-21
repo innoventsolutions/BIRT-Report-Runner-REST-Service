@@ -50,8 +50,8 @@ public class RunReportQuartzJob implements Job {
 			final ReportRun reportRun = new ReportRun(request.getDesignFile(),
 					request.getNameForHumans(), format, outputFilename, request.isRunThenRender(),
 					runner.fixParameterTypes(request.getParameters()), null);
-			final ReportEmail email = new ReportEmail(request.isSendEmailOnSuccess(),
-					request.isSendEmailOnFailure(), request.getMailTo(), request.getMailCc(),
+			final ReportEmail email = new ReportEmail(request.getSendEmailOnSuccess(),
+					request.getSendEmailOnFailure(), request.getMailTo(), request.getMailCc(),
 					request.getMailBcc(), request.getMailSuccessSubject(),
 					request.getMailFailureSubject(), request.getMailSuccessBody(),
 					request.getMailFailureBody(), request.getMailAttachReport(),
