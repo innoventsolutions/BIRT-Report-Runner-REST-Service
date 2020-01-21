@@ -25,17 +25,18 @@ public class ClientSpringBootApp {
 
 	@PostConstruct
 	private void initDb() {
+		/*
 		System.out.println("****** Inserting more sample data in the table: Employees ******");
 		String sqlStatements[] = {
 				"insert into brrs.authorization values(1, 'test.rptdesign', 'test-token',  '2020-01-15 00:00:00')",
 				"insert into brrs.authorization values(2, 'test2.rptdesign', 'test-token2', '2020-01-15 00:00:00')",
 				"insert into brrs.authorization values(3, 'test2.rptdesign', 'test-token3', '2020-01-15 00:00:00')" };
-
+		
 		Arrays.asList(sqlStatements).stream().forEach(sql -> {
 			System.out.println(sql);
 			jdbcTemplate.execute(sql);
 		});
-
+		*/
 		System.out.println("****** Fetching from table: Authorization ******");
 		jdbcTemplate.query("select * from authorization", new RowMapper<Object>() {
 			@Override
