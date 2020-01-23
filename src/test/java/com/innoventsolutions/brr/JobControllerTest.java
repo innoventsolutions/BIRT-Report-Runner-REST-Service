@@ -75,16 +75,15 @@ public class JobControllerTest {
 	private static final Object JOB_START_DATE_DESCRIPTION = "The start date and time as dd-MM-yyyy hh:mm:ss";
 	Logger logger = LoggerFactory.getLogger(JobControllerTest.class);
 	@Rule
-	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation(
-			"target/generated-snippets");
+	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
 	@Autowired
 	private WebApplicationContext context;
 	private MockMvc mockMvc;
 
 	@Before
 	public void setUp() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context).apply(
-			documentationConfiguration(this.restDocumentation)).build();
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
+				.apply(documentationConfiguration(this.restDocumentation)).build();
 	}
 
 	static class TestRunRequestParams extends TestRunRequestNoparams {
@@ -108,29 +107,39 @@ public class JobControllerTest {
 		requestObject.runThenRender = true;
 		requestObject.parameters = new HashMap<>();
 		requestObject.parameters.put("keyFilter", "a.*");
+		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		logger.info("testRun request = " + requestString);
-		this.mockMvc.perform(
-			post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
-					document("run",
-						requestFields(
-							fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
-							fieldWithPath("format").optional().description(FORMAT_DESCRIPTION),
-							fieldWithPath("runThenRender").optional().description(
-								RUN_THEN_RENDER_DESCRIPTION),
-							subsectionWithPath("parameters").optional().type(
-								JsonFieldType.OBJECT).description(PARAMETERS_DESCRIPTION),
-							fieldWithPath("securityToken").type(
-								JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION)),
-						responseHeaders(headerWithName("Content-Type").description(
-							"The content type of the payload"))));
+		this.mockMvc
+				.perform(post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("run",
+						requestFields(fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
+								fieldWithPath("format").optional().description(FORMAT_DESCRIPTION),
+								fieldWithPath("runThenRender").optional().description(RUN_THEN_RENDER_DESCRIPTION),
+								subsectionWithPath("parameters").optional().type(JsonFieldType.OBJECT)
+										.description(PARAMETERS_DESCRIPTION),
+								fieldWithPath("securityToken").type(JsonFieldType.STRING).optional()
+										.description(TOKEN_DESCRIPTION)),
+						responseHeaders(
+								headerWithName("Content-Type").description("The content type of the payload"))));
 	}
 
 	static class TestRunRequestNoparams {
 		String designFile;
 		String format;
+		String securityToken;
+
+		public String getSecurityToken() {
+			return securityToken;
+		}
+
+		public void setSecurityToken(String securityToken) {
+			this.securityToken = securityToken;
+		}
+
 		boolean runThenRender;
 
 		public String getDesignFile() {
@@ -165,12 +174,12 @@ public class JobControllerTest {
 		requestObject.designFile = designFileURL.getPath();
 		requestObject.format = "pdf";
 		requestObject.runThenRender = true;
+		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		logger.info("testRunNoParams request = " + requestString);
-		this.mockMvc.perform(
-			post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		this.mockMvc.perform(post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
 	@Test
@@ -182,12 +191,12 @@ public class JobControllerTest {
 		requestObject.runThenRender = true;
 		requestObject.parameters = new HashMap<>();
 		requestObject.parameters.put("rowCount", "5");
+		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		logger.info("testRunRowCount request = " + requestString);
-		this.mockMvc.perform(
-			post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		this.mockMvc.perform(post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
 	static class TestSubmitRequestNoparams extends TestRunRequestNoparams {
@@ -210,52 +219,47 @@ public class JobControllerTest {
 		requestObject.format = "PDF";
 		requestObject.runThenRender = true;
 		requestObject.nameForHumans = "Test Report";
+		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		logger.info("testSubmit request = " + requestString);
-		final MvcResult result = this.mockMvc.perform(
-			post("/submit").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
-					"submit",
-					requestFields(fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
+		final MvcResult result = this.mockMvc
+				.perform(post("/submit").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("submit", requestFields(
+						fieldWithPath("designFile").description(DESIGN_FILE_DESCRIPTION),
 						fieldWithPath("format").optional().description(FORMAT_DESCRIPTION),
-						fieldWithPath("runThenRender").optional().description(
-							RUN_THEN_RENDER_DESCRIPTION),
-						subsectionWithPath("parameters").optional().type(
-							JsonFieldType.OBJECT).description(PARAMETERS_DESCRIPTION),
-						fieldWithPath("securityToken").type(
-							JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION),
+						fieldWithPath("runThenRender").optional().description(RUN_THEN_RENDER_DESCRIPTION),
+						subsectionWithPath("parameters").optional().type(JsonFieldType.OBJECT)
+								.description(PARAMETERS_DESCRIPTION),
+						fieldWithPath("securityToken").type(JsonFieldType.STRING).optional()
+								.description(TOKEN_DESCRIPTION),
 						fieldWithPath("nameForHumans").optional().description(
-							"A human friendly name for the report.  This will appear in a report status message and emails."),
-						fieldWithPath("sendEmailOnSuccess").type(
-							JsonFieldType.BOOLEAN).optional().description(
-								"Indicates whether or not email should be sent for successful generation"),
-						fieldWithPath("sendEmailOnFailure").type(
-							JsonFieldType.BOOLEAN).optional().description(
-								"Indicates whether or not email should be sent for failed generation"),
-						fieldWithPath("mailTo").type(JsonFieldType.STRING).optional().description(
-							"Recipient addresses separated by commas"),
-						fieldWithPath("mailCc").type(JsonFieldType.STRING).optional().description(
-							"Copy-recipient addresses separated by commas"),
-						fieldWithPath("mailBcc").type(JsonFieldType.STRING).optional().description(
-							"Blind-copy-addresses separated by commas"),
-						fieldWithPath("mailSuccessSubject").type(
-							JsonFieldType.STRING).optional().description(
-								"Email subject for successful reports"),
-						fieldWithPath("mailFailureSubject").type(
-							JsonFieldType.STRING).optional().description(
-								"Email subject for failed reports"),
-						fieldWithPath("mailSuccessBody").type(
-							JsonFieldType.STRING).optional().description(
-								"Email body for successful reports"),
-						fieldWithPath("mailFailureBody").type(
-							JsonFieldType.STRING).optional().description(
-								"Email body for failed reports")),
-					responseFields(
-						fieldWithPath("exception").description(
-							"Returns the exception object in case of failure"),
-						fieldWithPath("uuid").description(
-							"Returns the UUID that identifies the job")))).andReturn();
+								"A human friendly name for the report.  This will appear in a report status message and emails."),
+						fieldWithPath("sendEmailOnSuccess").type(JsonFieldType.BOOLEAN).optional()
+								.description("Indicates whether or not email should be sent for successful generation"),
+						fieldWithPath("sendEmailOnFailure").type(JsonFieldType.BOOLEAN).optional()
+								.description("Indicates whether or not email should be sent for failed generation"),
+						fieldWithPath("mailTo").type(JsonFieldType.STRING).optional()
+								.description("Recipient addresses separated by commas"),
+						fieldWithPath("mailCc").type(JsonFieldType.STRING).optional()
+								.description("Copy-recipient addresses separated by commas"),
+						fieldWithPath("mailBcc").type(JsonFieldType.STRING).optional()
+								.description("Blind-copy-addresses separated by commas"),
+						fieldWithPath("mailSuccessSubject").type(JsonFieldType.STRING).optional()
+								.description("Email subject for successful reports"),
+						fieldWithPath("mailFailureSubject").type(JsonFieldType.STRING).optional()
+								.description("Email subject for failed reports"),
+						fieldWithPath("mailSuccessBody").type(JsonFieldType.STRING).optional()
+								.description("Email body for successful reports"),
+						fieldWithPath("mailFailureBody").type(JsonFieldType.STRING).optional()
+								.description("Email body for failed reports")),
+						responseFields(
+								fieldWithPath("exception")
+										.description("Returns the exception object in case of failure"),
+								fieldWithPath("uuid").description("Returns the UUID that identifies the job"))))
+				.andReturn();
 		final MockHttpServletResponse response = result.getResponse();
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));
 		final String jsonString = response.getContentAsString();
@@ -267,7 +271,7 @@ public class JobControllerTest {
 		final String exceptionString = submitResponse.get("exceptionString");
 		logger.info("testSubmit exceptionString = " + exceptionString);
 		Assert.assertFalse("Exception string is not null and not blank: " + exceptionString,
-			exceptionString != null && exceptionString.trim().length() > 0);
+				exceptionString != null && exceptionString.trim().length() > 0);
 		Assert.assertNotNull("Job ID is null", jobId);
 	}
 
@@ -278,12 +282,12 @@ public class JobControllerTest {
 		requestObject.format = "PDF";
 		requestObject.runThenRender = true;
 		requestObject.nameForHumans = "Test Report";
+		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		logger.info("submit request = " + requestString);
-		final MvcResult result = this.mockMvc.perform(
-			post("/submit").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+		final MvcResult result = this.mockMvc.perform(post("/submit").contentType(MediaType.APPLICATION_JSON)
+				.content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 		final MockHttpServletResponse response = result.getResponse();
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));
 		final String jsonString = response.getContentAsString();
@@ -295,7 +299,7 @@ public class JobControllerTest {
 		final String exceptionString = submitResponse.get("exceptionString");
 		logger.info("testStatus exceptionString = " + exceptionString);
 		Assert.assertFalse("Exception string is not null and not blank: " + exceptionString,
-			exceptionString != null && exceptionString.trim().length() > 0);
+				exceptionString != null && exceptionString.trim().length() > 0);
 		Assert.assertNotNull("Job ID is null", jobId);
 		return jobId;
 	}
@@ -303,35 +307,35 @@ public class JobControllerTest {
 	@Test
 	public void testStatus() throws Exception {
 		final StatusRequest request = new StatusRequest();
-		request.setSecurityToken(null);
+		request.setSecurityToken("test-token-noreport");
 		request.setJobId(submit());
+		request.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
 		logger.info("status request = " + requestString);
-		final MvcResult statusResult = this.mockMvc.perform(
-			get("/status").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
-					"status",
-					requestFields(fieldWithPath("jobId").description(JOB_ID_DESCRIPTION),
-						fieldWithPath("securityToken").type(
-							JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION)),
-					responseFields(
-						subsectionWithPath("reportRun").description("The report run request"),
-						subsectionWithPath("email").description("The email request"),
-						fieldWithPath("startTime").description(
-							"The time when the report generation started"),
-						fieldWithPath("finishTime").description(
-							"The time when report generation and email finished or null if not finished"),
-						fieldWithPath("reportFinishTime").description(
-							"The time when the report generation finished or null if it is still running"),
-						fieldWithPath("duration").description(
-							"The number of milliseconds it took to generate the report"),
-						fieldWithPath("finished").description(
-							"Whether the report generation is finished"),
-						subsectionWithPath("errors").description(
-							"List of exceptions that were encountered during report generation"),
-						subsectionWithPath("emailErrors").description(
-							"List of exceptions that were encountered during sending email")))).andReturn();
+		final MvcResult statusResult = this.mockMvc
+				.perform(get("/status").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("status",
+						requestFields(fieldWithPath("jobId").description(JOB_ID_DESCRIPTION),
+								fieldWithPath("securityToken").type(JsonFieldType.STRING).optional()
+										.description(TOKEN_DESCRIPTION)),
+						responseFields(subsectionWithPath("reportRun").description("The report run request"),
+								subsectionWithPath("email").description("The email request"),
+								fieldWithPath("startTime").description("The time when the report generation started"),
+								fieldWithPath("finishTime").description(
+										"The time when report generation and email finished or null if not finished"),
+								fieldWithPath("reportFinishTime").description(
+										"The time when the report generation finished or null if it is still running"),
+								fieldWithPath("duration")
+										.description("The number of milliseconds it took to generate the report"),
+								fieldWithPath("finished").description("Whether the report generation is finished"),
+								subsectionWithPath("errors").description(
+										"List of exceptions that were encountered during report generation"),
+								subsectionWithPath("emailErrors")
+										.description("List of exceptions that were encountered during sending email"))))
+				.andReturn();
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
@@ -344,8 +348,7 @@ public class JobControllerTest {
 		Assert.assertNotNull("reportErrors should not be null", reportErrors);
 		Assert.assertTrue("reportErrors should be empty", reportErrors.isEmpty());
 		@SuppressWarnings("unchecked")
-		final Map<String, Object> emailErrors = (Map<String, Object>) responseMap.get(
-			"emailErrors");
+		final Map<String, Object> emailErrors = (Map<String, Object>) responseMap.get("emailErrors");
 		Assert.assertNotNull("emailErrors should not be null", emailErrors);
 		Assert.assertTrue("emailErrors should be empty", emailErrors.isEmpty());
 	}
@@ -353,38 +356,35 @@ public class JobControllerTest {
 	@Test
 	public void testWaitFor() throws Exception {
 		final WaitforRequest request = new WaitforRequest();
-		request.setSecurityToken(null);
+		request.setSecurityToken("test-token-noreport");
 		request.setJobId(submit());
 		request.setTimeout(Long.valueOf(5000L));
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
 		logger.info("status request = " + requestString);
-		final MvcResult statusResult = this.mockMvc.perform(
-			get("/waitfor").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
-					"waitfor",
-					requestFields(fieldWithPath("jobId").description(JOB_ID_DESCRIPTION),
-						fieldWithPath("securityToken").type(
-							JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION),
-						fieldWithPath("timeout").description(
-							"The maximum number of milliseconds to wait")),
-					responseFields(
-						subsectionWithPath("reportRun").description("The report run request"),
-						subsectionWithPath("email").description("The email request"),
-						fieldWithPath("startTime").description(
-							"The time when the report generation started"),
-						fieldWithPath("finishTime").description(
-							"The time when report generation and email finished or null if not finished"),
-						fieldWithPath("reportFinishTime").description(
-							"The time when the report generation finished or null if it is still running"),
-						fieldWithPath("duration").description(
-							"The number of milliseconds it took to generate the report"),
-						fieldWithPath("finished").description(
-							"Whether the report generation is finished"),
-						subsectionWithPath("errors").description(
-							"List of exceptions that were encountered during report generation"),
-						subsectionWithPath("emailErrors").description(
-							"List of exceptions that were encountered during sending email")))).andReturn();
+		final MvcResult statusResult = this.mockMvc
+				.perform(get("/waitfor").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("waitfor",
+						requestFields(fieldWithPath("jobId").description(JOB_ID_DESCRIPTION), fieldWithPath(
+								"securityToken").type(JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION),
+								fieldWithPath("timeout").description("The maximum number of milliseconds to wait")),
+						responseFields(subsectionWithPath("reportRun").description("The report run request"),
+								subsectionWithPath("email").description("The email request"),
+								fieldWithPath("startTime").description("The time when the report generation started"),
+								fieldWithPath("finishTime").description(
+										"The time when report generation and email finished or null if not finished"),
+								fieldWithPath("reportFinishTime").description(
+										"The time when the report generation finished or null if it is still running"),
+								fieldWithPath("duration")
+										.description("The number of milliseconds it took to generate the report"),
+								fieldWithPath("finished").description("Whether the report generation is finished"),
+								subsectionWithPath("errors").description(
+										"List of exceptions that were encountered during report generation"),
+								subsectionWithPath("emailErrors")
+										.description("List of exceptions that were encountered during sending email"))))
+				.andReturn();
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
@@ -397,8 +397,7 @@ public class JobControllerTest {
 		Assert.assertNotNull("reportErrors should not be null", reportErrors);
 		Assert.assertTrue("reportErrors should be empty", reportErrors.isEmpty());
 		@SuppressWarnings("unchecked")
-		final Map<String, Object> emailErrors = (Map<String, Object>) responseMap.get(
-			"emailErrors");
+		final Map<String, Object> emailErrors = (Map<String, Object>) responseMap.get("emailErrors");
 		Assert.assertNotNull("emailErrors should not be null", emailErrors);
 		Assert.assertTrue("emailErrors should be empty", emailErrors.isEmpty());
 	}
@@ -406,17 +405,18 @@ public class JobControllerTest {
 	@Test
 	public void testStatusAll() throws Exception {
 		final BaseRequest request = new BaseRequest();
-		request.setSecurityToken(null);
+		request.setSecurityToken("test-token-noreport");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
 		logger.info("status-all request = " + requestString);
-		final MvcResult statusResult = this.mockMvc.perform(
-			get("/status-all").contentType(MediaType.APPLICATION_JSON).content(
-				requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
-					document("status-all",
-						requestFields(fieldWithPath("securityToken").type(
-							JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION)),
-						relaxedResponseFields())).andReturn();
+		final MvcResult statusResult = this.mockMvc
+				.perform(get("/status-all").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(
+						status().isOk())
+				.andDo(document("status-all", requestFields(fieldWithPath("securityToken").type(JsonFieldType.STRING)
+						.optional().description(TOKEN_DESCRIPTION)), relaxedResponseFields()))
+				.andReturn();
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
@@ -429,45 +429,56 @@ public class JobControllerTest {
 	@Test
 	public void testGet() throws Exception {
 		final StatusRequest request = new StatusRequest();
-		request.setSecurityToken(null);
+		request.setSecurityToken("test-token-noreport");
 		request.setJobId(submit());
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
 		logger.info("get request = " + requestString);
-		this.mockMvc.perform(
-			get("/get").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
-					document("get",
+		this.mockMvc
+				.perform(get("/get").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("get",
 						requestFields(fieldWithPath("jobId").description(JOB_ID_DESCRIPTION),
-							fieldWithPath("securityToken").type(
-								JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION)),
-						responseHeaders(headerWithName("Content-Type").description(
-							"The content type of the payload")))).andReturn();
+								fieldWithPath("securityToken").type(JsonFieldType.STRING).optional()
+										.description(TOKEN_DESCRIPTION)),
+						responseHeaders(headerWithName("Content-Type").description("The content type of the payload"))))
+				.andReturn();
 	}
 
 	@Test
 	public void testDownload() throws Exception {
 		final StatusRequest request = new StatusRequest();
-		request.setSecurityToken(null);
+		request.setSecurityToken("test-token-noreport");
 		request.setJobId(submit());
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
 		logger.info("get request = " + requestString);
-		this.mockMvc.perform(
-			get("/download").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
-					document("download",
+		this.mockMvc
+				.perform(get("/download").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("download",
 						requestFields(fieldWithPath("jobId").description(JOB_ID_DESCRIPTION),
-							fieldWithPath("securityToken").type(
-								JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION)),
-						responseHeaders(headerWithName("Content-Type").description(
-							"The content type of the payload")))).andReturn();
+								fieldWithPath("securityToken").type(JsonFieldType.STRING).optional()
+										.description(TOKEN_DESCRIPTION)),
+						responseHeaders(headerWithName("Content-Type").description("The content type of the payload"))))
+				.andReturn();
 	}
 
 	static class TestScheduleRequest {
 		String group;
 		String name;
 		Date startDate;
+		String securityToken;
+		public String getSecurityToken() {
+			return securityToken;
+		}
+
+		public void setSecurityToken(String securityToken) {
+			this.securityToken = securityToken;
+		}
+
 		TestSubmitRequestNoparams submit;
 
 		public String getGroup() {
@@ -550,66 +561,59 @@ public class JobControllerTest {
 		requestObject.intervalInMilliseconds = Long.valueOf(1000L);
 		requestObject.repeatCount = 1;
 		requestObject.misfireInstruction = null;
+		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		logger.info("testScheduleSimple request = " + requestString);
-		final MvcResult result = this.mockMvc.perform(
-			post("/schedule-simple").contentType(MediaType.APPLICATION_JSON).content(
-				requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
-					document("schedule-simple", requestFields(
+		final MvcResult result = this.mockMvc
+				.perform(post("/schedule-simple").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("schedule-simple", requestFields(
 						fieldWithPath("group").description(JOB_GROUP_DESCRIPTION),
 						fieldWithPath("name").description(JOB_NAME_DESCRIPTION),
 						fieldWithPath("startDate").description(JOB_START_DATE_DESCRIPTION),
-						fieldWithPath("intervalInMilliseconds").optional().description(
-							"The interval in milliseconds between runs"),
+						fieldWithPath("intervalInMilliseconds").optional()
+								.description("The interval in milliseconds between runs"),
 						fieldWithPath("repeatCount").optional().description(
-							"The number of times to repeat the run. The default is to repeat forever."),
+								"The number of times to repeat the run. The default is to repeat forever."),
 						fieldWithPath("misfireInstruction").optional().description(
-							"One of 'ignore', 'fire-now', 'next-with-existing-count', 'next-with-remaining-count', 'now-with-existing-count', or 'now-with-remaining-count'"),
-						fieldWithPath("securityToken").type(
-							JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION),
+								"One of 'ignore', 'fire-now', 'next-with-existing-count', 'next-with-remaining-count', 'now-with-existing-count', or 'now-with-remaining-count'"),
+						fieldWithPath("securityToken").type(JsonFieldType.STRING).optional()
+								.description(TOKEN_DESCRIPTION),
 						fieldWithPath("submit.designFile").description(DESIGN_FILE_DESCRIPTION),
 						fieldWithPath("submit.format").optional().description(FORMAT_DESCRIPTION),
-						fieldWithPath("submit.runThenRender").optional().description(
-							RUN_THEN_RENDER_DESCRIPTION),
-						subsectionWithPath("submit.parameters").optional().type(
-							JsonFieldType.OBJECT).description(PARAMETERS_DESCRIPTION),
+						fieldWithPath("submit.runThenRender").optional().description(RUN_THEN_RENDER_DESCRIPTION),
+						subsectionWithPath("submit.parameters").optional().type(JsonFieldType.OBJECT)
+								.description(PARAMETERS_DESCRIPTION),
 						fieldWithPath("submit.nameForHumans").optional().description(
-							"A human friendly name for the report.  This will appear in a report status message and emails."),
-						fieldWithPath("submit.sendEmailOnSuccess").type(
-							JsonFieldType.BOOLEAN).optional().description(
-								"Indicates whether or not email should be sent for successful generation"),
-						fieldWithPath("submit.sendEmailOnFailure").type(
-							JsonFieldType.BOOLEAN).optional().description(
-								"Indicates whether or not email should be sent for failed generation"),
-						fieldWithPath("submit.mailTo").type(
-							JsonFieldType.STRING).optional().description(
-								"Recipient addresses separated by commas"),
-						fieldWithPath("submit.mailCc").type(
-							JsonFieldType.STRING).optional().description(
-								"Copy-recipient addresses separated by commas"),
-						fieldWithPath("submit.mailBcc").type(
-							JsonFieldType.STRING).optional().description(
-								"Blind-copy-addresses separated by commas"),
-						fieldWithPath("submit.mailSuccessSubject").type(
-							JsonFieldType.STRING).optional().description(
-								"Email subject for successful reports"),
-						fieldWithPath("submit.mailFailureSubject").type(
-							JsonFieldType.STRING).optional().description(
-								"Email subject for failed reports"),
-						fieldWithPath("submit.mailSuccessBody").type(
-							JsonFieldType.STRING).optional().description(
-								"Email body for successful reports"),
-						fieldWithPath("submit.mailFailureBody").type(
-							JsonFieldType.STRING).optional().description(
-								"Email body for failed reports")),
+								"A human friendly name for the report.  This will appear in a report status message and emails."),
+						fieldWithPath("submit.sendEmailOnSuccess").type(JsonFieldType.BOOLEAN).optional()
+								.description("Indicates whether or not email should be sent for successful generation"),
+						fieldWithPath("submit.sendEmailOnFailure").type(JsonFieldType.BOOLEAN).optional()
+								.description("Indicates whether or not email should be sent for failed generation"),
+						fieldWithPath("submit.mailTo").type(JsonFieldType.STRING).optional()
+								.description("Recipient addresses separated by commas"),
+						fieldWithPath("submit.mailCc").type(JsonFieldType.STRING).optional()
+								.description("Copy-recipient addresses separated by commas"),
+						fieldWithPath("submit.mailBcc").type(JsonFieldType.STRING).optional()
+								.description("Blind-copy-addresses separated by commas"),
+						fieldWithPath("submit.mailSuccessSubject").type(JsonFieldType.STRING).optional()
+								.description("Email subject for successful reports"),
+						fieldWithPath("submit.mailFailureSubject").type(JsonFieldType.STRING).optional()
+								.description("Email subject for failed reports"),
+						fieldWithPath("submit.mailSuccessBody").type(JsonFieldType.STRING).optional()
+								.description("Email body for successful reports"),
+						fieldWithPath("submit.mailFailureBody").type(JsonFieldType.STRING).optional()
+								.description("Email body for failed reports"),
+						fieldWithPath("submit.securityToken").type(JsonFieldType.STRING).optional()
+								.description(TOKEN_DESCRIPTION)),
 						responseFields(
-							fieldWithPath("message").description(
-								"Returns the exception message string in case of failure"),
-							fieldWithPath("jobKey.group").description(
-								"The job group name passed in the request"),
-							fieldWithPath("jobKey.name").description(
-								"The job name passed in the request")))).andReturn();
+								fieldWithPath("message")
+										.description("Returns the exception message string in case of failure"),
+								fieldWithPath("jobKey.group").description("The job group name passed in the request"),
+								fieldWithPath("jobKey.name").description("The job name passed in the request"))))
+				.andReturn();
 		final MockHttpServletResponse response = result.getResponse();
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));
 		final String jsonString = response.getContentAsString();
@@ -622,7 +626,7 @@ public class JobControllerTest {
 		final String message = (String) scheduleResponse.get("message");
 		logger.info("testScheduleSimple message = " + message);
 		Assert.assertFalse("Message is not null and not blank: " + message,
-			message != null && message.trim().length() > 0);
+				message != null && message.trim().length() > 0);
 		Assert.assertNotNull("Job key is null", jobKey);
 	}
 
@@ -659,6 +663,7 @@ public class JobControllerTest {
 		requestObject.group = "cron-test";
 		requestObject.name = "cron-test";
 		requestObject.startDate = null;
+		requestObject.setSecurityToken("test-token-report");
 		final long time = System.currentTimeMillis() + 31L * 24L * 60L * 60L * 1000L;
 		logger.info("cron time = " + new Date(time));
 		requestObject.cronString = getCronString(time);
@@ -666,61 +671,52 @@ public class JobControllerTest {
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		logger.info("testScheduleCron request = " + requestString);
-		final MvcResult result = this.mockMvc.perform(
-			post("/schedule-cron").contentType(MediaType.APPLICATION_JSON).content(
-				requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
-					document("schedule-cron", requestFields(
+		final MvcResult result = this.mockMvc
+				.perform(post("/schedule-cron").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("schedule-cron", requestFields(
 						fieldWithPath("group").description(JOB_GROUP_DESCRIPTION),
 						fieldWithPath("name").description(JOB_NAME_DESCRIPTION),
 						fieldWithPath("startDate").description(JOB_START_DATE_DESCRIPTION),
-						fieldWithPath("cronString").description(
-							"The cron string as described in cron documentation"),
-						fieldWithPath("misfireInstruction").optional().description(
-							"One of 'ignore', 'fire-and-proceed', or 'do-nothing'"),
-						fieldWithPath("securityToken").type(
-							JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION),
+						fieldWithPath("cronString").description("The cron string as described in cron documentation"),
+						fieldWithPath("misfireInstruction").optional()
+								.description("One of 'ignore', 'fire-and-proceed', or 'do-nothing'"),
+						fieldWithPath("securityToken").type(JsonFieldType.STRING).optional()
+								.description(TOKEN_DESCRIPTION),
 						fieldWithPath("submit.designFile").description(DESIGN_FILE_DESCRIPTION),
 						fieldWithPath("submit.format").optional().description(FORMAT_DESCRIPTION),
-						fieldWithPath("submit.runThenRender").optional().description(
-							RUN_THEN_RENDER_DESCRIPTION),
-						subsectionWithPath("submit.parameters").optional().type(
-							JsonFieldType.OBJECT).description(PARAMETERS_DESCRIPTION),
+						fieldWithPath("submit.runThenRender").optional().description(RUN_THEN_RENDER_DESCRIPTION),
+						subsectionWithPath("submit.parameters").optional().type(JsonFieldType.OBJECT)
+								.description(PARAMETERS_DESCRIPTION),
 						fieldWithPath("submit.nameForHumans").optional().description(
-							"A human friendly name for the report.  This will appear in a report status message and emails."),
-						fieldWithPath("submit.sendEmailOnSuccess").type(
-							JsonFieldType.BOOLEAN).optional().description(
-								"Indicates whether or not email should be sent for successful generation"),
-						fieldWithPath("submit.sendEmailOnFailure").type(
-							JsonFieldType.BOOLEAN).optional().description(
-								"Indicates whether or not email should be sent for failed generation"),
-						fieldWithPath("submit.mailTo").type(
-							JsonFieldType.STRING).optional().description(
-								"Recipient addresses separated by commas"),
-						fieldWithPath("submit.mailCc").type(
-							JsonFieldType.STRING).optional().description(
-								"Copy-recipient addresses separated by commas"),
-						fieldWithPath("submit.mailBcc").type(
-							JsonFieldType.STRING).optional().description(
-								"Blind-copy-addresses separated by commas"),
-						fieldWithPath("submit.mailSuccessSubject").type(
-							JsonFieldType.STRING).optional().description(
-								"Email subject for successful reports"),
-						fieldWithPath("submit.mailFailureSubject").type(
-							JsonFieldType.STRING).optional().description(
-								"Email subject for failed reports"),
-						fieldWithPath("submit.mailSuccessBody").type(
-							JsonFieldType.STRING).optional().description(
-								"Email body for successful reports"),
-						fieldWithPath("submit.mailFailureBody").type(
-							JsonFieldType.STRING).optional().description(
-								"Email body for failed reports")),
+								"A human friendly name for the report.  This will appear in a report status message and emails."),
+						fieldWithPath("submit.sendEmailOnSuccess").type(JsonFieldType.BOOLEAN).optional()
+								.description("Indicates whether or not email should be sent for successful generation"),
+						fieldWithPath("submit.sendEmailOnFailure").type(JsonFieldType.BOOLEAN).optional()
+								.description("Indicates whether or not email should be sent for failed generation"),
+						fieldWithPath("submit.mailTo").type(JsonFieldType.STRING).optional()
+								.description("Recipient addresses separated by commas"),
+						fieldWithPath("submit.mailCc").type(JsonFieldType.STRING).optional()
+								.description("Copy-recipient addresses separated by commas"),
+						fieldWithPath("submit.mailBcc").type(JsonFieldType.STRING).optional()
+								.description("Blind-copy-addresses separated by commas"),
+						fieldWithPath("submit.mailSuccessSubject").type(JsonFieldType.STRING).optional()
+								.description("Email subject for successful reports"),
+						fieldWithPath("submit.mailFailureSubject").type(JsonFieldType.STRING).optional()
+								.description("Email subject for failed reports"),
+						fieldWithPath("submit.mailSuccessBody").type(JsonFieldType.STRING).optional()
+								.description("Email body for successful reports"),
+						fieldWithPath("submit.mailFailureBody").type(JsonFieldType.STRING).optional()
+								.description("Email body for failed reports"),
+						fieldWithPath("submit.securityToken").type(JsonFieldType.STRING).optional()
+								.description(TOKEN_DESCRIPTION)),
 						responseFields(
-							fieldWithPath("message").description(
-								"Returns the exception message string in case of failure"),
-							fieldWithPath("jobKey.group").description(
-								"The job group name passed in the request"),
-							fieldWithPath("jobKey.name").description(
-								"The job name passed in the request")))).andReturn();
+								fieldWithPath("message")
+										.description("Returns the exception message string in case of failure"),
+								fieldWithPath("jobKey.group").description("The job group name passed in the request"),
+								fieldWithPath("jobKey.name").description("The job name passed in the request"))))
+				.andReturn();
 		final MockHttpServletResponse response = result.getResponse();
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));
 		final String jsonString = response.getContentAsString();
@@ -733,7 +729,7 @@ public class JobControllerTest {
 		final String message = (String) scheduleResponse.get("message");
 		logger.info("testScheduleCron message = " + message);
 		Assert.assertFalse("Message is not null and not blank: " + message,
-			message != null && message.trim().length() > 0);
+				message != null && message.trim().length() > 0);
 		Assert.assertNotNull("Job key is null", jobKey);
 	}
 
@@ -761,28 +757,29 @@ public class JobControllerTest {
 	@Test
 	public void testGetJob() throws Exception {
 		final GetJobRequest request = new GetJobRequest();
-		request.setSecurityToken(null);
+		request.setSecurityToken("test-token-noreport");
 		request.setName("simple-test");
 		request.setGroup("simple-test");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
 		logger.info("testJob request = " + requestString);
-		final MvcResult statusResult = this.mockMvc.perform(
-			get("/job").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(document(
-					"job",
-					requestFields(
-						fieldWithPath("securityToken").type(
-							JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION),
-						fieldWithPath("name").description(
-							JOB_NAME_DESCRIPTION + " that was used to create the schedule"),
-						fieldWithPath("group").description(
-							JOB_GROUP_DESCRIPTION + " that was used to create the schedule")),
-					responseFields(subsectionWithPath("triggers").description("The job triggers"),
-						subsectionWithPath("runs").description(
-							"Status info of actual runs that have occurred.  "
-								+ "This is an object where each key is a report run UUID and the value is the "
-								+ "same as what is returned from /status.")))).andReturn();
+		final MvcResult statusResult = this.mockMvc
+				.perform(get("/job").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("job",
+						requestFields(fieldWithPath("securityToken").type(JsonFieldType.STRING).optional()
+								.description(TOKEN_DESCRIPTION),
+								fieldWithPath("name").description(JOB_NAME_DESCRIPTION
+										+ " that was used to create the schedule"),
+								fieldWithPath("group")
+										.description(JOB_GROUP_DESCRIPTION + " that was used to create the schedule")),
+						responseFields(subsectionWithPath("triggers").description("The job triggers"),
+								subsectionWithPath("runs")
+										.description("Status info of actual runs that have occurred.  "
+												+ "This is an object where each key is a report run UUID and the value is the "
+												+ "same as what is returned from /status."))))
+				.andReturn();
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
@@ -795,17 +792,18 @@ public class JobControllerTest {
 	@Test
 	public void testGetJobs() throws Exception {
 		final BaseRequest request = new BaseRequest();
-		request.setSecurityToken(null);
+		request.setSecurityToken("test-token-noreport");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
 		logger.info("testJobs request = " + requestString);
-		final MvcResult statusResult = this.mockMvc.perform(
-			get("/jobs").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
-					document("jobs",
-						requestFields(fieldWithPath("securityToken").type(
-							JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION)),
-						relaxedResponseFields())).andReturn();
+		final MvcResult statusResult = this.mockMvc
+				.perform(get("/jobs").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(
+						status().isOk())
+				.andDo(document("jobs", requestFields(fieldWithPath("securityToken").type(JsonFieldType.STRING)
+						.optional().description(TOKEN_DESCRIPTION)), relaxedResponseFields()))
+				.andReturn();
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
@@ -818,25 +816,26 @@ public class JobControllerTest {
 	@Test
 	public void testDeleteJob() throws Exception {
 		final GetJobRequest request = new GetJobRequest();
-		request.setSecurityToken(null);
+		request.setSecurityToken("test-token-noreport");
 		request.setName("simple-test");
 		request.setGroup("simple-test");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
 		logger.info("testDeleteJob request = " + requestString);
-		final MvcResult statusResult = this.mockMvc.perform(
-			delete("/job").contentType(MediaType.APPLICATION_JSON).content(requestString).accept(
-				MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(
-					document("delete-job",
+		final MvcResult statusResult = this.mockMvc
+				.perform(delete("/job").contentType(MediaType.APPLICATION_JSON).content(requestString)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("delete-job",
 						requestFields(
-							fieldWithPath("securityToken").type(
-								JsonFieldType.STRING).optional().description(TOKEN_DESCRIPTION),
-							fieldWithPath("name").description(
-								JOB_NAME_DESCRIPTION + " that was used to create the schedule"),
-							fieldWithPath("group").description(
-								JOB_GROUP_DESCRIPTION + " that was used to create the schedule")),
-						responseFields(fieldWithPath("jobDeleted").description(
-							"True if the job was deleted")))).andReturn();
+								fieldWithPath("securityToken").type(JsonFieldType.STRING).optional()
+										.description(TOKEN_DESCRIPTION),
+								fieldWithPath("name")
+										.description(JOB_NAME_DESCRIPTION + " that was used to create the schedule"),
+								fieldWithPath("group")
+										.description(JOB_GROUP_DESCRIPTION + " that was used to create the schedule")),
+						responseFields(fieldWithPath("jobDeleted").description("True if the job was deleted"))))
+				.andReturn();
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();

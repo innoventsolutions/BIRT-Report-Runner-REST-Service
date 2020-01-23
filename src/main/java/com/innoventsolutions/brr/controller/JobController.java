@@ -277,6 +277,9 @@ public class JobController {
 					request.getMailAttachReport(), request.getMailHtml());
 			final UUID jobUUID = runner.startReport(reportRun, email, true);
 			return new ResponseEntity<SubmitResponse>(new SubmitResponse(jobUUID, null), HttpStatus.OK);
+		} catch (final BadRequestException e) {
+			logger.error("Exception", e);
+			return new ResponseEntity<SubmitResponse>(new SubmitResponse(null, e), e.getCode());
 		} catch (final Throwable e) {
 			logger.error("Exception", e);
 			return new ResponseEntity<SubmitResponse>(new SubmitResponse(null, e), HttpStatus.INTERNAL_SERVER_ERROR);
