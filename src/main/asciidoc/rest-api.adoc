@@ -1,6 +1,6 @@
 = Report runner service
 Steve Schafer;
-:doctype: book
+:doctype: article
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
@@ -715,6 +715,9 @@ birt.runner.unsecuredOperationPattern::
   This is an optional regular expression that is matched against the operation name.
   If it matches, the request is allowed with no further security checks.
   If it does not match or is not specified, then the database security is checked.
+  To match multiple operations use the OR regular expression operator.  
++
+  For example: status|status-all|job|jobs
   
 birt.runner.mail.username::
   The user name required for SMTP server authentication.

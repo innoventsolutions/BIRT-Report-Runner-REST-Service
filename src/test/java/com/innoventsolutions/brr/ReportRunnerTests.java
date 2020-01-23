@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -28,7 +29,7 @@ import com.innoventsolutions.brr.service.RunnerService;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ReportRunnerApplication.class)
 public class ReportRunnerTests {
 	Logger logger = LoggerFactory.getLogger(ReportRunnerTests.class);
-	// @Autowired
+	@Autowired
 	RunnerService runner;
 
 	@Test

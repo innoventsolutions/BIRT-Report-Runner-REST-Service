@@ -9,6 +9,7 @@ HELP.md
 /sample/logs/
 /sample/output/
 derby.log
+/output/
 
 ### STS ###
 .apt_generated

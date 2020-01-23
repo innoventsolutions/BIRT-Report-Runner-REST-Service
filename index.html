@@ -730,7 +730,7 @@ and explictly typed parameter was not specified correctly or an unsupported form
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/run' -i -X POST \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"pdf","runThenRender":true,"parameters":{"keyFilter":"a.*"}}'</code></pre>
+    -d '{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"pdf","runThenRender":true,"parameters":{"keyFilter":"a.*"}}'</code></pre>
 </div>
 </div>
 </div>
@@ -740,11 +740,11 @@ and explictly typed parameter was not specified correctly or an unsupported form
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /run HTTP/1.1
 Accept: application/json
+Content-Length: 208
 Content-Type: application/json
 Host: localhost:8080
-Content-Length: 223
 
-{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"pdf","runThenRender":true,"parameters":{"keyFilter":"a.*"}}</code></pre>
+{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"pdf","runThenRender":true,"parameters":{"keyFilter":"a.*"}}</code></pre>
 </div>
 </div>
 </div>
@@ -874,16 +874,6 @@ Both the request and the response content types are application/json.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Returns the exception object in case of failure</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>exceptionString</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Returns the exception message string in case of failure</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>success</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Returns true if the request was successfully processed</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>uuid</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Returns the UUID that identifies the job</p></td>
@@ -947,7 +937,7 @@ and explictly typed parameter was not specified correctly or an unsupported form
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/submit' -i -X POST \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"}'</code></pre>
+    -d '{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"}'</code></pre>
 </div>
 </div>
 </div>
@@ -957,11 +947,11 @@ and explictly typed parameter was not specified correctly or an unsupported form
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /submit HTTP/1.1
 Accept: application/json
-Content-Length: 220
 Content-Type: application/json
+Content-Length: 205
 Host: localhost:8080
 
-{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"}</code></pre>
+{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"}</code></pre>
 </div>
 </div>
 </div>
@@ -1177,7 +1167,7 @@ request or the request was made beyond the timeout period.</p></td>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/schedule-cron' -i -X POST \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"22 11 8 28 9 ? 2019","misfireInstruction":null}'</code></pre>
+    -d '{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"4 20 8 23 2 ? 2020","misfireInstruction":null}'</code></pre>
 </div>
 </div>
 </div>
@@ -1188,10 +1178,10 @@ request or the request was made beyond the timeout period.</p></td>
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /schedule-cron HTTP/1.1
 Accept: application/json
 Content-Type: application/json
-Content-Length: 348
 Host: localhost:8080
+Content-Length: 332
 
-{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"22 11 8 28 9 ? 2019","misfireInstruction":null}</code></pre>
+{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"4 20 8 23 2 ? 2020","misfireInstruction":null}</code></pre>
 </div>
 </div>
 </div>
@@ -1412,7 +1402,7 @@ request or the request was made beyond the timeout period.</p></td>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/schedule-cron' -i -X POST \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"22 11 8 28 9 ? 2019","misfireInstruction":null}'</code></pre>
+    -d '{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"4 20 8 23 2 ? 2020","misfireInstruction":null}'</code></pre>
 </div>
 </div>
 </div>
@@ -1423,10 +1413,10 @@ request or the request was made beyond the timeout period.</p></td>
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /schedule-cron HTTP/1.1
 Accept: application/json
 Content-Type: application/json
-Content-Length: 348
 Host: localhost:8080
+Content-Length: 332
 
-{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/reportrunneracsbms/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"22 11 8 28 9 ? 2019","misfireInstruction":null}</code></pre>
+{"group":"cron-test","name":"cron-test","startDate":null,"submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","runThenRender":true,"nameForHumans":"Test Report"},"cronString":"4 20 8 23 2 ? 2020","misfireInstruction":null}</code></pre>
 </div>
 </div>
 </div>
@@ -1959,7 +1949,7 @@ The response content type is application/json.</p>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":null,"jobId":"28bf0a9c-4562-4612-adb7-bd0daeffd184"}'</code></pre>
+    -d '{"securityToken":null,"jobId":"09d800cd-4b36-4c55-8088-0a6cfe19f3c0"}'</code></pre>
 </div>
 </div>
 </div>
@@ -1973,7 +1963,7 @@ Content-Type: application/json
 Host: localhost:8080
 Content-Length: 69
 
-{"securityToken":null,"jobId":"28bf0a9c-4562-4612-adb7-bd0daeffd184"}</code></pre>
+{"securityToken":null,"jobId":"09d800cd-4b36-4c55-8088-0a6cfe19f3c0"}</code></pre>
 </div>
 </div>
 </div>
@@ -2241,7 +2231,7 @@ The response content type is application/json.</p>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/waitfor' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":null,"jobId":"2ada92c1-9493-4c55-8155-f028cb9fcfc4","timeout":5000}'</code></pre>
+    -d '{"securityToken":null,"jobId":"f5e19e82-2386-4d67-9eb5-b2a765dfe2d6","timeout":5000}'</code></pre>
 </div>
 </div>
 </div>
@@ -2255,7 +2245,7 @@ Content-Length: 84
 Content-Type: application/json
 Host: localhost:8080
 
-{"securityToken":null,"jobId":"2ada92c1-9493-4c55-8155-f028cb9fcfc4","timeout":5000}</code></pre>
+{"securityToken":null,"jobId":"f5e19e82-2386-4d67-9eb5-b2a765dfe2d6","timeout":5000}</code></pre>
 </div>
 </div>
 </div>
@@ -2352,7 +2342,7 @@ The response content type will correspond to the requested format.</p>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/get' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":null,"jobId":"07e19827-f499-45bd-8be5-fe2aa62e6b72"}'</code></pre>
+    -d '{"securityToken":null,"jobId":"a794c8db-34b7-42a4-9623-37e301c26497"}'</code></pre>
 </div>
 </div>
 </div>
@@ -2366,7 +2356,7 @@ Content-Type: application/json
 Host: localhost:8080
 Content-Length: 69
 
-{"securityToken":null,"jobId":"07e19827-f499-45bd-8be5-fe2aa62e6b72"}</code></pre>
+{"securityToken":null,"jobId":"a794c8db-34b7-42a4-9623-37e301c26497"}</code></pre>
 </div>
 </div>
 </div>
@@ -2463,7 +2453,7 @@ The response content type will correspond to the requested format.</p>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/download' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":null,"jobId":"2a153117-71ee-4199-b8fb-605a56302a9c"}'</code></pre>
+    -d '{"securityToken":null,"jobId":"fc3d7bc2-b98e-4c2f-ab84-a086b1b144a1"}'</code></pre>
 </div>
 </div>
 </div>
@@ -2477,7 +2467,7 @@ Content-Type: application/json
 Host: localhost:8080
 Content-Length: 69
 
-{"securityToken":null,"jobId":"2a153117-71ee-4199-b8fb-605a56302a9c"}</code></pre>
+{"securityToken":null,"jobId":"fc3d7bc2-b98e-4c2f-ab84-a086b1b144a1"}</code></pre>
 </div>
 </div>
 </div>
@@ -2654,7 +2644,13 @@ If it does not match or is not specified, then the database security is checked.
 <dd>
 <p>This is an optional regular expression that is matched against the operation name.
 If it matches, the request is allowed with no further security checks.
-If it does not match or is not specified, then the database security is checked.</p>
+If it does not match or is not specified, then the database security is checked.
+To match multiple operations use the OR regular expression operator.</p>
+<div class="literalblock">
+<div class="content">
+<pre>For example: status|status-all|job|jobs</pre>
+</div>
+</div>
 </dd>
 <dt class="hdlist1">birt.runner.mail.username</dt>
 <dd>
@@ -2979,7 +2975,7 @@ Single forward slashes can also be used.  On Windows they will be automatically 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-08-12 10:03:03 MDT
+Last updated 2020-01-22 11:37:45 MST
 </div>
 </div>
 </body>

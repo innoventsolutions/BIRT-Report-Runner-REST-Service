@@ -38,7 +38,7 @@ public class AuthorizationService {
 	public void authorize(final String securityToken, final String requestDesignFile)
 			throws BadRequestException, SQLException {
 		
-		List<Authorization> as = (List<Authorization>)authRepository.findAll();
+		// List<Authorization> as = (List<Authorization>)authRepository.findAll();
 		List<Authorization> auths = authRepository.findAllBySecurityToken(securityToken);
 		
 		if (auths.size() < 1) {

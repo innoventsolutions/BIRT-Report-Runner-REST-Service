@@ -254,10 +254,6 @@ public class JobControllerTest {
 					responseFields(
 						fieldWithPath("exception").description(
 							"Returns the exception object in case of failure"),
-						fieldWithPath("exceptionString").description(
-							"Returns the exception message string in case of failure"),
-						fieldWithPath("success").description(
-							"Returns true if the request was successfully processed"),
 						fieldWithPath("uuid").description(
 							"Returns the UUID that identifies the job")))).andReturn();
 		final MockHttpServletResponse response = result.getResponse();
