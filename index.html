@@ -1172,7 +1172,7 @@ request or the request was made beyond the timeout period.</p></td>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/schedule-cron' -i -X POST \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"group":"cron-test","name":"cron-test","startDate":null,"securityToken":"test-token-report","submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","securityToken":null,"runThenRender":true,"nameForHumans":"Test Report"},"cronString":"17 40 1 23 2 ? 2020","misfireInstruction":null}'</code></pre>
+    -d '{"group":"cron-test","name":"cron-test","startDate":null,"securityToken":"test-token-report","submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","securityToken":null,"runThenRender":true,"nameForHumans":"Test Report"},"cronString":"22 45 0 24 2 ? 2020","misfireInstruction":null}'</code></pre>
 </div>
 </div>
 </div>
@@ -1186,7 +1186,7 @@ Content-Length: 390
 Content-Type: application/json
 Host: localhost:8080
 
-{"group":"cron-test","name":"cron-test","startDate":null,"securityToken":"test-token-report","submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","securityToken":null,"runThenRender":true,"nameForHumans":"Test Report"},"cronString":"17 40 1 23 2 ? 2020","misfireInstruction":null}</code></pre>
+{"group":"cron-test","name":"cron-test","startDate":null,"securityToken":"test-token-report","submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","securityToken":null,"runThenRender":true,"nameForHumans":"Test Report"},"cronString":"22 45 0 24 2 ? 2020","misfireInstruction":null}</code></pre>
 </div>
 </div>
 </div>
@@ -1412,7 +1412,7 @@ request or the request was made beyond the timeout period.</p></td>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/schedule-cron' -i -X POST \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"group":"cron-test","name":"cron-test","startDate":null,"securityToken":"test-token-report","submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","securityToken":null,"runThenRender":true,"nameForHumans":"Test Report"},"cronString":"17 40 1 23 2 ? 2020","misfireInstruction":null}'</code></pre>
+    -d '{"group":"cron-test","name":"cron-test","startDate":null,"securityToken":"test-token-report","submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","securityToken":null,"runThenRender":true,"nameForHumans":"Test Report"},"cronString":"22 45 0 24 2 ? 2020","misfireInstruction":null}'</code></pre>
 </div>
 </div>
 </div>
@@ -1426,7 +1426,7 @@ Content-Length: 390
 Content-Type: application/json
 Host: localhost:8080
 
-{"group":"cron-test","name":"cron-test","startDate":null,"securityToken":"test-token-report","submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","securityToken":null,"runThenRender":true,"nameForHumans":"Test Report"},"cronString":"17 40 1 23 2 ? 2020","misfireInstruction":null}</code></pre>
+{"group":"cron-test","name":"cron-test","startDate":null,"securityToken":"test-token-report","submit":{"designFile":"/disk1/home/innovent/projects/BIRT-Report-Runner-REST-Service/target/test-classes/com/innoventsolutions/brr/test.rptdesign","format":"PDF","securityToken":null,"runThenRender":true,"nameForHumans":"Test Report"},"cronString":"22 45 0 24 2 ? 2020","misfireInstruction":null}</code></pre>
 </div>
 </div>
 </div>
@@ -1959,7 +1959,7 @@ The response content type is application/json.</p>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/status' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":"test-token-report","jobId":"150c805d-2cfc-4dc3-9358-535bf20adeda"}'</code></pre>
+    -d '{"securityToken":"test-token-report","jobId":"404632b0-4789-45ea-baa9-0bfb2717548e"}'</code></pre>
 </div>
 </div>
 </div>
@@ -1973,7 +1973,7 @@ Content-Length: 84
 Content-Type: application/json
 Host: localhost:8080
 
-{"securityToken":"test-token-report","jobId":"150c805d-2cfc-4dc3-9358-535bf20adeda"}</code></pre>
+{"securityToken":"test-token-report","jobId":"404632b0-4789-45ea-baa9-0bfb2717548e"}</code></pre>
 </div>
 </div>
 </div>
@@ -2241,7 +2241,7 @@ The response content type is application/json.</p>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/waitfor' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":"test-token-noreport","jobId":"81cad8b4-5fe9-443d-bb36-bf731edc4202","timeout":5000}'</code></pre>
+    -d '{"securityToken":"test-token-noreport","jobId":"798c73aa-924b-46e8-ad89-4c21e207922e","timeout":5000}'</code></pre>
 </div>
 </div>
 </div>
@@ -2255,7 +2255,7 @@ Content-Type: application/json
 Host: localhost:8080
 Content-Length: 101
 
-{"securityToken":"test-token-noreport","jobId":"81cad8b4-5fe9-443d-bb36-bf731edc4202","timeout":5000}</code></pre>
+{"securityToken":"test-token-noreport","jobId":"798c73aa-924b-46e8-ad89-4c21e207922e","timeout":5000}</code></pre>
 </div>
 </div>
 </div>
@@ -2352,7 +2352,7 @@ The response content type will correspond to the requested format.</p>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/get' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":"test-token-noreport","jobId":"ababfb3e-872a-4cba-ad29-3c6dfd6e5aaf"}'</code></pre>
+    -d '{"securityToken":"test-token-noreport","jobId":"bce92582-d01e-4cec-84fc-552b9ae00bc8"}'</code></pre>
 </div>
 </div>
 </div>
@@ -2366,7 +2366,7 @@ Content-Length: 86
 Content-Type: application/json
 Host: localhost:8080
 
-{"securityToken":"test-token-noreport","jobId":"ababfb3e-872a-4cba-ad29-3c6dfd6e5aaf"}</code></pre>
+{"securityToken":"test-token-noreport","jobId":"bce92582-d01e-4cec-84fc-552b9ae00bc8"}</code></pre>
 </div>
 </div>
 </div>
@@ -2463,7 +2463,7 @@ The response content type will correspond to the requested format.</p>
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ curl 'http://localhost:8080/download' -i -X GET \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"securityToken":"test-token-noreport","jobId":"da0970a0-093c-44c8-bdd3-74e48cdf8ec4"}'</code></pre>
+    -d '{"securityToken":"test-token-noreport","jobId":"1874f1a1-847a-4d69-b6ff-11758be9cd50"}'</code></pre>
 </div>
 </div>
 </div>
@@ -2477,7 +2477,7 @@ Content-Length: 86
 Content-Type: application/json
 Host: localhost:8080
 
-{"securityToken":"test-token-noreport","jobId":"da0970a0-093c-44c8-bdd3-74e48cdf8ec4"}</code></pre>
+{"securityToken":"test-token-noreport","jobId":"1874f1a1-847a-4d69-b6ff-11758be9cd50"}</code></pre>
 </div>
 </div>
 </div>

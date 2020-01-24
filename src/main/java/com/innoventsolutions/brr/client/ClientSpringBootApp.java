@@ -34,13 +34,13 @@ public class ClientSpringBootApp {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String dateString = df.format(new Date());
 		// get full path to report design file (which is in a different package)
-		final URL designFileURL = this.getClass().getResource("placeholder.txt");
-		File file = new File(new File(designFileURL.getPath()).getParentFile().getParentFile(), "test.rptdesign");
-		System.out.println("****** Inserting more sample data in the table: Employees ******");
+		final URL placeholderFileURL = this.getClass().getResource("placeholder.txt");
+		final File file = new File(new File(placeholderFileURL.getPath()).getParentFile().getParentFile(), "test.rptdesign");
+		System.out.println("****** Inserting test data in the table: Authorization ******");
 		String sqlStatements[] = { "truncate table brrs.authorization",
-				"insert into brrs.authorization values(1, '" + file.getAbsolutePath() + "', 'test-token-report', '"
+				"insert into brrs.authorization (id, security_token, design_file, submit_time) values(1, 'test-token-report', '" + file.getAbsolutePath() + "', '"
 						+ dateString + "')",
-				"insert into brrs.authorization values(2, null, 'test-token-noreport', '" + dateString + "')" };
+				"insert into brrs.authorization (id, security_token, design_file, submit_time) values(2, 'test-token-noreport', null, '" + dateString + "')" };
 
 		Arrays.asList(sqlStatements).stream().forEach(sql -> {
 			System.out.println(sql);
