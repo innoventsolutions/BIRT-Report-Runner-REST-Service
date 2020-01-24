@@ -23,8 +23,14 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.subsecti
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.File;
 import java.net.URL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -42,6 +48,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -79,11 +87,41 @@ public class JobControllerTest {
 	@Autowired
 	private WebApplicationContext context;
 	private MockMvc mockMvc;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	@Before
 	public void setUp() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.apply(documentationConfiguration(this.restDocumentation)).build();
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String dateString = df.format(new Date());
+		// get full path to report design file (which is in a different package)
+		final URL designFileURL = this.getClass().getResource("test.rptdesign");
+		final File designFile = new File(designFileURL.getPath());
+		System.out.println("****** Inserting test data in the table: Authorization ******");
+		String sqlStatements[] = { "truncate table brrs.authorization",
+				"insert into brrs.authorization (id, security_token, design_file, submit_time) values(1, 'test-token-report', '" + designFile.getAbsolutePath() + "', '"
+						+ dateString + "')",
+				"insert into brrs.authorization (id, security_token, design_file, submit_time) values(2, 'test-token-noreport', null, '" + dateString + "')" };
+
+		Arrays.asList(sqlStatements).stream().forEach(sql -> {
+			System.out.println(sql);
+			jdbcTemplate.execute(sql);
+		});
+		System.out.println("****** Fetching from table: Authorization ******");
+		jdbcTemplate.query("select * from authorization", new RowMapper<Object>() {
+			@Override
+			public Object mapRow(ResultSet rs, int i) throws SQLException {
+				System.out.println(rs.toString());
+				/*
+				 * System.out.println(String.format("id:%s,token:%s,rpt:%s,time:%s",
+				 * rs.getString("id").toString(), rs.getString("securityToken"),
+				 * rs.getString("designFile"), rs.getString("submitTime")));
+				 */
+				return null;
+			}
+		});
 	}
 
 	static class TestRunRequestParams extends TestRunRequestNoparams {

@@ -131,8 +131,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<!--<mainClass>com.innoventsolutions.brr.ReportRunnerApplication</mainClass>-->
-					<mainClass>com.innoventsolutions.brr.client.ClientSpringBootApp</mainClass>
+					<mainClass>com.innoventsolutions.brr.ReportRunnerApplication</mainClass>
 				</configuration>
 			</plugin>
 			<!-- rest docs -->
