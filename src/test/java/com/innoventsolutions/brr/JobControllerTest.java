@@ -60,12 +60,15 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.innoventsolutions.brr.ReportRunnerApplication;
 import com.innoventsolutions.brr.entity.BaseRequest;
 import com.innoventsolutions.brr.entity.GetJobRequest;
 import com.innoventsolutions.brr.entity.StatusRequest;
+import com.innoventsolutions.brr.entity.TestRunRequestNoparams;
+import com.innoventsolutions.brr.entity.TestRunRequestParams;
+import com.innoventsolutions.brr.entity.TestScheduleCronRequest;
+import com.innoventsolutions.brr.entity.TestScheduleSimpleRequest;
+import com.innoventsolutions.brr.entity.TestSubmitRequestNoparams;
 import com.innoventsolutions.brr.entity.WaitforRequest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -101,9 +104,10 @@ public class JobControllerTest {
 		final File designFile = new File(designFileURL.getPath());
 		System.out.println("****** Inserting test data in the table: Authorization ******");
 		String sqlStatements[] = { "truncate table brrs.authorization",
-				"insert into brrs.authorization (id, security_token, design_file, submit_time) values(1, 'test-token-report', '" + designFile.getAbsolutePath() + "', '"
-						+ dateString + "')",
-				"insert into brrs.authorization (id, security_token, design_file, submit_time) values(2, 'test-token-noreport', null, '" + dateString + "')" };
+				"insert into brrs.authorization (id, security_token, design_file, submit_time) values(1, 'test-token-report', '"
+						+ designFile.getAbsolutePath() + "', '" + dateString + "')",
+				"insert into brrs.authorization (id, security_token, design_file, submit_time) values(2, 'test-token-noreport', null, '"
+						+ dateString + "')" };
 
 		Arrays.asList(sqlStatements).stream().forEach(sql -> {
 			System.out.println(sql);
@@ -124,27 +128,16 @@ public class JobControllerTest {
 		});
 	}
 
-	static class TestRunRequestParams extends TestRunRequestNoparams {
-		Map<String, Object> parameters;
-
-		public Map<String, Object> getParameters() {
-			return parameters;
-		}
-
-		public void setParameters(final Map<String, Object> parameters) {
-			this.parameters = parameters;
-		}
-	}
-
 	@Test
 	public void testRun() throws Exception {
 		final TestRunRequestParams requestObject = new TestRunRequestParams();
 		final URL designFileURL = this.getClass().getResource("test.rptdesign");
-		requestObject.designFile = designFileURL.getPath();
-		requestObject.format = "pdf";
-		requestObject.runThenRender = true;
-		requestObject.parameters = new HashMap<>();
-		requestObject.parameters.put("keyFilter", "a.*");
+		requestObject.setDesignFile(designFileURL.getPath());
+		requestObject.setFormat("pdf");
+		requestObject.setRunThenRender(Boolean.TRUE);
+
+		requestObject.setParameters(new HashMap<>());
+		requestObject.getParameters().put("keyFilter", "a.*");
 		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
@@ -165,53 +158,13 @@ public class JobControllerTest {
 								headerWithName("Content-Type").description("The content type of the payload"))));
 	}
 
-	static class TestRunRequestNoparams {
-		String designFile;
-		String format;
-		String securityToken;
-
-		public String getSecurityToken() {
-			return securityToken;
-		}
-
-		public void setSecurityToken(String securityToken) {
-			this.securityToken = securityToken;
-		}
-
-		boolean runThenRender;
-
-		public String getDesignFile() {
-			return designFile;
-		}
-
-		public void setDesignFile(final String designFile) {
-			this.designFile = designFile;
-		}
-
-		public String getFormat() {
-			return format;
-		}
-
-		public void setFormat(final String format) {
-			this.format = format;
-		}
-
-		public boolean isRunThenRender() {
-			return runThenRender;
-		}
-
-		public void setRunThenRender(final boolean runThenRender) {
-			this.runThenRender = runThenRender;
-		}
-	}
-
 	@Test
 	public void testRunNoParams() throws Exception {
 		final TestRunRequestNoparams requestObject = new TestRunRequestNoparams();
 		final URL designFileURL = this.getClass().getResource("test.rptdesign");
-		requestObject.designFile = designFileURL.getPath();
-		requestObject.format = "pdf";
-		requestObject.runThenRender = true;
+		requestObject.setDesignFile(designFileURL.getPath());
+		requestObject.setFormat("pdf");
+		requestObject.setRunThenRender(true);
 		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
@@ -224,11 +177,11 @@ public class JobControllerTest {
 	public void testRunRowCount() throws Exception {
 		final TestRunRequestParams requestObject = new TestRunRequestParams();
 		final URL designFileURL = this.getClass().getResource("test.rptdesign");
-		requestObject.designFile = designFileURL.getPath();
-		requestObject.format = "pdf";
-		requestObject.runThenRender = true;
-		requestObject.parameters = new HashMap<>();
-		requestObject.parameters.put("rowCount", "5");
+		requestObject.setDesignFile(designFileURL.getPath());
+		requestObject.setFormat("pdf");
+		requestObject.setRunThenRender(true);
+		requestObject.setParameters(new HashMap<>());
+		requestObject.getParameters().put("rowCount", "5");
 		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
@@ -237,26 +190,14 @@ public class JobControllerTest {
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
-	static class TestSubmitRequestNoparams extends TestRunRequestNoparams {
-		String nameForHumans;
-
-		public String getNameForHumans() {
-			return nameForHumans;
-		}
-
-		public void setNameForHumans(final String nameForHumans) {
-			this.nameForHumans = nameForHumans;
-		}
-	}
-
 	@Test
 	public void testSubmit() throws Exception {
 		final TestSubmitRequestNoparams requestObject = new TestSubmitRequestNoparams();
 		final URL designFileURL = this.getClass().getResource("test.rptdesign");
-		requestObject.designFile = designFileURL.getPath();
-		requestObject.format = "PDF";
-		requestObject.runThenRender = true;
-		requestObject.nameForHumans = "Test Report";
+		requestObject.setDesignFile(designFileURL.getPath());
+		requestObject.setFormat("pdf");
+		requestObject.setRunThenRender(true);
+		requestObject.setNameForHumans("Test Report");
 		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
@@ -316,10 +257,10 @@ public class JobControllerTest {
 	public String submit() throws Exception {
 		final TestSubmitRequestNoparams requestObject = new TestSubmitRequestNoparams();
 		final URL designFileURL = this.getClass().getResource("test.rptdesign");
-		requestObject.designFile = designFileURL.getPath();
-		requestObject.format = "PDF";
-		requestObject.runThenRender = true;
-		requestObject.nameForHumans = "Test Report";
+		requestObject.setDesignFile(designFileURL.getPath());
+		requestObject.setFormat("pdf");
+		requestObject.setRunThenRender(true);
+		requestObject.setNameForHumans("Test Report");
 		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
@@ -504,101 +445,22 @@ public class JobControllerTest {
 				.andReturn();
 	}
 
-	static class TestScheduleRequest {
-		String group;
-		String name;
-		Date startDate;
-		String securityToken;
-		public String getSecurityToken() {
-			return securityToken;
-		}
-
-		public void setSecurityToken(String securityToken) {
-			this.securityToken = securityToken;
-		}
-
-		TestSubmitRequestNoparams submit;
-
-		public String getGroup() {
-			return group;
-		}
-
-		public void setGroup(final String group) {
-			this.group = group;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(final String name) {
-			this.name = name;
-		}
-
-		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-		public Date getStartDate() {
-			return startDate;
-		}
-
-		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-		public void setStartDate(final Date startDate) {
-			this.startDate = startDate;
-		}
-
-		public TestSubmitRequestNoparams getSubmit() {
-			return submit;
-		}
-
-		public void setSubmit(final TestSubmitRequestNoparams submit) {
-			this.submit = submit;
-		}
-	}
-
-	static class TestScheduleSimpleRequest extends TestScheduleRequest {
-		Long intervalInMilliseconds;
-		Integer repeatCount;
-		String misfireInstruction;
-
-		public Long getIntervalInMilliseconds() {
-			return intervalInMilliseconds;
-		}
-
-		public void setIntervalInMilliseconds(final Long intervalInMilliseconds) {
-			this.intervalInMilliseconds = intervalInMilliseconds;
-		}
-
-		public Integer getRepeatCount() {
-			return repeatCount;
-		}
-
-		public void setRepeatCount(final Integer repeatCount) {
-			this.repeatCount = repeatCount;
-		}
-
-		public String getMisfireInstruction() {
-			return misfireInstruction;
-		}
-
-		public void setMisfireInstruction(final String misfireInstruction) {
-			this.misfireInstruction = misfireInstruction;
-		}
-	}
-
+	//TODO Fix Test
 	@Test
 	public void testScheduleSimple() throws Exception {
 		final TestScheduleSimpleRequest requestObject = new TestScheduleSimpleRequest();
 		final URL designFileURL = this.getClass().getResource("test.rptdesign");
-		requestObject.submit = new TestSubmitRequestNoparams();
-		requestObject.submit.designFile = designFileURL.getPath();
-		requestObject.submit.format = "PDF";
-		requestObject.submit.runThenRender = true;
-		requestObject.submit.nameForHumans = "Test Report";
-		requestObject.group = "simple-test";
-		requestObject.name = "simple-test";
-		requestObject.startDate = null;
-		requestObject.intervalInMilliseconds = Long.valueOf(1000L);
-		requestObject.repeatCount = 1;
-		requestObject.misfireInstruction = null;
+		requestObject.setSubmit(new TestSubmitRequestNoparams());
+		requestObject.getSubmit().setDesignFile(designFileURL.getPath());
+		requestObject.getSubmit().setFormat("PDF");
+		requestObject.getSubmit().setRunThenRender(true);
+		requestObject.getSubmit().setNameForHumans("Test Report");
+		requestObject.setGroup("simple-test");
+		requestObject.setName("simple-test");
+		requestObject.setStartDate(null);
+		requestObject.setIntervalInMilliseconds(Long.valueOf(1000L));
+		requestObject.setRepeatCount(1);
+		requestObject.setMisfireInstruction(null);
 		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
@@ -668,44 +530,24 @@ public class JobControllerTest {
 		Assert.assertNotNull("Job key is null", jobKey);
 	}
 
-	static class TestScheduleCronRequest extends TestScheduleRequest {
-		String cronString;
-		String misfireInstruction;
-
-		public String getCronString() {
-			return cronString;
-		}
-
-		public void setCronString(final String cronString) {
-			this.cronString = cronString;
-		}
-
-		public String getMisfireInstruction() {
-			return misfireInstruction;
-		}
-
-		public void setMisfireInstruction(final String misfireInstruction) {
-			this.misfireInstruction = misfireInstruction;
-		}
-	}
-
+	//TODO Fix Test
 	@Test
 	public void testScheduleCron() throws Exception {
 		final TestScheduleCronRequest requestObject = new TestScheduleCronRequest();
 		final URL designFileURL = this.getClass().getResource("test.rptdesign");
-		requestObject.submit = new TestSubmitRequestNoparams();
-		requestObject.submit.designFile = designFileURL.getPath();
-		requestObject.submit.format = "PDF";
-		requestObject.submit.runThenRender = true;
-		requestObject.submit.nameForHumans = "Test Report";
-		requestObject.group = "cron-test";
-		requestObject.name = "cron-test";
-		requestObject.startDate = null;
+		requestObject.setSubmit(new TestSubmitRequestNoparams());
+		requestObject.getSubmit().setDesignFile( designFileURL.getPath());
+		requestObject.getSubmit().setFormat( "PDF");
+		requestObject.getSubmit().setRunThenRender( true);
+		requestObject.getSubmit().setNameForHumans( "Test Report");
+		requestObject.setGroup( "cron-test");
+		requestObject.setName( "cron-test");
+		requestObject.setStartDate( null);
 		requestObject.setSecurityToken("test-token-report");
 		final long time = System.currentTimeMillis() + 31L * 24L * 60L * 60L * 1000L;
 		logger.info("cron time = " + new Date(time));
-		requestObject.cronString = getCronString(time);
-		requestObject.misfireInstruction = null;
+		requestObject.setCronString( getCronString(time));
+		requestObject.setMisfireInstruction( null);
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
 		logger.info("testScheduleCron request = " + requestString);
