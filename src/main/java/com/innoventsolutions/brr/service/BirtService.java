@@ -25,16 +25,16 @@ import org.eclipse.birt.report.engine.api.EngineConfig;
 import org.eclipse.birt.report.engine.api.EngineConstants;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportEngineFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.innoventsolutions.brr.util.BatchFormatter;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class BirtService {
-	Logger logger = LoggerFactory.getLogger(BirtService.class);
 	private final ConfigService configuration;
 
 	public BirtService(@Autowired final ConfigService configuration) {
@@ -43,9 +43,9 @@ public class BirtService {
 
 	public IReportEngine getReportEngine() throws IOException, BirtException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		logger.info("getReportEngine");
+		log.info("getReportEngine");
 		final EngineConfig config = new EngineConfig();
-		logger.info("birtRuntimeHome = " + configuration.birtRuntimeHome);
+		log.info("birtRuntimeHome = " + configuration.birtRuntimeHome);
 		if (configuration.birtRuntimeHome != null) {
 			final String birtHome = configuration.birtRuntimeHome.getAbsolutePath();
 			if (configuration.isActuate) {

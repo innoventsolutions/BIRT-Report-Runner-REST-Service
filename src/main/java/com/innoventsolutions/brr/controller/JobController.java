@@ -38,8 +38,6 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
@@ -76,9 +74,12 @@ import com.innoventsolutions.brr.service.ConfigService;
 import com.innoventsolutions.brr.service.RunnerService;
 import com.innoventsolutions.brr.service.SchedulerService;
 
+import lombok.extern.slf4j.Slf4j;
+
+
+@Slf4j
 @Controller
 public class JobController {
-	Logger logger = LoggerFactory.getLogger(JobController.class);
 	private RunnerService runner;
 	private SchedulerService schedulerService;
 	private ConfigService configService;
@@ -112,7 +113,7 @@ public class JobController {
 	}
 
 	public ResponseEntity<Resource> getReport(final StatusRequest request, final boolean isAttachment) {
-		logger.info("getReport " + request + " " + isAttachment);
+		log.info("getReport " + request + " " + isAttachment);
 		if (!allow(isAttachment ? "download" : "get")) {
 			final String securityToken = request.getSecurityToken();
 			try {
@@ -125,7 +126,7 @@ public class JobController {
 		}
 		try {
 			final File outputDir = runner.getOutputDirectory();
-			logger.info("outputDir = " + outputDir);
+			log.info("outputDir = " + outputDir);
 			UUID uuid;
 			try {
 				uuid = UUID.fromString(request.getJobId());
@@ -137,14 +138,14 @@ public class JobController {
 				return getErrorResponse(HttpStatus.NOT_FOUND, "Report not found");
 			}
 			while (!status.isFinished()) {
-				logger.info("waiting...");
+				log.info("waiting...");
 				synchronized (status) {
 					try {
 						status.wait();
 					} catch (final InterruptedException e) {
 					}
 				}
-				logger.info("done waiting");
+				log.info("done waiting");
 			}
 			if (!status.isFinished()) {
 				return getErrorResponse(HttpStatus.BAD_REQUEST, "Report is not finished");
@@ -160,7 +161,7 @@ public class JobController {
 			return ResponseEntity.ok().headers(headers).contentLength(outputFile.length())
 					.contentType(getMediaType(status.reportRun.format)).body(resource);
 		} catch (final Throwable e) {
-			logger.error("Exception", e);
+			log.error("Exception", e);
 			return getErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
 		}
 	}
@@ -168,7 +169,7 @@ public class JobController {
 	@GetMapping("/status")
 	@ResponseBody
 	public ResponseEntity<ReportRunStatus> getStatus(@RequestBody final StatusRequest request) {
-		logger.info("getStatus " + request);
+		log.info("getStatus " + request);
 		if (!allow("status")) {
 			final String securityToken = request.getSecurityToken();
 			try {
@@ -192,7 +193,7 @@ public class JobController {
 	@GetMapping("/test")
 	@ResponseBody
 	public ResponseEntity<Map<UUID, ReportRunStatus>> getTest(@RequestBody final BaseRequest request) {
-		logger.info("getTest " + request);
+		log.info("getTest " + request);
 		if (!allow("status-all")) {
 			final String securityToken = request.getSecurityToken();
 			try {
@@ -210,7 +211,7 @@ public class JobController {
 	@GetMapping("/status-all")
 	@ResponseBody
 	public ResponseEntity<Map<UUID, ReportRunStatus>> getStatusAll(@RequestBody final BaseRequest request) {
-		logger.info("getStatusAll " + request);
+		log.info("getStatusAll " + request);
 		if (!allow("status-all")) {
 			final String securityToken = request.getSecurityToken();
 			try {
@@ -228,7 +229,7 @@ public class JobController {
 	@GetMapping("/waitfor")
 	@ResponseBody
 	public ResponseEntity<ReportRunStatus> waitFor(@RequestBody final WaitforRequest request) {
-		logger.info("waitFor " + request);
+		log.info("waitFor " + request);
 		if (!allow("waitfor")) {
 			final String securityToken = request.getSecurityToken();
 			try {
@@ -263,7 +264,7 @@ public class JobController {
 	@PostMapping("/submit")
 	@ResponseBody
 	public ResponseEntity<SubmitResponse> submit(@RequestBody final SubmitRequest request) {
-		logger.info("submit " + request);
+		log.info("submit " + request);
 		try {
 			final UUID uuid = UUID.randomUUID();
 			final String format = runner.getFormat(request.getFormat());
@@ -278,10 +279,10 @@ public class JobController {
 			final UUID jobUUID = runner.startReport(reportRun, email, true);
 			return new ResponseEntity<SubmitResponse>(new SubmitResponse(jobUUID, null), HttpStatus.OK);
 		} catch (final BadRequestException e) {
-			logger.error("Exception", e);
+			log.error("Exception", e);
 			return new ResponseEntity<SubmitResponse>(new SubmitResponse(null, e), e.getCode());
 		} catch (final Throwable e) {
-			logger.error("Exception", e);
+			log.error("Exception", e);
 			return new ResponseEntity<SubmitResponse>(new SubmitResponse(null, e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -289,7 +290,7 @@ public class JobController {
 	@PostMapping("/schedule-simple")
 	@ResponseBody
 	public ResponseEntity<ScheduleResponse> scheduleSimple(@RequestBody final SimpleScheduleRequest request) {
-		logger.info("schedule-simple " + request);
+		log.info("schedule-simple " + request);
 		final String designFileName = request.getSubmit().getDesignFile();
 		if (!allowReport(designFileName)) {
 			final String securityToken = request.getSecurityToken();
@@ -355,11 +356,11 @@ public class JobController {
 			scheduler.scheduleJob(jobDetail, trigger);
 			return new ResponseEntity<ScheduleResponse>(new ScheduleResponse(trigger.getJobKey(), null), HttpStatus.OK);
 		} catch (final SchedulerException e) {
-			logger.error("Exception", e);
+			log.error("Exception", e);
 			return new ResponseEntity<ScheduleResponse>(new ScheduleResponse(null, e.getMessage()),
 					HttpStatus.BAD_REQUEST);
 		} catch (final Throwable e) {
-			logger.error("Exception", e);
+			log.error("Exception", e);
 			return new ResponseEntity<ScheduleResponse>(new ScheduleResponse(null, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -368,7 +369,7 @@ public class JobController {
 	@PostMapping("/schedule-cron")
 	@ResponseBody
 	public ResponseEntity<ScheduleResponse> scheduleCron(@RequestBody final CronScheduleRequest request) {
-		logger.info("schedule-cron " + request);
+		log.info("schedule-cron " + request);
 		final String designFileName = request.getSubmit().getDesignFile();
 		if (!allowReport(designFileName)) {
 			final String securityToken = request.getSecurityToken();
@@ -397,17 +398,17 @@ public class JobController {
 			final TriggerBuilder<Trigger> triggerBuilder = newTrigger().withIdentity(request.getName() + "-trigger",
 					request.getGroup());
 			final Date startDate = request.getStartDate();
-			logger.info("startDate = " + startDate);
+			log.info("startDate = " + startDate);
 			if (startDate == null) {
 				triggerBuilder.startNow();
 			} else {
 				triggerBuilder.startAt(startDate);
 			}
 			final String cronString = request.getCronString();
-			logger.info("cronString = " + cronString);
+			log.info("cronString = " + cronString);
 			final CronScheduleBuilder scheduleBuilder = cronSchedule(cronString);
 			final String misfireInstruction = request.getMisfireInstruction();
-			logger.info("misfireInstruction = " + misfireInstruction);
+			log.info("misfireInstruction = " + misfireInstruction);
 			if ("ignore".equals(misfireInstruction)) {
 				scheduleBuilder.withMisfireHandlingInstructionIgnoreMisfires();
 			} else if ("fire-and-proceed".equals(misfireInstruction)) {
@@ -422,11 +423,11 @@ public class JobController {
 			scheduler.scheduleJob(jobDetail, trigger);
 			return new ResponseEntity<ScheduleResponse>(new ScheduleResponse(trigger.getJobKey(), null), HttpStatus.OK);
 		} catch (final SchedulerException e) {
-			logger.error("Exception", e);
+			log.error("Exception", e);
 			return new ResponseEntity<ScheduleResponse>(new ScheduleResponse(null, e.getMessage()),
 					HttpStatus.BAD_REQUEST);
 		} catch (final Throwable e) {
-			logger.error("Exception", e);
+			log.error("Exception", e);
 			return new ResponseEntity<ScheduleResponse>(new ScheduleResponse(null, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -447,7 +448,7 @@ public class JobController {
 	@DeleteMapping("/job")
 	@ResponseBody
 	public ResponseEntity<DeleteJobResponse> deleteJob(@RequestBody final GetJobRequest request) {
-		logger.info("delete-job " + request);
+		log.info("delete-job " + request);
 		if (!allow("delete-job")) {
 			final String securityToken = request.getSecurityToken();
 			try {
@@ -464,7 +465,7 @@ public class JobController {
 			final boolean result = scheduler.deleteJob(jobKey);
 			return new ResponseEntity<DeleteJobResponse>(new DeleteJobResponse(result), HttpStatus.OK);
 		} catch (final SchedulerException e) {
-			logger.error("Exception", e);
+			log.error("Exception", e);
 			return new ResponseEntity<DeleteJobResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -493,7 +494,7 @@ public class JobController {
 	@GetMapping("/job")
 	@ResponseBody
 	public ResponseEntity<JobResponse> getJob(@RequestBody final GetJobRequest request) {
-		logger.info("job " + request);
+		log.info("job " + request);
 		if (!allow("job")) {
 			final String securityToken = request.getSecurityToken();
 			try {
@@ -520,7 +521,7 @@ public class JobController {
 			}
 			return new ResponseEntity<JobResponse>(jobResponse, HttpStatus.OK);
 		} catch (final SchedulerException e) {
-			logger.error("Exception", e);
+			log.error("Exception", e);
 			return new ResponseEntity<JobResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -528,7 +529,7 @@ public class JobController {
 	@GetMapping("/jobs")
 	@ResponseBody
 	public ResponseEntity<Map<JobKey, JobResponse>> getJobs(@RequestBody final BaseRequest request) {
-		logger.info("jobs " + request);
+		log.info("jobs " + request);
 		if (!allow("jobs")) {
 			final String securityToken = request.getSecurityToken();
 			try {
@@ -557,7 +558,7 @@ public class JobController {
 				response.put(jobKey, jobResponse);
 			}
 		} catch (final SchedulerException e) {
-			logger.error("Exception", e);
+			log.error("Exception", e);
 			return new ResponseEntity<Map<JobKey, JobResponse>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<Map<JobKey, JobResponse>>(response, HttpStatus.OK);
@@ -566,7 +567,7 @@ public class JobController {
 	@PostMapping("/run")
 	@ResponseBody
 	public ResponseEntity<Resource> run(@RequestBody final RunRequest request) {
-		logger.info("run");
+		log.info("run");
 		try {
 			final String format = runner.getFormat(request.getFormat());
 			final String outputFilename = UUID.randomUUID() + "." + format;
@@ -576,7 +577,7 @@ public class JobController {
 			final List<Exception> exceptions = runner.runReport(reportRun);
 			if (!exceptions.isEmpty()) {
 				for (final Throwable e : exceptions) {
-					logger.error("Exception", e);
+					log.error("Exception", e);
 				}
 				return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
@@ -591,7 +592,7 @@ public class JobController {
 		} catch (final BadRequestException e) {
 			return getErrorResponse(e.getCode(), e.getReason());
 		} catch (final Throwable e) {
-			logger.error("Exception", e);
+			log.error("Exception", e);
 			return getErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.toString());
 		}
 	}
@@ -642,14 +643,14 @@ public class JobController {
 
 	@PreDestroy
 	public void onExit() {
-		logger.info("onExit");
+		log.info("onExit");
 		try {
 			final Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
 			if (!scheduler.isShutdown()) {
 				scheduler.shutdown(true);
 			}
 		} catch (final SchedulerException e) {
-			logger.error("Unable to acquire scheduler", e);
+			log.error("Unable to acquire scheduler", e);
 		}
 	}
 

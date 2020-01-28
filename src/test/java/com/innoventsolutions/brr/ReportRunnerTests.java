@@ -17,18 +17,18 @@ import java.util.UUID;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.innoventsolutions.brr.service.RunnerService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ReportRunnerApplication.class)
 public class ReportRunnerTests {
-	Logger logger = LoggerFactory.getLogger(ReportRunnerTests.class);
 	@Autowired
 	RunnerService runner;
 
@@ -80,7 +80,7 @@ public class ReportRunnerTests {
 			final ReportRunStatus status = runner.reports.get(uuid);
 			Assert.assertNotNull("Status for " + uuid + " is null", status);
 			for (final Exception e : status.getErrors()) {
-				logger.info("Exception for " + uuid + " = " + e);
+				log.info("Exception for " + uuid + " = " + e);
 			}
 			Assert.assertTrue(status.getErrors().isEmpty());
 		}

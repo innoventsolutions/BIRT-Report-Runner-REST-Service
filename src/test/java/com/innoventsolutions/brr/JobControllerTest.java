@@ -43,8 +43,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -71,9 +69,12 @@ import com.innoventsolutions.brr.entity.TestScheduleSimpleRequest;
 import com.innoventsolutions.brr.entity.TestSubmitRequestNoparams;
 import com.innoventsolutions.brr.entity.WaitforRequest;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = ReportRunnerApplication.class)
 @WebAppConfiguration
+@Slf4j
 public class JobControllerTest {
 	private static final Object DESIGN_FILE_DESCRIPTION = "The full path to the BIRT design file on the server file system";
 	private static final Object FORMAT_DESCRIPTION = "The report output format: HTML, PDF, XLS, or any other format supported by the BIRT engine";
@@ -84,7 +85,6 @@ public class JobControllerTest {
 	private static final Object JOB_GROUP_DESCRIPTION = "The job group name";
 	private static final Object JOB_NAME_DESCRIPTION = "The job name";
 	private static final Object JOB_START_DATE_DESCRIPTION = "The start date and time as dd-MM-yyyy hh:mm:ss";
-	Logger logger = LoggerFactory.getLogger(JobControllerTest.class);
 	@Rule
 	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
 	@Autowired
@@ -141,7 +141,7 @@ public class JobControllerTest {
 		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
-		logger.info("testRun request = " + requestString);
+		log.info("testRun request = " + requestString);
 		this.mockMvc
 				.perform(post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -168,7 +168,7 @@ public class JobControllerTest {
 		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
-		logger.info("testRunNoParams request = " + requestString);
+		log.info("testRunNoParams request = " + requestString);
 		this.mockMvc.perform(post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
@@ -185,7 +185,7 @@ public class JobControllerTest {
 		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
-		logger.info("testRunRowCount request = " + requestString);
+		log.info("testRunRowCount request = " + requestString);
 		this.mockMvc.perform(post("/run").contentType(MediaType.APPLICATION_JSON).content(requestString)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
@@ -201,7 +201,7 @@ public class JobControllerTest {
 		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
-		logger.info("testSubmit request = " + requestString);
+		log.info("testSubmit request = " + requestString);
 		final MvcResult result = this.mockMvc
 				.perform(post("/submit").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -242,13 +242,13 @@ public class JobControllerTest {
 		final MockHttpServletResponse response = result.getResponse();
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));
 		final String jsonString = response.getContentAsString();
-		logger.info("testSubmit response = " + jsonString);
+		log.info("testSubmit response = " + jsonString);
 		@SuppressWarnings("unchecked")
 		final Map<String, String> submitResponse = mapper.readValue(jsonString, Map.class);
 		final String jobId = submitResponse.get("uuid");
-		logger.info("testSubmit jobId = " + jobId);
+		log.info("testSubmit jobId = " + jobId);
 		final String exceptionString = submitResponse.get("exceptionString");
-		logger.info("testSubmit exceptionString = " + exceptionString);
+		log.info("testSubmit exceptionString = " + exceptionString);
 		Assert.assertFalse("Exception string is not null and not blank: " + exceptionString,
 				exceptionString != null && exceptionString.trim().length() > 0);
 		Assert.assertNotNull("Job ID is null", jobId);
@@ -264,19 +264,19 @@ public class JobControllerTest {
 		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
-		logger.info("submit request = " + requestString);
+		log.info("submit request = " + requestString);
 		final MvcResult result = this.mockMvc.perform(post("/submit").contentType(MediaType.APPLICATION_JSON)
 				.content(requestString).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 		final MockHttpServletResponse response = result.getResponse();
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));
 		final String jsonString = response.getContentAsString();
-		logger.info("testStatus submit response = " + jsonString);
+		log.info("testStatus submit response = " + jsonString);
 		@SuppressWarnings("unchecked")
 		final Map<String, String> submitResponse = mapper.readValue(jsonString, Map.class);
 		final String jobId = submitResponse.get("uuid");
-		logger.info("testStatus jobId = " + jobId);
+		log.info("testStatus jobId = " + jobId);
 		final String exceptionString = submitResponse.get("exceptionString");
-		logger.info("testStatus exceptionString = " + exceptionString);
+		log.info("testStatus exceptionString = " + exceptionString);
 		Assert.assertFalse("Exception string is not null and not blank: " + exceptionString,
 				exceptionString != null && exceptionString.trim().length() > 0);
 		Assert.assertNotNull("Job ID is null", jobId);
@@ -291,7 +291,7 @@ public class JobControllerTest {
 		request.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
-		logger.info("status request = " + requestString);
+		log.info("status request = " + requestString);
 		final MvcResult statusResult = this.mockMvc
 				.perform(get("/status").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -318,10 +318,10 @@ public class JobControllerTest {
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
-		logger.info("testStatus response = " + jsonString2);
+		log.info("testStatus response = " + jsonString2);
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> responseMap = mapper.readValue(jsonString2, Map.class);
-		logger.info("responseMap = " + responseMap);
+		log.info("responseMap = " + responseMap);
 		@SuppressWarnings("unchecked")
 		final List<Object> reportErrors = (List<Object>) responseMap.get("errors");
 		Assert.assertNotNull("reportErrors should not be null", reportErrors);
@@ -340,7 +340,7 @@ public class JobControllerTest {
 		request.setTimeout(Long.valueOf(5000L));
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
-		logger.info("status request = " + requestString);
+		log.info("status request = " + requestString);
 		final MvcResult statusResult = this.mockMvc
 				.perform(get("/waitfor").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -367,10 +367,10 @@ public class JobControllerTest {
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
-		logger.info("testStatus response = " + jsonString2);
+		log.info("testStatus response = " + jsonString2);
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> responseMap = mapper.readValue(jsonString2, Map.class);
-		logger.info("responseMap = " + responseMap);
+		log.info("responseMap = " + responseMap);
 		@SuppressWarnings("unchecked")
 		final List<Object> reportErrors = (List<Object>) responseMap.get("errors");
 		Assert.assertNotNull("reportErrors should not be null", reportErrors);
@@ -387,7 +387,7 @@ public class JobControllerTest {
 		request.setSecurityToken("test-token-noreport");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
-		logger.info("status-all request = " + requestString);
+		log.info("status-all request = " + requestString);
 		final MvcResult statusResult = this.mockMvc
 				.perform(get("/status-all").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -399,10 +399,10 @@ public class JobControllerTest {
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
-		logger.info("testStatusAll response = " + jsonString2);
+		log.info("testStatusAll response = " + jsonString2);
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> responseMap = mapper.readValue(jsonString2, Map.class);
-		logger.info("responseMap = " + responseMap);
+		log.info("responseMap = " + responseMap);
 	}
 
 	@Test
@@ -412,7 +412,7 @@ public class JobControllerTest {
 		request.setJobId(submit());
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
-		logger.info("get request = " + requestString);
+		log.info("get request = " + requestString);
 		this.mockMvc
 				.perform(get("/get").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -432,7 +432,7 @@ public class JobControllerTest {
 		request.setJobId(submit());
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
-		logger.info("get request = " + requestString);
+		log.info("get request = " + requestString);
 		this.mockMvc
 				.perform(get("/download").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -464,7 +464,7 @@ public class JobControllerTest {
 		requestObject.setSecurityToken("test-token-report");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
-		logger.info("testScheduleSimple request = " + requestString);
+		log.info("testScheduleSimple request = " + requestString);
 		final MvcResult result = this.mockMvc
 				.perform(post("/schedule-simple").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -517,14 +517,14 @@ public class JobControllerTest {
 		final MockHttpServletResponse response = result.getResponse();
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));
 		final String jsonString = response.getContentAsString();
-		logger.info("testScheduleSimple response = " + jsonString);
+		log.info("testScheduleSimple response = " + jsonString);
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> scheduleResponse = mapper.readValue(jsonString, Map.class);
 		@SuppressWarnings("unchecked")
 		final Map<String, String> jobKey = (Map<String, String>) scheduleResponse.get("jobKey");
-		logger.info("testScheduleSimple jobKey = " + jobKey);
+		log.info("testScheduleSimple jobKey = " + jobKey);
 		final String message = (String) scheduleResponse.get("message");
-		logger.info("testScheduleSimple message = " + message);
+		log.info("testScheduleSimple message = " + message);
 		Assert.assertFalse("Message is not null and not blank: " + message,
 				message != null && message.trim().length() > 0);
 		Assert.assertNotNull("Job key is null", jobKey);
@@ -545,12 +545,12 @@ public class JobControllerTest {
 		requestObject.setStartDate( null);
 		requestObject.setSecurityToken("test-token-report");
 		final long time = System.currentTimeMillis() + 31L * 24L * 60L * 60L * 1000L;
-		logger.info("cron time = " + new Date(time));
+		log.info("cron time = " + new Date(time));
 		requestObject.setCronString( getCronString(time));
 		requestObject.setMisfireInstruction( null);
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(requestObject);
-		logger.info("testScheduleCron request = " + requestString);
+		log.info("testScheduleCron request = " + requestString);
 		final MvcResult result = this.mockMvc
 				.perform(post("/schedule-cron").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -600,14 +600,14 @@ public class JobControllerTest {
 		final MockHttpServletResponse response = result.getResponse();
 		Assert.assertTrue(response.getContentType().startsWith("application/json"));
 		final String jsonString = response.getContentAsString();
-		logger.info("testScheduleCron response = " + jsonString);
+		log.info("testScheduleCron response = " + jsonString);
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> scheduleResponse = mapper.readValue(jsonString, Map.class);
 		@SuppressWarnings("unchecked")
 		final Map<String, String> jobKey = (Map<String, String>) scheduleResponse.get("jobKey");
-		logger.info("testScheduleCron jobKey = " + jobKey);
+		log.info("testScheduleCron jobKey = " + jobKey);
 		final String message = (String) scheduleResponse.get("message");
-		logger.info("testScheduleCron message = " + message);
+		log.info("testScheduleCron message = " + message);
 		Assert.assertFalse("Message is not null and not blank: " + message,
 				message != null && message.trim().length() > 0);
 		Assert.assertNotNull("Job key is null", jobKey);
@@ -642,7 +642,7 @@ public class JobControllerTest {
 		request.setGroup("simple-test");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
-		logger.info("testJob request = " + requestString);
+		log.info("testJob request = " + requestString);
 		final MvcResult statusResult = this.mockMvc
 				.perform(get("/job").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -663,10 +663,10 @@ public class JobControllerTest {
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
-		logger.info("testJob response = " + jsonString2);
+		log.info("testJob response = " + jsonString2);
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> responseMap = mapper.readValue(jsonString2, Map.class);
-		logger.info("responseMap = " + responseMap);
+		log.info("responseMap = " + responseMap);
 	}
 
 	@Test
@@ -675,7 +675,7 @@ public class JobControllerTest {
 		request.setSecurityToken("test-token-noreport");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
-		logger.info("testJobs request = " + requestString);
+		log.info("testJobs request = " + requestString);
 		final MvcResult statusResult = this.mockMvc
 				.perform(get("/jobs").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -687,10 +687,10 @@ public class JobControllerTest {
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
-		logger.info("testJobs response = " + jsonString2);
+		log.info("testJobs response = " + jsonString2);
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> responseMap = mapper.readValue(jsonString2, Map.class);
-		logger.info("responseMap = " + responseMap);
+		log.info("responseMap = " + responseMap);
 	}
 
 	@Test
@@ -701,7 +701,7 @@ public class JobControllerTest {
 		request.setGroup("simple-test");
 		final ObjectMapper mapper = new ObjectMapper();
 		final String requestString = mapper.writeValueAsString(request);
-		logger.info("testDeleteJob request = " + requestString);
+		log.info("testDeleteJob request = " + requestString);
 		final MvcResult statusResult = this.mockMvc
 				.perform(delete("/job").contentType(MediaType.APPLICATION_JSON).content(requestString)
 						.accept(MediaType.APPLICATION_JSON))
@@ -719,8 +719,8 @@ public class JobControllerTest {
 		final MockHttpServletResponse response2 = statusResult.getResponse();
 		Assert.assertTrue(response2.getContentType().startsWith("application/json"));
 		final String jsonString2 = response2.getContentAsString();
-		logger.info("testDeleteJob response = " + jsonString2);
+		log.info("testDeleteJob response = " + jsonString2);
 		final Object response = mapper.readValue(jsonString2, Object.class);
-		logger.info("response = " + response);
+		log.info("response = " + response);
 	}
 }

@@ -12,8 +12,6 @@ package com.innoventsolutions.brr.service;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,25 +20,27 @@ import com.innoventsolutions.brr.exception.BadRequestException;
 import com.innoventsolutions.brr.jpa.dao.AuthorizationRepository;
 import com.innoventsolutions.brr.jpa.model.Authorization;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class AuthorizationService {
-	Logger logger = LoggerFactory.getLogger(this.getClass());
 	final ConfigService configService;
 	@Autowired
 	private AuthorizationRepository authRepository;
 
-
 	@Autowired
 	public AuthorizationService(final ConfigService configService) {
+		log.info("Configure Authorization Service");
 		this.configService = configService;
 	}
 
 	public void authorize(final String securityToken, final String requestDesignFile)
 			throws BadRequestException, SQLException {
-		
+
 		// List<Authorization> as = (List<Authorization>)authRepository.findAll();
 		List<Authorization> auths = authRepository.findAllBySecurityToken(securityToken);
-		
+
 		if (auths.size() < 1) {
 			throw new BadRequestException(HttpStatus.UNAUTHORIZED, "No security Token: " + securityToken);
 		}
@@ -49,11 +49,11 @@ public class AuthorizationService {
 			if (authorization.getDesignFile() != null && !authorization.getDesignFile().equals(requestDesignFile)) {
 				throw new BadRequestException(HttpStatus.UNAUTHORIZED, "Wrong design file");
 			}
-			if (authorization.getSubmitTime() != null
-					&& System.currentTimeMillis() - authorization.getSubmitTime().getTime() > configService.authTimeout) {
+			if (authorization.getSubmitTime() != null && System.currentTimeMillis()
+					- authorization.getSubmitTime().getTime() > configService.authTimeout) {
 				throw new BadRequestException(HttpStatus.UNAUTHORIZED, "Security token has timed out");
 			}
-			
+
 		}
 		// the security token was found, the design file matches, and we are inside
 		// the time window so we are authorized to make this request

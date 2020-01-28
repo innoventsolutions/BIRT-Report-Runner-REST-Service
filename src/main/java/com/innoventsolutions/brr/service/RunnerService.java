@@ -47,8 +47,6 @@ import org.eclipse.birt.report.engine.api.PDFRenderOption;
 import org.eclipse.birt.report.engine.api.RenderOption;
 import org.eclipse.birt.report.engine.api.UnsupportedFormatException;
 import org.eclipse.birt.report.model.api.ParameterHandle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -58,9 +56,10 @@ import com.innoventsolutions.brr.ReportRunStatus;
 import com.innoventsolutions.brr.entity.ReportEmail;
 import com.innoventsolutions.brr.exception.BadRequestException;
 
-@Service
+import lombok.extern.slf4j.Slf4j;
+
+@Service @Slf4j
 public class RunnerService {
-	private static final Logger logger = LoggerFactory.getLogger(RunnerService.class);
 	private static final SimpleDateFormat PARAM_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private final ConfigService configService;
 	private final BirtService birtService;
@@ -85,7 +84,7 @@ public class RunnerService {
 
 	public UUID startReport(final ReportRun reportRun, final ReportEmail email,
 			final boolean authorize) throws BadRequestException, SQLException {
-		logger.debug("startReport reportRun = " + reportRun + ", email = " + email);
+		log.debug("startReport reportRun = " + reportRun + ", email = " + email);
 		if (authorize) {
 			authorize(reportRun);
 		}
@@ -118,12 +117,12 @@ public class RunnerService {
 			List<Exception> errors;
 			try {
 				errors = runReport(status.reportRun, false);
-				logger.info("report is finished, errors = " + errors);
+				log.info("report is finished, errors = " + errors);
 			}
 			catch (final Exception e) {
 				errors = new ArrayList<>();
 				errors.add(e);
-				logger.info("report failed", e);
+				log.info("report failed", e);
 			}
 			status.finishReport(errors);
 			mailer.send(status);
@@ -138,7 +137,7 @@ public class RunnerService {
 	@SuppressWarnings("unchecked")
 	private List<Exception> runReport(final ReportRun reportRun, final boolean authorize)
 			throws EngineException, IOException, BadRequestException, SQLException {
-		logger.info("runReport reportRun = " + reportRun);
+		log.info("runReport reportRun = " + reportRun);
 		if (authorize) {
 			authorize(reportRun);
 		}
@@ -170,14 +169,14 @@ public class RunnerService {
 			}
 			final ParameterHandle handle = (ParameterHandle) defn.getHandle();
 			final Object dataType = handle.getProperty("dataType");
-			logger.info(" param " + key + " = " + paramValue + ", type = " + dataType + " "
+			log.info(" param " + key + " = " + paramValue + ", type = " + dataType + " "
 				+ defn.getTypeName());
 			if (paramValue instanceof Object[]) {
 				final Object[] values = (Object[]) paramValue;
-				logger.info(" param " + key + " " + values.length);
+				log.info(" param " + key + " " + values.length);
 				for (int i = 0; i < values.length; i++) {
 					final Object value = values[i];
-					logger.info("   value " + i + " " + value + " " + value.getClass().getName());
+					log.info("   value " + i + " " + value + " " + value.getClass().getName());
 					values[i] = convertParameterValue(key + "(" + i + ")", value, dataType);
 				}
 				task.setParameterValue(key, values);
@@ -186,13 +185,13 @@ public class RunnerService {
 				task.setParameterValue(key, convertParameterValue(key, paramValue, dataType));
 			}
 		}
-		logger.info("validating parameters");
+		log.info("validating parameters");
 		task.validateParameters();
 		if (task instanceof IRunAndRenderTask) {
 			final IRunAndRenderTask rrTask = (IRunAndRenderTask) task;
 			final RenderOption options = getRenderOptions(birtService, reportRun);
 			rrTask.setRenderOption(options);
-			logger.info("run-and-render report");
+			log.info("run-and-render report");
 			try {
 				rrTask.run();
 			}
@@ -221,12 +220,12 @@ public class RunnerService {
 			}
 			final File docFile = new File(configService.outputDirectory, docFilename);
 			docFile.getParentFile().mkdirs();
-			logger.info("run report to " + docFile);
+			log.info("run report to " + docFile);
 			try {
 				runTask.run(docFile.getAbsolutePath());
 			}
 			catch (final Exception e) {
-				logger.info("task.run exception", e);
+				log.info("task.run exception", e);
 				if ("org.eclipse.birt.report.engine.api.impl.ParameterValidationException".equals(
 					e.getClass().getName())) {
 					throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE, e.getMessage());
@@ -289,7 +288,7 @@ public class RunnerService {
 					return Integer.valueOf(stringValue);
 				}
 				catch (final NumberFormatException e) {
-					logger.error("Parameter " + name + " isn't a valid integer");
+					log.error("Parameter " + name + " isn't a valid integer");
 					throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE,
 							"Parameter " + name + " isn't a valid integer");
 				}
@@ -302,7 +301,7 @@ public class RunnerService {
 					return Double.valueOf(stringValue);
 				}
 				catch (final NumberFormatException e) {
-					logger.error("Parameter " + name + " isn't a valid decimal");
+					log.error("Parameter " + name + " isn't a valid decimal");
 					throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE,
 							"Parameter " + name + " isn't a valid decimal");
 				}
@@ -312,7 +311,7 @@ public class RunnerService {
 					return Double.valueOf(stringValue);
 				}
 				catch (final NumberFormatException e) {
-					logger.error("Parameter " + name + " isn't a valid float");
+					log.error("Parameter " + name + " isn't a valid float");
 					throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE,
 							"Parameter " + name + " isn't a valid float");
 				}
@@ -323,7 +322,7 @@ public class RunnerService {
 					return new java.sql.Date(df.parse(stringValue).getTime());
 				}
 				catch (final ParseException e) {
-					logger.error("Parameter " + name + " isn't a valid date");
+					log.error("Parameter " + name + " isn't a valid date");
 					throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE,
 							"Parameter " + name + " isn't a valid date");
 				}
@@ -334,7 +333,7 @@ public class RunnerService {
 					return new java.sql.Date(df.parse(stringValue).getTime());
 				}
 				catch (final ParseException e) {
-					logger.error("Parameter " + name + " isn't a valid dateTime");
+					log.error("Parameter " + name + " isn't a valid dateTime");
 					throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE,
 							"Parameter " + name + " isn't a valid dateTime");
 				}
@@ -345,7 +344,7 @@ public class RunnerService {
 					return new java.sql.Time(df.parse(stringValue).getTime());
 				}
 				catch (final ParseException e) {
-					logger.error("Parameter " + name + " isn't a valid time");
+					log.error("Parameter " + name + " isn't a valid time");
 					throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE,
 							"Parameter " + name + " isn't a valid time");
 				}
@@ -355,7 +354,7 @@ public class RunnerService {
 	}
 
 	private RenderOption getRenderOptions(final BirtService env, final ReportRun reportRun) {
-		logger.info("getRenderOptions");
+		log.info("getRenderOptions");
 		final String format = reportRun.format;
 		RenderOption options = null;
 		if (format.equalsIgnoreCase(RenderOption.OUTPUT_FORMAT_HTML)) {
@@ -376,7 +375,7 @@ public class RunnerService {
 			options.setOutputFormat(format.toLowerCase());
 		}
 		final File outputFile = new File(configService.outputDirectory, reportRun.outputFile);
-		logger.info("getRenderOptions outputFile = " + outputFile);
+		log.info("getRenderOptions outputFile = " + outputFile);
 		outputFile.getParentFile().mkdirs();
 		options.setOutputFileName(outputFile.getAbsolutePath());
 		options.setOutputFormat(format);
@@ -468,7 +467,7 @@ public class RunnerService {
 
 	public void shutdown() {
 		// there is really no place this can be done
-		logger.info("runner shutdown");
+		log.info("runner shutdown");
 		threadPool.shutdown();
 	}
 
@@ -522,13 +521,13 @@ public class RunnerService {
 		final Map<?, ?> map = (Map<?, ?>) value;
 		final Object type = map.get("type");
 		if (type == null) {
-			logger.error("parameter value type is missing");
+			log.error("parameter value type is missing");
 			throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE,
 					"Parameter " + name + " is an object but the type field is missing");
 		}
 		final Object subValue = map.get("value");
 		if (!(subValue instanceof String)) {
-			logger.error("parameter sub-value is not a string");
+			log.error("parameter sub-value is not a string");
 			throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE, "Parameter " + name
 				+ " is an object but the value field is missing or isn't a string");
 		}
@@ -539,7 +538,7 @@ public class RunnerService {
 				return new java.sql.Date(date.getTime());
 			}
 			catch (final ParseException e) {
-				logger.error("parameter date sub-value is malformed");
+				log.error("parameter date sub-value is malformed");
 				throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE, "Parameter " + name
 					+ " is an object and the type is date but the value isn't a valid date");
 			}
@@ -551,7 +550,7 @@ public class RunnerService {
 				return new java.sql.Date(date.getTime());
 			}
 			catch (final ParseException e) {
-				logger.error("parameter date sub-value is malformed");
+				log.error("parameter date sub-value is malformed");
 				throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE, "Parameter " + name
 					+ " is an object and the type is datetime but the value isn't a valid datetime");
 			}
@@ -563,12 +562,12 @@ public class RunnerService {
 				return new java.sql.Time(date.getTime());
 			}
 			catch (final ParseException e) {
-				logger.error("parameter date sub-value is malformed");
+				log.error("parameter date sub-value is malformed");
 				throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE, "Parameter " + name
 					+ " is an object and the type is time but the value isn't a valid time");
 			}
 		}
-		logger.error("unrecognized parameter value type: " + type);
+		log.error("unrecognized parameter value type: " + type);
 		throw new BadRequestException(HttpStatus.NOT_ACCEPTABLE, "Parameter " + name
 			+ " is an object and the type field is present but is not recognized");
 	}

@@ -12,15 +12,14 @@ package com.innoventsolutions.brr.service;
 import java.io.File;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Service
+import lombok.extern.slf4j.Slf4j;
+
+@Service @Slf4j
 public class ConfigService {
-	Logger logger = LoggerFactory.getLogger(ConfigService.class);
 
 	@Service
 	public static class Editor {
@@ -178,37 +177,37 @@ public class ConfigService {
 		this.isActuate = editor.isActuate;
 		this.unsecuredDesignFilePattern = editor.unsecuredDesignFilePattern;
 		this.unsecuredOperationPattern = editor.unsecuredOperationPattern;
-		logger.info("outputDirectory = " + outputDirectory.getAbsolutePath());
-		logger.info("workspace = " + workspace.getAbsolutePath());
-		logger.info("birtRuntimeHome = "
+		log.info("outputDirectory = " + outputDirectory.getAbsolutePath());
+		log.info("workspace = " + workspace.getAbsolutePath());
+		log.info("birtRuntimeHome = "
 			+ (birtRuntimeHome == null ? "null" : birtRuntimeHome.getAbsolutePath()));
-		logger.info("resourcePath = " + resourcePath.getAbsolutePath());
-		logger.info("scriptLib = " + scriptLib.getAbsolutePath());
-		logger.info("reportFormat = " + reportFormat);
-		logger.info("baseImageURL = " + baseImageURL);
-		logger.info("loggingPropertiesFile = " + loggingPropertiesFile.getAbsolutePath());
-		logger.info("loggingDir = " + loggingDir.getAbsolutePath());
-		logger.info("dbTimeout = " + authTimeout);
-		logger.info("mailUsername = " + mailUsername);
-		logger.info("mailPassword = " + mailPassword);
-		logger.info("mailPropertiesFile = "
+		log.info("resourcePath = " + resourcePath.getAbsolutePath());
+		log.info("scriptLib = " + scriptLib.getAbsolutePath());
+		log.info("reportFormat = " + reportFormat);
+		log.info("baseImageURL = " + baseImageURL);
+		log.info("loggingPropertiesFile = " + loggingPropertiesFile.getAbsolutePath());
+		log.info("loggingDir = " + loggingDir.getAbsolutePath());
+		log.info("dbTimeout = " + authTimeout);
+		log.info("mailUsername = " + mailUsername);
+		log.info("mailPassword = " + mailPassword);
+		log.info("mailPropertiesFile = "
 			+ (mailPropertiesFile == null ? "null" : mailPropertiesFile.getAbsolutePath()));
-		logger.info("mailSuccess = " + mailSuccess);
-		logger.info("mailFailure = " + mailFailure);
-		logger.info("mailTo = " + mailTo);
-		logger.info("mailCc = " + mailCc);
-		logger.info("mailBcc = " + mailBcc);
-		logger.info("mailFrom = " + mailFrom);
-		logger.info("mailSuccessSubject = " + mailSuccessSubject);
-		logger.info("mailFailureSubject = " + mailFailureSubject);
-		logger.info("mailSuccessBody = " + mailSuccessBody);
-		logger.info("mailFailureBody = " + mailFailureBody);
-		logger.info("mailAttachReport = " + mailAttachReport);
-		logger.info("mailHtml = " + mailHtml);
-		logger.info("threadCount = " + threadCount);
-		logger.info("isActuate = " + isActuate);
-		logger.info("unsecuredDesignFilePattern = " + unsecuredDesignFilePattern);
-		logger.info("unsecuredOperationPattern = " + unsecuredOperationPattern);
+		log.info("mailSuccess = " + mailSuccess);
+		log.info("mailFailure = " + mailFailure);
+		log.info("mailTo = " + mailTo);
+		log.info("mailCc = " + mailCc);
+		log.info("mailBcc = " + mailBcc);
+		log.info("mailFrom = " + mailFrom);
+		log.info("mailSuccessSubject = " + mailSuccessSubject);
+		log.info("mailFailureSubject = " + mailFailureSubject);
+		log.info("mailSuccessBody = " + mailSuccessBody);
+		log.info("mailFailureBody = " + mailFailureBody);
+		log.info("mailAttachReport = " + mailAttachReport);
+		log.info("mailHtml = " + mailHtml);
+		log.info("threadCount = " + threadCount);
+		log.info("isActuate = " + isActuate);
+		log.info("unsecuredDesignFilePattern = " + unsecuredDesignFilePattern);
+		log.info("unsecuredOperationPattern = " + unsecuredOperationPattern);
 	}
 
 	@Override
