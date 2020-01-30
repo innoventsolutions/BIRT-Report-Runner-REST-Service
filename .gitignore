@@ -3,6 +3,7 @@ HELP.md
 /bin/
 /log/
 !.mvn/wrapper/maven-wrapper.jar
+/output/
 /sample/log/
 /sample/derby.log
 /sample/logs/
