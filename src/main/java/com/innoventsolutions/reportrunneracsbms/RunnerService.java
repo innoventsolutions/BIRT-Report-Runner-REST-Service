@@ -382,12 +382,6 @@ public class RunnerService {
 			options = new PDFRenderOption();
 			options.setOutputFormat(RenderOption.OUTPUT_FORMAT_PDF);
 		}
-		if (format.equalsIgnoreCase("xlsx")) {
-			final EXCELRenderOption excelOption = new EXCELRenderOption();
-			excelOption.setEnableMultipleSheet(true);
-			options = excelOption;
-			options.setOutputFormat(format.toLowerCase());
-		}
 		else {
 			options = new RenderOption();
 			options.setOutputFormat(format.toLowerCase());
