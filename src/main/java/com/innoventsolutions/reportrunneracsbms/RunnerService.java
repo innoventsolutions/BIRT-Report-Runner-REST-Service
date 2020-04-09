@@ -30,6 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 
 import org.eclipse.birt.core.exception.BirtException;
+import org.eclipse.birt.report.engine.api.EXCELRenderOption;
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.HTMLActionHandler;
 import org.eclipse.birt.report.engine.api.HTMLCompleteImageHandler;
@@ -172,8 +173,18 @@ public class RunnerService {
 			final Object dataType = handle.getProperty("dataType");
 			logger.info(" param " + key + " = " + paramValue + ", type = " + dataType + " "
 				+ defn.getTypeName());
-			if (paramValue instanceof Object[]) {
-				final Object[] values = (Object[]) paramValue;
+			Object[] values;
+			if (paramValue instanceof List) {
+				List<?> list = (List<?>) paramValue;
+				values = list.toArray(new Object[0]);
+			}
+			else if (paramValue instanceof Object[]) {
+				values = (Object[]) paramValue;
+			}
+			else {
+				values = null;
+			}
+			if (values != null) {
 				logger.info(" param " + key + " " + values.length);
 				for (int i = 0; i < values.length; i++) {
 					final Object value = values[i];
@@ -370,6 +381,12 @@ public class RunnerService {
 		if (format.equalsIgnoreCase(RenderOption.OUTPUT_FORMAT_PDF)) {
 			options = new PDFRenderOption();
 			options.setOutputFormat(RenderOption.OUTPUT_FORMAT_PDF);
+		}
+		if (format.equalsIgnoreCase("xlsx")) {
+			final EXCELRenderOption excelOption = new EXCELRenderOption();
+			excelOption.setEnableMultipleSheet(true);
+			options = excelOption;
+			options.setOutputFormat(format.toLowerCase());
 		}
 		else {
 			options = new RenderOption();
